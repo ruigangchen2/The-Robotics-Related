@@ -114,6 +114,22 @@ void Key_IRQHandler()
 }
 
 
+/*
+ * @brief: clutch the stick by using the slpoe detecting
+ * @return: nothing
+ */
+int current_time = 0;
+int previous_time = 0;
+int speed_slope = 0;
+int pre_velocity = 0;
+void slope_detecting_method(){
+
+  current_time = millis();
+  speed_slope = (velocity - pre_velocity) / (current_time - previous_time);
+  previous_time = current_time;
+  pre_velocity = velocity;
+}
+
 float cal_speed(float n) //转速计算函数
 { 
   float vel = n * 0.9 / ((millis() - timecnt) * 0.001); 
@@ -122,57 +138,33 @@ float cal_speed(float n) //转速计算函数
 }
 
 
-void cal_degree()  //得出角度
+void get_information()  //得出角度
 {
-  int w = motion;
+  int w = pulse;
 
   noInterrupts();
   
   velocity = cal_speed(w); //计算转速
 
   if(current_direction == forward_direction){
-    motion = motion + motion * 360 / 400; //计算正位移
+    motion = motion + pulse * 360 / 400; //计算正位移
   }
   else{
-    motion = motion - motion * 360 / 400; //计算负位移
+    motion = motion - pulse * 360 / 400; //计算负位移
   }
-  motion = 0;    //脉冲A计数归0
+  pulse = 0;    //脉冲A计数归0
   
   interrupts();
+  slope_detecting_method();
   if(number_matrix < 500 && stage_save == 1){
     static int matrix_time_start = millis(); //初始化一次
     degree_matrix[number_matrix] = motion;
-    speed_matrix[number_matrix] = velocity;
+    speed_matrix[number_matrix] = speed_slope;
     time_matrix[number_matrix] = millis() - matrix_time_start ;
     number_matrix++;
   }
 }
 
-/*
- * @brief: clutch the stick if the speed achieves the interval
-           direction == 0: anticlockwise
-           direction == 1: clockwise
- * @return: nothing
- */
-void speed_clutch_method(){
-  if(premotion > motion && clutch_state == 0 && direction == 0 && speed_detect_state ==0){   //anticlockwise
-    speed_detect_state = 1;
-    stage_save = 1;
-    direction = 1;
-  }
-
-  if(speed_detect_state == 1){
-    if(velocity < 100 && velocity > 0 && clutch_state == 0 && direction == 0 && motion > 0){
-      clutch_state = 1;
-      direction = 1; //逆时针转
-    }
-    if(velocity > -100 && velocity < 0  && clutch_state == 0 && direction == 1 && motion < 0){
-      clutch_state = 1;
-      direction = 0; //逆时针转
-    }
-  }
-  premotion = motion; 
-}
 
 /*
  * @brief: main funtcion
@@ -205,7 +197,7 @@ void setup(){
 void loop() {
   
   Key_function();
-  speed_clutch_method();
+  slope_detecting_method();
 
   if(clutch_state == 1){
     analogWrite(5,255); // 100% PWM wave
@@ -227,22 +219,22 @@ void CountA()
   if(digitalRead(encoderA_pin) == HIGH){ //B脉冲为高电平
     if(digitalRead(encoderB_pin) == HIGH){
       current_direction = forward_direction;
-      motion++;
+      pulse++;
     }
     else{
-      motion--;
+      pulse--;
     }
   }
   else{
     if(digitalRead(encoderB_pin) == LOW){
       current_direction = forward_direction;
-      motion++;
+      pulse++;
     }
     else{
-      motion--;
+      pulse--;
     }
   }
-  cal_degree();
+  get_information();
 }
 
 void CountB()
@@ -250,20 +242,20 @@ void CountB()
   if(digitalRead(encoderB_pin) == HIGH){ //B脉冲为高电平
     if(digitalRead(encoderA_pin) == LOW){
       current_direction = forward_direction;
-      motion++;
+      pulse++;
     }
     else{
-      motion--;
+      pulse--;
     }
   }
   else{
     if(digitalRead(encoderA_pin) == HIGH){
       current_direction = forward_direction;
-      motion++;
+      pulse++;
     }
     else{
-      motion--;
+      pulse--;
     }
   }
-  cal_degree();
+  get_information();
 }
