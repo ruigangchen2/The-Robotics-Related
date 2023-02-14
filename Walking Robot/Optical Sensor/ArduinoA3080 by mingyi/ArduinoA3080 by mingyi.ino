@@ -60,7 +60,8 @@ SoftwareSerial mySerial(6, 7); // RX, TX
 #define ADNS3080_SROM_LOAD             0x60
 
 #define ADNS3080_PRODUCT_ID_VAL        0x17
-
+int X = 0;
+int Y = 0;
 void mousecam_reset()
 {
   digitalWrite(PIN_MOUSECAM_RESET,HIGH);
@@ -206,7 +207,7 @@ char asciiart(int k)
   return foo[k>>4];
 
 
-  Serial.begin(38400);
+  Serial.begin(9600);
 }
 
 byte frame[ADNS3080_PIXELS_X * ADNS3080_PIXELS_Y];
@@ -251,24 +252,29 @@ void loop()
   */
   //Serial.print(md.shutter); Serial.print(" (");
 
-  int X = (int)md.dx;
-  int Y = (int)md.dy;
-  if(X > -1) Serial.print("+");
-  if(X < 0) Serial.print("-");
-  if(abs(X) < 10) Serial.print("0");
-  Serial.print(abs(X));
-  Serial.print(',');
-  if(Y > -1) Serial.print("+");
-  if(Y < 0) Serial.print("-");
-  if(abs(Y) < 10) Serial.print("0");
-  Serial.print(abs(Y));
-  Serial.print('\n');
+  //int X = (int)md.dx;
+  X += (int)md.dx;
+  Y += (int)md.dy;
+  Serial.print(X);
+  Serial.print(",");
+  Serial.print(Y);
+   Serial.print("\n");
+  
+  //if(X > -1) Serial.print("+");
+  //if(X < 0) Serial.print("-");
+  //if(abs(X) < 10) Serial.print("0");
+  //Serial.print(abs(X));
+  //Serial.print(',');
+  // if(Y > -1) Serial.print("+");
+  // if(Y < 0) Serial.print("-");
+  // if(abs(Y) < 10) Serial.print("0");
+  // Serial.println(abs(Y));
   /*
   Serial.print((int)md.dx); Serial.print(',');
   Serial.println((int)md.dy); //Serial.println(')');
   // Serial.println(md.max_pix);
   */
-  delay(100);
+  delay(10);
   
   #endif
 }

@@ -1,7 +1,7 @@
 #include <MsTimer2.h>        //定时器2
 #include "TimerOne.h"
 
-#define matrix_number 480
+#define matrix_number 450
 #define button_pin 18
 #define encoderA_pin 2
 #define encoderB_pin 3
@@ -35,9 +35,9 @@ unsigned int timecnt = 0;
 float degree_matrix[matrix_number] = {};
 float speed_matrix[matrix_number] = {};
 float time_matrix[matrix_number] = {};
-float clutch_matrix[matrix_number] = {};
+float slope_matrix[matrix_number] = {};
 int number_matrix = 0;
-int stage_save = 0;
+int stage_save = 1;
 /******************************/
 
 
@@ -69,6 +69,8 @@ void Key_function()
 
   switch(count){
   case 2:  //If you want to send the matrix data, just click the key twice.
+    noInterrupts();
+    Serial.print("Start Sending\n");
     Serial.print("angle = np.array([");
     for (int i = 0; i < number_matrix; i++) {
       Serial.print(degree_matrix[i]);
@@ -87,13 +89,15 @@ void Key_function()
       Serial.print(", ");
     }
     Serial.print("])\n");
-    Serial.print("clutch = np.array([");
+    Serial.print("slope = np.array([");
     for (int i = 0; i < number_matrix; i++) {
-      Serial.print(clutch_matrix[i]);
+      Serial.print(slope_matrix[i]);
       Serial.print(", ");
     }
     Serial.print("])\n");
+    Serial.print("Finish Sending\n");
     count++;
+    interrupts();
     break;  
   case 3:
     count = 0;
@@ -120,14 +124,15 @@ void Key_IRQHandler()
  */
 int current_time = 0;
 int previous_time = 0;
-int speed_slope = 0;
-int pre_velocity = 0;
-void slope_detecting_method(){
+int previous_velocity = 0;
+int estimate_time = 0;
+int slope_detecting_method(){
 
   current_time = millis();
-  speed_slope = (velocity - pre_velocity) / (current_time - previous_time);
+  estimate_time = previous_time - (previous_velocity * (current_time - previous_time) / ((int)velocity - previous_velocity));
   previous_time = current_time;
-  pre_velocity = velocity;
+  previous_velocity = (int)velocity;
+  return estimate_time;
 }
 
 float cal_speed(float n) //转速计算函数
@@ -154,13 +159,14 @@ void get_information()  //得出角度
   }
   pulse = 0;    //脉冲A计数归0
   
-  interrupts();
-  slope_detecting_method();
+  // interrupts();
+  // slope_detecting_method();
   if(number_matrix < 500 && stage_save == 1){
     static int matrix_time_start = millis(); //初始化一次
     degree_matrix[number_matrix] = motion;
-    speed_matrix[number_matrix] = speed_slope;
+    speed_matrix[number_matrix] = velocity;
     time_matrix[number_matrix] = millis() - matrix_time_start ;
+    slope_matrix[number_matrix] = slope_detecting_method();
     number_matrix++;
   }
 }
@@ -199,14 +205,14 @@ void loop() {
   Key_function();
   slope_detecting_method();
 
-  if(clutch_state == 1){
-    analogWrite(5,255); // 100% PWM wave
-    if(clutch_timecount == 100){  //replace the delay function.
-      clutch_timecount = 0;
-      clutch_state = 0;
-      analogWrite(5,0);
-    }
-  }
+  // if(clutch_state == 1){
+  //   analogWrite(5,255); // 100% PWM wave
+  //   if(clutch_timecount == 100){  //replace the delay function.
+  //     clutch_timecount = 0;
+  //     clutch_state = 0;
+  //     analogWrite(5,0);
+  //   }
+  // }
 }
 
 

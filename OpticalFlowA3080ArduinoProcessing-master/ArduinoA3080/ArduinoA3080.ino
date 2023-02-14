@@ -206,7 +206,7 @@ char asciiart(int k)
   return foo[k>>4];
 
 
-  Serial.begin(38400);
+  Serial.begin(9600);
 }
 
 byte frame[ADNS3080_PIXELS_X * ADNS3080_PIXELS_Y];
@@ -261,14 +261,13 @@ void loop()
   if(Y > -1) Serial.print("+");
   if(Y < 0) Serial.print("-");
   if(abs(Y) < 10) Serial.print("0");
-  Serial.print(abs(Y));
-  Serial.print('\n');
+  Serial.println(abs(Y));
   /*
   Serial.print((int)md.dx); Serial.print(',');
   Serial.println((int)md.dy); //Serial.println(')');
   // Serial.println(md.max_pix);
   */
-  delay(100);
+  delay(10);
   
   #endif
 }
