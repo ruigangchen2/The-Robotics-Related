@@ -13,6 +13,10 @@ class IMU {
         static void updateYaw();
         static void Kalmaninitialize();
         static void InvertEulerangle();
+        static void Quaternion();
+        static void MahonyAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, double dt);
+        static void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, double dt);
+        static float invSqrt(float x);
 
         static double accX, accY, accZ;
         static double gyroX, gyroY, gyroZ;

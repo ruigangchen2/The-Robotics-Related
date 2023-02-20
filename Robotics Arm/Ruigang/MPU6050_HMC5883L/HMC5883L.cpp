@@ -28,7 +28,7 @@ void HMC5883L::getdata(){
 void HMC5883L::calibrate(){
   HMC5883L_Write(0x00, 0x11);
   delay(500); // Wait for sensor to get ready
-  getdata(); // Read positive bias values
+  HMC5883L::getdata(); // Read positive bias values
 
   HMC5883L::magPosOff[0] = HMC5883L::magX;
   HMC5883L::magPosOff[1] = HMC5883L::magY;
@@ -37,7 +37,7 @@ void HMC5883L::calibrate(){
 
   HMC5883L_Write(0x00, 0x12);
   delay(500); // Wait for sensor to get ready
-  getdata(); // Read positive bias values
+  HMC5883L::getdata(); // Read positive bias values
 
   HMC5883L::magNegOff[0] = HMC5883L::magX;
   HMC5883L::magNegOff[1] = HMC5883L::magY;

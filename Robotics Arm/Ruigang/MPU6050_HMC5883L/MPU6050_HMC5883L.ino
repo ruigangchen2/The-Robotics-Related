@@ -27,29 +27,8 @@ void setup() {
 void loop() {
 
   IMU::InvertEulerangle();
-
   /* Print Data */
-#if 1
-  Serial.print(IMU::roll); Serial.print("\t");
-  Serial.print(IMU::gyroXangle); Serial.print("\t");
-  Serial.print(IMU::compAngleX); Serial.print("\t");
-  Serial.print(IMU::kalAngleX); Serial.print("\t");
-
-  Serial.print("\t");
-
-  Serial.print(IMU::pitch); Serial.print("\t");
-  Serial.print(IMU::gyroYangle); Serial.print("\t");
-  Serial.print(IMU::compAngleY); Serial.print("\t");
-  Serial.print(IMU::kalAngleY); Serial.print("\t");
-
-  Serial.print("\t");
-
-  Serial.print(IMU::yaw); Serial.print("\t");
-  Serial.print(IMU::gyroZangle); Serial.print("\t");
-  Serial.print(IMU::compAngleZ); Serial.print("\t");
-  Serial.print(IMU::kalAngleZ); Serial.print("\t");
-  Serial.print("\n");
-#endif
+  Serial.print("kalAngleZ:");Serial.println(IMU::kalAngleZ);
   delay(10);
 }
 
