@@ -235,8 +235,8 @@ void loop()
 { 
   Key_function();
   MPU_getdata();
-  // MPU_datasend();
-  SpeedCluthingmethod();
+  MPU_datasend();
+  // SpeedCluthingmethod();
   
   if(clutch_state == 1){
     analogWrite(5,255); // 100% PWM wave
