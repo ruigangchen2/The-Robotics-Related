@@ -1,20 +1,3 @@
-/* Copyright (C) 2012 Kristian Lauszus, TKJ Electronics. All rights reserved.
-
- This software may be distributed and modified under the terms of the GNU
- General Public License version 2 (GPL2) as published by the Free Software
- Foundation and appearing in the file GPL2.TXT included in the packaging of
- this file. Please note that GPL2 Section 2[b] requires that all works based
- on this software must also be made publicly available under the terms of
- the GPL2 ("Copyleft").
-
- Contact information
- -------------------
-
- Kristian Lauszus, TKJ Electronics
- Web      :  http://www.tkjelectronics.com
- e-mail   :  kristianl@tkjelectronics.com
- */
-
 #ifndef _Kalman_h
 #define _Kalman_h
 
@@ -36,12 +19,6 @@ public:
     };
     // The angle should be in degrees and the rate should be in degrees per second and the delta time in seconds
     double getAngle(double newAngle, double newRate, double dt) {
-        // KasBot V2  -  Kalman filter module - http://www.x-firm.com/?page_id=145
-        // Modified by Kristian Lauszus
-        // See my blog post for more information: http://blog.tkjelectronics.dk/2012/09/a-practical-approach-to-kalman-filter-and-how-to-implement-it
-
-        // Discrete Kalman filter time update equations - Time Update ("Predict")
-        // Update xhat - Project the state ahead
         /* Step 1 */
         rate = newRate - bias;
         angle += dt * rate;

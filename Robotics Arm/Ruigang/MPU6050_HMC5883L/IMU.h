@@ -11,7 +11,8 @@ class IMU {
         static void getdata();
         static void updatePitchRoll();
         static void updateYaw();
-
+        static void Kalmaninitialize();
+        static void InvertEulerangle();
 
         static double accX, accY, accZ;
         static double gyroX, gyroY, gyroZ;
