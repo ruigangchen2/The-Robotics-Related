@@ -216,8 +216,11 @@ void setup()
 
   mpu.initialize();
   mpu.dmpInitialize();
+  
+  Serial.print("**** The System Init Done... ****\n");
   mpu.CalibrateAccel(6);
   mpu.CalibrateGyro(6);
+  
   mpu.PrintActiveOffsets();
   mpu.setDMPEnabled(true);
   
