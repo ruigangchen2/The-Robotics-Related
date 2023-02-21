@@ -76,12 +76,13 @@ void Key_function()
       Serial.print(", ");
     }
     Serial.print("])\n");
-    Serial.print("stage = np.array([");
-    for (int i = 0; i < number_matrix; i++) {
-      Serial.print(stage_matrix[i]);
-      Serial.print(", ");
-    }
-    Serial.print("])\n");
+
+    // Serial.print("stage = np.array([");
+    // for (int i = 0; i < number_matrix; i++) {
+    //   Serial.print(stage_matrix[i]);
+    //   Serial.print(", ");
+    // }
+    // Serial.print("])\n");
 
     Serial.print("time = np.array([");
     for (int i = 0; i < number_matrix; i++) {
@@ -133,7 +134,7 @@ void Savedata()
     static int start_time = millis();
     // degree_matrix[number_matrix] = yaw_angle;
     speed_matrix[number_matrix] = yaw_speed;
-    stage_matrix[number_matrix] = clutch_state;
+    // stage_matrix[number_matrix] = clutch_state;
     time_matrix[number_matrix] = millis() - start_time;
     number_matrix++;
   }
@@ -181,7 +182,7 @@ void setup() {
 void loop() {
 
   IMU::InvertEulerangle();
-  yaw_angle = IMU::compAngleZ - 63;
+  yaw_angle = IMU::compAngleZ - 68;
   yaw_speed = -IMU::gyroZrate;
   Key_function();
   SpeedCluthingmethod();
