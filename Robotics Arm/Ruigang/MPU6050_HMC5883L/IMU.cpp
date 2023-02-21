@@ -34,6 +34,19 @@ volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f;					// quaternion of 
 volatile float integralFBx = 0.0f,  integralFBy = 0.0f, integralFBz = 0.0f;	// integral error terms scaled by Ki
 
 
+struct _1_ekf_filter
+  {
+    float LastP;	
+    float	Now_P;	//测量不确定性
+    float out;
+    float Kg;		//卡尔曼增益
+    float Q;	//过程噪声的方差
+    float R;	//估计不确定性
+  };
+static struct _1_ekf_filter Kalman_parameter[9] = {{0.003,0,0,0,0.001,0.03},{0.003,0,0,0,0.001,0.03},{0.003,0,0,0,0.001,0.03},  //加速度计卡尔曼参数
+																									 {0.003,0,0,0,0.001,0.03},{0.003,0,0,0,0.001,0.03},{0.003,0,0,0,0.001,0.03},	//陀螺仪卡尔曼参数
+                                                   {0.003,0,0,0,0.001,0.03},{0.003,0,0,0,0.001,0.03},{0.003,0,0,0,0.001,0.03}}; //磁力计
+
 /** Default constructor.
  */
 IMU::IMU() {
@@ -210,25 +223,30 @@ void IMU::InvertEulerangle(){
 }
 
 void IMU::Quaternion(){
+  uint8_t buffer[9];
   IMU::getdata();
   HMC5883L::getdata();
-  IMU::gyroXrate = IMU::gyroX / 131.0; // Convert to deg/s
-  IMU::gyroYrate = IMU::gyroY / 131.0; // Based on the setting. (131LSB)
-  IMU::gyroZrate = IMU::gyroZ / 131.0; // Convert to deg/s. 131LSB
-  
-  double dt = (double)(micros() - timer) / 1000000; // Calculate delta time
+  buffer[0] = IMU::accX;
+  buffer[1] = IMU::accY;
+  buffer[2] = IMU::accZ;
+  buffer[3] = IMU::gyroX;
+  buffer[4] = IMU::gyroY;
+  buffer[5] = IMU::gyroZ;
+  buffer[6] = HMC5883L::magX;
+  buffer[7] = HMC5883L::magY;
+  buffer[8] = HMC5883L::magZ;
+  for(int i=0;i<9;i++){
+    kalman_1(&Kalman_parameter[i],(float)buffer[i]);  //一维卡尔曼滤波
+    buffer[i] = (int16_t)Kalman_parameter[i].out;  //滤波结果输出
+  }
+  double dt = (double)(micros() - timer) / 1000000; // unit : seconds
   timer = micros();
+  IMU::MahonyAHRSupdate(buffer[3] * DEG_TO_RAD, buffer[4] * DEG_TO_RAD, buffer[5] * DEG_TO_RAD, buffer[0], buffer[1], buffer[2], buffer[6], buffer[7], buffer[8], dt);
 
-  IMU::MahonyAHRSupdate(IMU::gyroX, IMU::gyroY, IMU::gyroZ, IMU::accX, IMU::accY, IMU::accZ, HMC5883L::magX, HMC5883L::magY, HMC5883L::magZ, dt);
-
-  IMU::pitch = kalmanY.getAngle(IMU::pitch, IMU::gyroYrate, dt);
-  // IMU::roll = kalmanX.getAngle(IMU::roll, IMU::gyroXrate, dt); // Calculate the angle using a Kalman filter
-  // IMU::yaw = kalmanZ.getAngle(IMU::yaw, IMU::gyroZrate, dt); // Calculate the angle using a Kalman filter
-  
 #if 1
-  Serial.print(IMU::pitch); Serial.print("\n");
-  Serial.print(IMU::roll); Serial.print("\n");
-  Serial.print(IMU::yaw); Serial.print("\n");
+  Serial.print("PITCH:");Serial.println(IMU::pitch);
+  // Serial.print(IMU::roll); Serial.print("\n");
+  // Serial.print(IMU::yaw); Serial.print("\n");
 
 #endif
 }
@@ -401,14 +419,10 @@ void IMU::MahonyAHRSupdate(float gx, float gy, float gz, float ax, float ay, flo
 	q2 *= recipNorm;
 	q3 *= recipNorm;
 
-  {
-    float vecxZ = q0 * q2 - q1 * q3 ;
-		float vecyZ = q2 * q3 + q0 * q1;
-		float veczZ =  0.5f - q1 * q1 - q2 * q2;	  
-
-    IMU::roll = asin(vecxZ) * RAD_TO_DEG;
-    IMU::pitch = atan2f(vecyZ,veczZ) * RAD_TO_DEG;
-    IMU::yaw = atan2f(q1 * q2 + q0 * q3, 0.5 - q2 * q2 - q3 * q3) * RAD_TO_DEG;
+  {  
+    IMU::yaw = -atan2f(2*q1*q2 + 2*q0*q3, -2*q2*q2 - 2*q3*q3 + 1) * RAD_TO_DEG;
+    IMU::roll = atan2f(2*q2*q3 + 2*q0*q1, -2*q1*q1 - 2*q2*q2 + 1) * RAD_TO_DEG;
+    IMU::pitch = -asin(-2*q1*q3 + 2*q0*q2) * RAD_TO_DEG;
   }
 }
 
@@ -422,3 +436,14 @@ float IMU::invSqrt(float x) {
 	y = y * (1.5f - (halfx * y * y));
 	return y;
 }
+
+void IMU::kalman_1(struct _1_ekf_filter *ekf, float input){ //一维卡尔曼
+	ekf->Now_P = ekf->LastP + ekf->Q;   								//p(x,x-1) = p(x-1,x-1) + Q   更新外推不确定性
+	
+	ekf->Kg = ekf->Now_P / (ekf->Now_P + ekf->R);				//K = p / (p + R)   更新卡尔曼增益，
+	
+	ekf->out = ekf->out + ekf->Kg * (input - ekf->out); //卡尔曼状态更新方程
+	
+	ekf->LastP = (1-ekf->Kg) * ekf->Now_P ;							//估计不确定性更新
+}
+

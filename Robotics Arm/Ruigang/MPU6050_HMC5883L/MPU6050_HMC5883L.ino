@@ -28,7 +28,10 @@ void loop() {
 
   IMU::InvertEulerangle();
   /* Print Data */
-  Serial.print("kalAngleZ:");Serial.println(IMU::kalAngleZ);
+  // Serial.print("kalAngleZ:");Serial.println((int)IMU::kalAngleZ);
+  // Serial.print("compAngleZ:");Serial.println((int)IMU::compAngleZ);
+  Serial.print("Yaw:");Serial.println(IMU::yaw);
+  
   delay(10);
 }
 

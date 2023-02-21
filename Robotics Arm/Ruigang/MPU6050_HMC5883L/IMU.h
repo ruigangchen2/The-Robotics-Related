@@ -17,6 +17,7 @@ class IMU {
         static void MahonyAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz, double dt);
         static void MahonyAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az, double dt);
         static float invSqrt(float x);
+        static void kalman_1(struct _1_ekf_filter *ekf,float input);
 
         static double accX, accY, accZ;
         static double gyroX, gyroY, gyroZ;
@@ -31,6 +32,8 @@ class IMU {
 
         static int16_t tempRaw;
         static uint8_t Data[14];
+    private:
+
 
 };
 
