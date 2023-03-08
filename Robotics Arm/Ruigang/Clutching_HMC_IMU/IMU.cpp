@@ -149,9 +149,9 @@ void IMU::InvertEulerangle(){
     IMU::kalAngleX = IMU::roll;
     IMU::gyroXangle = IMU::roll;
   } else
-    IMU::kalAngleX = kalmanX.getAngle(IMU::roll, IMU::gyroXrate, dt); // Calculate the angle using a Kalman filter
+  IMU::kalAngleX = kalmanX.getAngle(IMU::roll, IMU::gyroXrate, dt); // Calculate the angle using a Kalman filter
   if (abs(IMU::kalAngleX) > 90)
-    IMU::gyroYrate = -IMU::gyroYrate; // Invert rate, so it fits the restricted accelerometer reading
+  IMU::gyroYrate = -IMU::gyroYrate; // Invert rate, so it fits the restricted accelerometer reading
   IMU::kalAngleY = kalmanY.getAngle(IMU::pitch, IMU::gyroYrate, dt);
 
   // This fixes the transition problem when the accelerometer angle jumps between -180 and 180 degrees

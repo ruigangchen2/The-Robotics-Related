@@ -287,6 +287,7 @@ uint8_t MPU6050_6Axis_MotionApps20::dmpInitialize() {
 	// get MPU hardware revision
 	setMemoryBank(0x10, true, true);
 	setMemoryStartAddress(0x06);
+  
 	DEBUG_PRINTLN(F("Checking hardware revision..."));
 	DEBUG_PRINT(F("Revision @ user[16][6] = "));
 	DEBUG_PRINTLN(readMemoryByte());
@@ -307,6 +308,7 @@ uint8_t MPU6050_6Axis_MotionApps20::dmpInitialize() {
 	setSlaveAddress(0, 0x68);
 	DEBUG_PRINTLN(F("Resetting I2C Master control..."));
 	resetI2CMaster();
+  
 	delay(20);
 	DEBUG_PRINTLN(F("Setting clock source to Z Gyro..."));
 	setClockSource(MPU6050_CLOCK_PLL_ZGYRO);
@@ -317,7 +319,6 @@ uint8_t MPU6050_6Axis_MotionApps20::dmpInitialize() {
 	DEBUG_PRINTLN(F("Setting sample rate to 200Hz..."));
 	setRate(4); // 1khz / (1 + 4) = 200 Hz
 
-
 	DEBUG_PRINTLN(F("Setting external frame sync to TEMP_OUT_L[0]..."));
 	setExternalFrameSync(MPU6050_EXT_SYNC_TEMP_OUT_L);
 
@@ -327,11 +328,14 @@ uint8_t MPU6050_6Axis_MotionApps20::dmpInitialize() {
 	DEBUG_PRINTLN(F("Setting gyro sensitivity to +/- 2000 deg/sec..."));
 	setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
 
+
 	// load DMP code into memory banks
 	DEBUG_PRINT(F("Writing DMP code to MPU memory banks ("));
 	DEBUG_PRINT(MPU6050_DMP_CODE_SIZE);
 	DEBUG_PRINTLN(F(" bytes)"));
+  
 	if (!writeProgMemoryBlock(dmpMemory, MPU6050_DMP_CODE_SIZE)) return 1; // Failed
+
 	DEBUG_PRINTLN(F("Success! DMP code written and verified."));
 
 	// Set the FIFO Rate Divisor int the DMP Firmware Memory

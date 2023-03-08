@@ -199,7 +199,7 @@ void IMU::InvertEulerangle(){
     IMU::gyroYangle = IMU::kalAngleY;
   if (IMU::gyroZangle < -180 || IMU::gyroZangle > 180)
    IMU::gyroZangle = IMU::kalAngleZ;
-#if 0
+#if 1
   Serial.print(IMU::roll); Serial.print("\t");
   Serial.print(IMU::gyroXangle); Serial.print("\t");
   Serial.print(IMU::compAngleX); Serial.print("\t");

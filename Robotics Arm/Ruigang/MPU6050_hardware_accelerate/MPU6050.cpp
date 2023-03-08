@@ -3099,6 +3099,7 @@ void MPU6050_Base::readMemoryBlock(uint8_t *data, uint16_t dataSize, uint8_t ban
 bool MPU6050_Base::writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t bank, uint8_t address, bool verify, bool useProgMem) {
     setMemoryBank(bank);
     setMemoryStartAddress(address);
+
     uint8_t chunkSize;
     uint8_t *verifyBuffer=0;
     uint8_t *progBuffer=0;
@@ -3131,6 +3132,7 @@ bool MPU6050_Base::writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint
             setMemoryBank(bank);
             setMemoryStartAddress(address);
             I2Cdev::readBytes(devAddr, MPU6050_RA_MEM_R_W, chunkSize, verifyBuffer, I2Cdev::readTimeout, wireObj);
+            
             if (memcmp(progBuffer, verifyBuffer, chunkSize) != 0) {
                 /*Serial.print("Block write verification error, bank ");
                 Serial.print(bank, DEC);
@@ -3154,7 +3156,6 @@ bool MPU6050_Base::writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint
                 return false; // uh oh.
             }
         }
-
         // increase byte index by [chunkSize]
         i += chunkSize;
 
@@ -3168,8 +3169,10 @@ bool MPU6050_Base::writeMemoryBlock(const uint8_t *data, uint16_t dataSize, uint
             setMemoryStartAddress(address);
         }
     }
+
     if (verify) free(verifyBuffer);
     if (useProgMem) free(progBuffer);
+
     return true;
 }
 bool MPU6050_Base::writeProgMemoryBlock(const uint8_t *data, uint16_t dataSize, uint8_t bank, uint8_t address, bool verify) {

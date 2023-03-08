@@ -2,7 +2,7 @@
 #include "MPU6050_6Axis_MotionApps20.h"
 #include "TimerOne.h"
 
-#define matrix_number 1200
+#define matrix_number 10
 #define button_pin 18
 
 /***** MPU variable *****/
@@ -215,6 +215,9 @@ void setup()
   Serial.print("\n**** Start To Init The System... ****\n\n");
 
   mpu.initialize();
+  Serial.print("The device:");
+  Serial.print(mpu.testConnection());
+  Serial.print("\n");
   mpu.dmpInitialize();
   
   Serial.print("**** The System Init Done... ****\n");

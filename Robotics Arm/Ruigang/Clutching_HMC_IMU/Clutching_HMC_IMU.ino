@@ -196,9 +196,9 @@ void loop() {
       analogWrite(5,0);
     }
   }
-#if 0
-  Serial.print("10 degree:");Serial.println(10);
-  Serial.print("-10 degree:");Serial.println(-10);
+#if 1
+  Serial.print("90 degree:");Serial.println(90);
+  Serial.print("-90 degree:");Serial.println(-90);
   Serial.print("YAW_Degree:");Serial.println(yaw_angle);
   Serial.print("YAW_Speed:");Serial.println(yaw_speed);
 #endif

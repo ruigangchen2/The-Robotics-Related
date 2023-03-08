@@ -158,17 +158,17 @@ void kalman_1(struct _1_ekf_filter *ekf,float input)  //卡尔曼滤波
   ekf->LastP = (1-ekf->Kg) * ekf->Now_P ;           
 }
 
-static struct _1_ekf_filter Kalman_parameter[6] = {{0.02,0,0,0,0.001,0.4},{0.02,0,0,0,0.001,0.4},{0.02,0,0,0,0.001,0.4}, 
-                                                   {0.02,0,0,0,0.001,0.3},{0.02,0,0,0,0.001,0.3},{0.02,0,0,0,0.001,0.3}};
+static struct _1_ekf_filter Kalman_parameter[3] = {{0.02,0,0,0,0.00,0.543},{0.02,0,0,0,0.003,0.543},{0.02,0,0,0,0.003,0.543}};
+                                                   
 static volatile int16_t *pMpu = (int16_t *)&MPU6050; 
 
-void MpuGetOffset(void) //
+void MpuGetOffset(void) 
 {
   int32_t buffer[6]={0};
   int16_t i;  
   uint8_t k=30;
-  const int8_t MAX_GYRO_QUIET = 0.5;
-  const int8_t MIN_GYRO_QUIET = -0.5; 
+  const int8_t MAX_GYRO_QUIET = 5;
+  const int8_t MIN_GYRO_QUIET = -5; 
                                             
   int16_t LastGyro[3] = {0};
   int16_t ErrorGyro[3]; 
@@ -226,10 +226,18 @@ void MpuGetData(void) //MPU6050得到数据
     pMpu[4] = (Wire.read() << 8 | Wire.read())  - MpuOffset[4];
     pMpu[5] = (Wire.read() << 8 | Wire.read())  - MpuOffset[5]; 
     
-    for(i = 0; i < 6 ; i++){
-      kalman_1(&Kalman_parameter[i],(float)pMpu[i]);
-      pMpu[i] = (int16_t)Kalman_parameter[i].out; 
-    } 
+    for(i = 0; i < 6; i++){
+      if(i<3){
+        kalman_1(&Kalman_parameter[i],(float)pMpu[i]);
+        pMpu[i] = (int16_t)Kalman_parameter[i].out; 
+      }
+      if(i>2){
+        uint8_t k = i - 3;
+        const float factor = 0.15f;
+        static float tBuff[3];
+        pMpu[i] = tBuff[k] = tBuff[k] * (1 - factor) + pMpu[i] * factor;        
+      } 
+    }
 }
 
 
@@ -344,50 +352,44 @@ void setup() {
   Serial.begin(9600);
   Serial.print("Start To Init The IMU...\n");
   Wire.begin();                      // Initialize comunication
-  delay(10);
   Wire.beginTransmission(MPU);       // Start communication with MPU6050 // MPU=0x68
-  Wire.write(0x6B);                
-  Wire.write(0);     
-  delay(10);             
+  Wire.write(0x6B);                 
+  Wire.write(0x80);     //复位            
   Wire.endTransmission(true);        //end the transmission
-  delay(10);
+  delay(30);
+
   Wire.beginTransmission(MPU); 
   Wire.write(0x19);                
-  Wire.write(0x02);  
-  delay(10);
+  Wire.write(0x02);   //陀螺仪采样率 500HZ
   Wire.endTransmission(true); 
-  delay(10);
+
   Wire.beginTransmission(MPU); 
   Wire.write(0x6B);                
-  Wire.write(0x03);  
-  delay(10);
+  Wire.write(0x03);  //设置设备时钟源，陀螺仪Z轴
   Wire.endTransmission(true); 
-  delay(10);
+
   Wire.beginTransmission(MPU); 
   Wire.write(0x1A);                
-  Wire.write(0x03); 
-  delay(10);
+  Wire.write(0x03);   //低通滤波 42Hz
   Wire.endTransmission(true); 
-  delay(10);
-  Wire.endTransmission(true); 
-  delay(10);
+
   Wire.beginTransmission(MPU); 
   Wire.write(0x1B);                
-  Wire.write(0x18); 
-  delay(10);
+  Wire.write(0x18); //角速度计 +-2000g/s
   Wire.endTransmission(true);
-  delay(10);
+
   Wire.beginTransmission(MPU); 
   Wire.write(0x1C);                
-  Wire.write(0x09); 
-  delay(10);
+  Wire.write(0x09); //加速度计 +-4g
   Wire.endTransmission(true);
+
   Serial.print("IMU Init Done...\n");
   Serial.print("Start To Correct The IMU...\n");
+
   MpuGetOffset();
+
   Serial.print("Correct Done...\n");
   Serial.print("The System Init Done\n");
-  delay(500);
 
   MsTimer2::set(2, Timer_interrupt);        // 中断设置函数，每 2ms 进入一次中断
   MsTimer2::start();             
