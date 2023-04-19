@@ -56,7 +56,6 @@ void get_info()  //calculate the information of the encoder
         velocity = -velocity;
     }
     pulse = 0;    //set pulse to zero
-    printf("motion is:%.2f\n",motion);
 }
 
 
@@ -128,9 +127,13 @@ void *Timer_5ms(void)
 
     digitalWrite(electromagnet_1,0);
     digitalWrite(electromagnet_2,1);
+    digitalWrite(electromagnet_3,0);
+    digitalWrite(electromagnet_4,0);
 
     int Electromagnet_1_Clutch = 0;
     int Electromagnet_2_Clutch = 1;
+    int Electromagnet_3_Clutch = 0;
+    int Electromagnet_4_Clutch = 0;
 
     FILE *fp = fopen("./robotic_arm.csv", "w+");
     if (fp == NULL) {
@@ -138,23 +141,40 @@ void *Timer_5ms(void)
         printf("Failed\n");
         exit(EXIT_FAILURE);
     }
-    fprintf(fp, "Time,Degree,Velocity,Electromagnet_1_Clutch,Electromagnet_2_Clutch\n");
+    fprintf(fp, "Time,Degree,Velocity,Electromagnet_1_Clutch,Electromagnet_2_Clutch,Electromagnet_3_Clutch,Electromagnet_4_Clutch\n");
     
     signal(SIGINT, intHandler);
     while(1){
         get_info();
-        
+        printf("motion is:%.2f\n",motion);
         if(file_state == 1)
-            fprintf(fp,"%.2f,%.2f,%.2f,%d,%d\n",testingT_end(),motion,velocity,Electromagnet_1_Clutch,Electromagnet_2_Clutch);
+            fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Electromagnet_1_Clutch, Electromagnet_2_Clutch, Electromagnet_3_Clutch, Electromagnet_4_Clutch);
         else
             fclose(fp); 
-        if(motion > 45)
-            direction_state = forward_direction;
-        if(motion <= 0.3 && file_state == 1 && direction_state == forward_direction){
+
+        if(motion < -30)
+            direction_state = back_direction; //That means the next step will back to the natural position
+
+        if(motion >= 0.3 && file_state == 1 && direction_state == back_direction){
             digitalWrite(electromagnet_1,1);
             digitalWrite(electromagnet_2,0);
+            digitalWrite(electromagnet_3,1);
+            digitalWrite(electromagnet_4,0);
             Electromagnet_1_Clutch = 1;
             Electromagnet_2_Clutch = 0;
+            Electromagnet_3_Clutch = 1;
+            Electromagnet_4_Clutch = 0;
+        }
+        if(motion >= 38 && file_state == 1){
+            direction_state = forward_direction;
+            digitalWrite(electromagnet_1,1);
+            digitalWrite(electromagnet_2,0);
+            digitalWrite(electromagnet_3,0);
+            digitalWrite(electromagnet_4,1);
+            Electromagnet_1_Clutch = 1;
+            Electromagnet_2_Clutch = 0;
+            Electromagnet_3_Clutch = 0;
+            Electromagnet_4_Clutch = 1;
         }
         delay(5);
     }
