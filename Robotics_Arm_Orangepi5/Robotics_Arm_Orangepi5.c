@@ -40,13 +40,31 @@ float velocity=0;
 double TimeUse=0;
 struct timeval StartTime;
 struct timeval EndTime;
+
+double TimeDuration_Encoder=0;
+struct timeval StartTime_Encoder;
+struct timeval EndTime_Encoder;
 /******************************/
 
 struct pollfd fds[1];
 
+void testingT_durationT_start_Encoder()
+{
+    gettimeofday(&StartTime_Encoder, NULL);  //measure the time of encoder use
+}
+
+double testing_durationT_End_Encoder()
+{
+    gettimeofday(&EndTime_Encoder, NULL);   //measurement ends
+    TimeDuration_Encoder = 1000000*(EndTime_Encoder.tv_sec-StartTime_Encoder.tv_sec)+EndTime_Encoder.tv_usec-StartTime_Encoder.tv_usec;
+    TimeDuration_Encoder/=1000;  //the result is in the ms dimension
+    return TimeDuration_Encoder;
+}
+
 void get_info()  //calculate the information of the encoder
 {
-    velocity = pulse * 48.0; //   n / (5 * 0.001 * 1500) * 360
+
+    velocity = pulse * 240.0 / (testing_durationT_End_Encoder()); //   n / ((testing_durationT_End_Encoder / 1000) * 1500) * 360
 
     if(current_direction == forward_direction){
         motion = motion + pulse * 360 / 1500; //calculate the positive motion 
@@ -68,6 +86,8 @@ void *create(void)
     }
     fds[0].fd=fd;
     fds[0].events=POLLPRI;
+
+    
 
     while(1){
         if(poll(fds,1,0)==-1){
@@ -93,6 +113,8 @@ void *create(void)
                     current_direction = back_direction;
                 }
                 pulse++;
+                get_info();
+                testingT_durationT_start_Encoder();
             }
         }
     }
@@ -145,8 +167,8 @@ void *Timer_5ms(void)
     
     signal(SIGINT, intHandler);
     while(1){
-        get_info();
         printf("motion is:%.2f\n",motion);
+        // printf("velocity is:%.4f\n",velocity);
         if(file_state == 1)
             fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Electromagnet_1_Clutch, Electromagnet_2_Clutch, Electromagnet_3_Clutch, Electromagnet_4_Clutch);
         else
@@ -155,7 +177,7 @@ void *Timer_5ms(void)
         if(motion < -30)
             direction_state = back_direction; //That means the next step will back to the natural position
 
-        if(motion >= 0.3 && file_state == 1 && direction_state == back_direction){
+        if(motion >= 0 && file_state == 1 && direction_state == back_direction){
             digitalWrite(electromagnet_1,1);
             digitalWrite(electromagnet_2,0);
             digitalWrite(electromagnet_3,1);
@@ -165,7 +187,7 @@ void *Timer_5ms(void)
             Electromagnet_3_Clutch = 1;
             Electromagnet_4_Clutch = 0;
         }
-        if(motion >= 38 && file_state == 1){
+        if(motion >= 45 && file_state == 1){  //32
             direction_state = forward_direction;
             digitalWrite(electromagnet_1,1);
             digitalWrite(electromagnet_2,0);
