@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import scipy
 
 data = pd.read_csv("robotic_arm.csv")
 
@@ -21,15 +21,16 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_4_Clutch'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch,2)
 
 
-startline = 110
+startline = 1195
+endline = 1770
 
-time = time[startline:] - time[startline] 
-degree = degree[startline:]  
-velocity = velocity[startline:]  
-Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:]  
-Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:]  
-Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:]  
-Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:]  
+time = time[startline:endline] - time[startline] 
+degree = degree[startline:endline]  
+velocity = velocity[startline:endline]  
+Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]  
+Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]  
+Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]  
+Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]  
 
 
 # fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
@@ -60,7 +61,7 @@ ax1.set_xlabel('Time [ms]', fontweight ='bold')
 ax1.set_ylabel('Angular Velocity [degree/s]',fontweight ='bold')
 ax1.grid()
 fig.legend()
-ax1.set_ylim([-150, 150])
+ax1.set_ylim([-300, 300])
 fig.savefig('The Angular Velocity.pdf')
 
 
@@ -93,15 +94,15 @@ fig.savefig('The Electromagnet_3 & Electromagnet_4 State.pdf')
 
 fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
 ax2 = ax1.twinx()
-p1 = np.poly1d(np.polyfit(time,velocity,12))
-yvals = p1(time)
+velocity_smooth = scipy.signal.savgol_filter(velocity,20,4) #filter the data first and then use fourth order polynomial to fit the curve.
 ax1.plot(time, velocity, 'b-*', label='Angular Velocity [degree/s]')
-ax2.plot(time, yvals,'r-*', label='Matching Angular Velocity [degree/s]')
+ax2.plot(time, velocity_smooth,'r-*', label='Fitting Angular Velocity [degree/s]')
 ax1.set_xlabel('Time [ms]', fontweight ='bold')
 ax1.set_ylabel('Angular Velocity [degree/s]',fontweight ='bold')
-ax2.set_ylabel('Matching Angular Velocity [degree/s]',fontweight ='bold')
+ax2.set_ylabel('Fitting Angular Velocity [degree/s]',fontweight ='bold')
 ax1.grid()
 fig.legend()
-ax1.set_ylim([-150, 150])
-ax2.set_ylim([-150, 150])
-fig.savefig('The Angular Velocity & Matching Angular Velocity.pdf')
+ax1.set_ylim([-300, 300])
+ax2.set_ylim([-300, 300])
+fig.savefig('The Angular Velocity & Fitting Angular Velocity.pdf')
+plt.show()
