@@ -164,11 +164,11 @@ void speed_clutch_method(){
   if(speed_detect_state == 1){
     if(velocity < 100 && velocity > 0 && clutch_state == 0 && direction == 0 && motion > 0){
       clutch_state = 1;
-      direction = 1; //逆时针转
+      direction = 1;
     }
     if(velocity > -100 && velocity < 0  && clutch_state == 0 && direction == 1 && motion < 0){
       clutch_state = 1;
-      direction = 0; //逆时针转
+      direction = 0;
     }
   }
   premotion = motion; 

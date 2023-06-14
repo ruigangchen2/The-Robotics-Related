@@ -144,7 +144,7 @@ void intHandler(int i){
 
 
 void *Timer_5ms(void)
-{   
+{
     testingT_start();
     
     digitalWrite(electromagnet_1,0);
@@ -157,9 +157,12 @@ void *Timer_5ms(void)
     int Electromagnet_Clutch_3 = 0;
     int Electromagnet_Clutch_4 = 0;
     char velocity_state = 0;
+    char system_state = 0;
+
+
 
     FILE *fp = fopen("./robotic_arm.csv", "w+");
-    if (fp == NULL) {
+    if (fp == NULL){
         fprintf(stderr, "fopen() failed.\n");
         printf("Failed\n");
         exit(EXIT_FAILURE);
@@ -173,8 +176,19 @@ void *Timer_5ms(void)
         if(file_state == 1){
             fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Electromagnet_Clutch_1, Electromagnet_Clutch_2, Electromagnet_Clutch_3, Electromagnet_Clutch_4);
 
-            digitalWrite(electromagnet_2,1);
-            Electromagnet_Clutch_2 = 1;
+            if(motion > 35) system_state = 1;
+            if(system_state == 1 && motion < 16){
+                digitalWrite(electromagnet_3,0);
+                Electromagnet_Clutch_3 = 0;
+                digitalWrite(electromagnet_4,1);
+                Electromagnet_Clutch_3 = 1;
+            }
+            else{
+                digitalWrite(electromagnet_3,1);
+                Electromagnet_Clutch_3 = 1;
+                digitalWrite(electromagnet_4,0);
+                Electromagnet_Clutch_3 = 0;
+            }
         }
         else
             fclose(fp); 
