@@ -64,7 +64,7 @@ double testing_durationT_End_Encoder()
 void get_info()  //calculate the information of the encoder
 {
 
-    velocity = pulse * 240.0 / (testing_durationT_End_Encoder()); //   n / ((testing_durationT_End_Encoder / 1000) * 1500) * 360
+    velocity = pulse * 180.0 / (testing_durationT_End_Encoder()); //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
 
     if(current_direction == forward_direction){
         motion = motion + pulse * 360 / 2000; //calculate the positive motion 
