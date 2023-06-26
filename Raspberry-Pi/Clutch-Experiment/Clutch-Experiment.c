@@ -8,11 +8,10 @@
 #include <wiringPi.h>
 #include <sys/time.h>
 #include <signal.h>
-#include <ads1115.h>
 
 /*
 
-gcc -o Raspberry-PI Torque-Experiment.c ads1115.c ads1115.h -lwiringPi -pthread -lcrypt -lm -lrt
+gcc -o Raspberry-PI Clutch-Experiment.c -lwiringPi -pthread -lcrypt -lm -lrt
 
 */
 
@@ -45,11 +44,6 @@ struct timeval StartTime_Encoder;
 struct timeval EndTime_Encoder;
 /******************************/
 
-/***** ADS1115 *****/
-int16_t adc_value;
-float Weight = 0.0;
-float Gain = 1.0;
-/******************************/
 
 void testingT_durationT_start_Encoder()
 {
@@ -114,7 +108,6 @@ void intHandler(int i){
     digitalWrite(electromagnet_3,0);
     digitalWrite(electromagnet_4,0);
     
-    
 }
 
 void *Timer_5ms(void)
@@ -130,6 +123,9 @@ void *Timer_5ms(void)
     int Electromagnet_Clutch_2 = 0;
     int Electromagnet_Clutch_3 = 0;
     int Electromagnet_Clutch_4 = 0;
+    
+    char State0 = 0;
+    char State1 = 0;
 
     FILE *fp = fopen("./robotic_arm.csv", "w+");
     if (fp == NULL){
@@ -143,17 +139,42 @@ void *Timer_5ms(void)
 
     while(1){
         
-
-		adc_value = (int16_t) analogRead(100);
-		Weight = (float)adc_value * (0.256 / 32768.00) / 3.3 * 1000.00 * Gain; // plase find the .h file to change this number
-
-        printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s, The Weight is: %.2f g", motion, velocity, Weight);   
+        printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
         fflush(stdout);   
 
         if(file_state == 1){
-            fprintf(fp,"%.2f,%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Weight, Electromagnet_Clutch_1, Electromagnet_Clutch_2, Electromagnet_Clutch_3, Electromagnet_Clutch_4);
-            digitalWrite(electromagnet_2,1);
-            Electromagnet_Clutch_2 = 1;
+            fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Electromagnet_Clutch_1, Electromagnet_Clutch_2, Electromagnet_Clutch_3, Electromagnet_Clutch_4);
+            
+            if(motion < -85)State0 = 1;
+            
+            if(motion > -80 && State0 == 1){
+                digitalWrite(electromagnet_2,0);
+                digitalWrite(electromagnet_1,1);
+                Electromagnet_Clutch_2 = 0;
+                Electromagnet_Clutch_1 = 1;
+                
+                if(motion > 47 && State0 == 1){
+                    digitalWrite(electromagnet_4,0);
+                    digitalWrite(electromagnet_3,1);
+                    Electromagnet_Clutch_4 = 0;
+                    Electromagnet_Clutch_3 = 1;
+
+                    if(velocity < 40){
+                        digitalWrite(electromagnet_3,0);
+                        digitalWrite(electromagnet_4,1);
+                        Electromagnet_Clutch_3 = 0;
+                        Electromagnet_Clutch_4 = 1;
+                        State0 = 0;
+                        State1 = 1;
+                    }
+                }
+            }
+            else if(State1 == 0){
+                digitalWrite(electromagnet_1,0);
+                digitalWrite(electromagnet_2,1);
+                Electromagnet_Clutch_1 = 0;
+                Electromagnet_Clutch_2 = 1;
+            }
         }
         else
             fclose(fp); 
@@ -163,8 +184,6 @@ void *Timer_5ms(void)
 
 int main (void)
 {
-	ads1115Setup(100,0x48);
-
     wiringPiSetup();
     pinMode(encoderA_pin, INPUT);
     pinMode(encoderB_pin, INPUT);

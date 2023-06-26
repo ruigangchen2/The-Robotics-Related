@@ -15,11 +15,11 @@ static int myAnalogRead(struct wiringPiNodeStruct *node, int pin) {
                     ADS1015_REG_CONFIG_CLAT_NONLAT  | // Non-latching (default val)
                     ADS1015_REG_CONFIG_CPOL_ACTVLOW | // Alert/Rdy active low   (default val)
                     ADS1015_REG_CONFIG_CMODE_TRAD   | // Traditional comparator (default val)
-                    ADS1115_REG_CONFIG_DR_250SPS   | // 250 samples per second (default val)
+                    ADS1115_REG_CONFIG_DR_860SPS   | // 860 samples per second 
                     ADS1015_REG_CONFIG_MODE_SINGLE;   // Single-shot mode (default)
                     //ADS1015_REG_CONFIG_MODE_CONTIN;   // ** Continuous mode (doesn't work with more than one channel)
   // Set PGA/voltage range
-  config |= ADS1015_REG_CONFIG_PGA_4_096V;  //change this one to get the different range 
+  config |= ADS1015_REG_CONFIG_PGA_0_256V;  //change this one to get the different range 
 
   // Set single-ended input chan
   switch (chan)
