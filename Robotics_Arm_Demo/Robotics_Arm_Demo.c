@@ -3,18 +3,38 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
-#include <pthread.h>
+
 #include <wiringPi.h>
 #include <sys/time.h>
 #include <signal.h>
 
+#define __USE_GNU
+#include <sched.h>
+#include <pthread.h>
 /*
 Reference:
 https://zhou-yuxin.github.io/articles/2017/Linux的GPIO子系统之-sys-class-gpio目录/index.html
 
+//编译
 gcc -o Robotics_Arm_Demo Robotics_Arm_Demo.c -lwiringPi -pthread -lcrypt -lm -lrt
 
+//挂在后台
+nohup ./Robotics_Arm_Demo  & 
 
+//查看进程的线程
+ps -T -p <pid> 
+
+//查看各个核心的频率
+sudo cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq
+sudo cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq
+sudo cat /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq
+sudo cat /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq
+sudo cat /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_cur_freq
+sudo cat /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_cur_freq
+sudo cat /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_cur_freq
+sudo cat /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_cur_freq
+
+//转化引脚状态
 echo 92 > /sys/class/gpio/export  # Encoder A Phase 
 echo in > /sys/class/gpio/gpio92/direction
 echo falling > /sys/class/gpio/gpio92/edge
@@ -77,8 +97,124 @@ void get_info()  //calculate the information of the encoder
 }
 
 
+void testingT_start()
+{
+    gettimeofday(&StartTime, NULL);  //measure the time
+}
+
+double testingT_end()
+{
+    gettimeofday(&EndTime, NULL);   //measurement ends
+    TimeUse = 1000000*(EndTime.tv_sec-StartTime.tv_sec)+EndTime.tv_usec-StartTime.tv_usec;
+    TimeUse /= 1000;  //the result is in the ms dimension
+    return TimeUse;
+}
+
+
+static volatile int file_state = 1;
+
+void intHandler(int i){
+    
+    digitalWrite(electromagnet_1,0);
+    digitalWrite(electromagnet_2,0);
+    digitalWrite(electromagnet_3,0);
+    digitalWrite(electromagnet_4,0);
+    file_state = 0;
+}
+
+
+void *Timer_5ms(void)
+{
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(7,&mask);
+    if (sched_setaffinity(0,sizeof(mask),&mask)<0){
+        printf("affinity set fail!");
+    }
+
+    testingT_start();
+    
+    digitalWrite(electromagnet_1,0);
+    digitalWrite(electromagnet_2,0);
+    digitalWrite(electromagnet_3,0);
+    digitalWrite(electromagnet_4,0);
+    
+    int Electromagnet_Clutch_1 = 0;
+    int Electromagnet_Clutch_2 = 0;
+    int Electromagnet_Clutch_3 = 0;
+    int Electromagnet_Clutch_4 = 0;
+
+    char State0 = 0;
+    char State1 = 0;
+
+    FILE *fp = fopen("./robotic_arm.csv", "w+");
+    if (fp == NULL){
+        fprintf(stderr, "fopen() failed.\n");
+        printf("Failed\n");
+        exit(EXIT_FAILURE);
+    }
+    fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
+    
+    signal(SIGINT, intHandler);
+    while(1){
+        printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
+        fflush(stdout);  
+        if(file_state == 1){
+            fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Electromagnet_Clutch_1, Electromagnet_Clutch_2, Electromagnet_Clutch_3, Electromagnet_Clutch_4);
+        
+        #if 1
+            if(motion < -85)State0 = 1;
+           
+            if(motion > -80 && State0 == 1){
+                digitalWrite(electromagnet_2,0);
+                digitalWrite(electromagnet_1,1);
+                Electromagnet_Clutch_2 = 0;
+                Electromagnet_Clutch_1 = 1;
+                
+                if(motion > 19 && State0 == 1){
+                    digitalWrite(electromagnet_4,0);
+                    digitalWrite(electromagnet_3,1);
+                    Electromagnet_Clutch_4 = 0;
+                    Electromagnet_Clutch_3 = 1;
+
+                    if(velocity < 10){
+                        digitalWrite(electromagnet_3,0);
+                        digitalWrite(electromagnet_4,1);
+                        digitalWrite(electromagnet_2,1);
+                        digitalWrite(electromagnet_1,1);
+                        
+                        Electromagnet_Clutch_3 = 0;
+                        Electromagnet_Clutch_4 = 1;
+                        Electromagnet_Clutch_1 = 1;
+                        Electromagnet_Clutch_2 = 1;
+                        State0 = 0;
+                        State1 = 1;
+                    }
+                }
+            }
+            else if(State1 == 0){
+                digitalWrite(electromagnet_1,0);
+                digitalWrite(electromagnet_2,1);
+                Electromagnet_Clutch_1 = 0;
+                Electromagnet_Clutch_2 = 1;
+            }
+        #endif
+        }
+        else
+            fclose(fp); 
+        delay(1);
+    }
+}
+
 void *create(void)
 {
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(7,&mask);
+    if (sched_setaffinity(0,sizeof(mask),&mask)<0){
+        printf("affinity set fail!");
+    }
+
     int fd = open("/sys/class/gpio/gpio92/value",O_RDONLY);
     if(fd<0){
         perror("open '/sys/class/gpio/gpio92/value' failed!\n");  
@@ -118,78 +254,10 @@ void *create(void)
     }
 }
 
-void testingT_start()
-{
-    gettimeofday(&StartTime, NULL);  //measure the time
-}
-
-double testingT_end()
-{
-    gettimeofday(&EndTime, NULL);   //measurement ends
-    TimeUse = 1000000*(EndTime.tv_sec-StartTime.tv_sec)+EndTime.tv_usec-StartTime.tv_usec;
-    TimeUse /= 1000;  //the result is in the ms dimension
-    return TimeUse;
-}
-
-static volatile int file_state = 1;
-
-void intHandler(int i){
-    
-    digitalWrite(electromagnet_1,0);
-    digitalWrite(electromagnet_2,0);
-    digitalWrite(electromagnet_3,0);
-    digitalWrite(electromagnet_4,0);
-    file_state = 0;
-}
-
-
-void *Timer_5ms(void)
-{
-    testingT_start();
-    
-    digitalWrite(electromagnet_1,0);
-    digitalWrite(electromagnet_2,0);
-    digitalWrite(electromagnet_3,0);
-    digitalWrite(electromagnet_4,0);
-    
-    int Electromagnet_Clutch_1 = 0;
-    int Electromagnet_Clutch_2 = 0;
-    int Electromagnet_Clutch_3 = 0;
-    int Electromagnet_Clutch_4 = 0;
-
-
-    char starting_state = 0;
-    char clockwise_state = 1;
-    char relsease_state = 0;
-
-
-    FILE *fp = fopen("./robotic_arm.csv", "w+");
-    if (fp == NULL){
-        fprintf(stderr, "fopen() failed.\n");
-        printf("Failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
-    
-    signal(SIGINT, intHandler);
-    while(1){
-        printf("motion is:%.2f\n",motion);
-        // printf("velocity is:%.2f\n",velocity);
-        if(file_state == 1){
-            fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Electromagnet_Clutch_1, Electromagnet_Clutch_2, Electromagnet_Clutch_3, Electromagnet_Clutch_4);
-            digitalWrite(electromagnet_1,1);
-            
-        }
-        else
-            fclose(fp); 
-        delay(5);
-    }
-}
-
-
-
 int main(int argc, const char *argv[])
-{
+{   
+
+
     wiringPiSetup();
     pinMode(encoderB_pin, INPUT);
     
@@ -209,12 +277,14 @@ int main(int argc, const char *argv[])
 	int value;
 
     value = pthread_create(&id1, NULL, (void *)create, NULL);
+    pthread_setname_np(id1, "create");
 	if(value){
         printf("thread1 is not created!\n");
         return -1;
 	}
 
     value = pthread_create(&id2, NULL, (void *)Timer_5ms, NULL);
+    pthread_setname_np(id2, "Timer_5ms");
 	if(value){
         printf("thread2 is not created!\n");
         return -1;
