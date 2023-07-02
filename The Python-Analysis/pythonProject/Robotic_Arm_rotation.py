@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230628/robotic_arm1.xlsx")
+data = pd.read_excel("./20230703/data.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,7 +23,7 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 7000
+startline = 500
 endline = None
 
 time = time[startline:endline] - time[startline]
@@ -39,24 +39,24 @@ Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
 '''
 Filtered Angular Displacement [degree] & Derivated Velocity [Python]
 '''
-data_number = len(degree)
-b, a = signal.butter(8, 0.02, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-filtered_degree = signal.filtfilt(b, a, degree)  # data为要过滤的信号
-for i in range(data_number-1):
-    velocity[i] = (filtered_degree[i+1] - filtered_degree[i]) / (time[i+1]-time[i])
-
-fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax2 = ax1.twinx()
-ax1.plot(time, filtered_degree, 'k-', label='Angular Displacement [degree]')
-ax2.plot(time, velocity, 'r-', label='Angular Velocity [degree/s]')
-ax1.set_xlabel('Time [s]', fontweight='bold')
-ax1.set_ylabel('Angular Displacement [degree]', fontweight='bold')
-ax2.set_ylabel('Angular Velocity [degree/s]', fontweight='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-100, 100])
-ax2.set_ylim([-500, 500])
-fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
+# data_number = len(degree)
+# b, a = signal.butter(8, 0.02, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+# filtered_degree = signal.filtfilt(b, a, degree)  # data为要过滤的信号
+# for i in range(data_number-1):
+#     velocity[i] = (filtered_degree[i+1] - filtered_degree[i]) / (time[i+1]-time[i])
+#
+# fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+# ax2 = ax1.twinx()
+# ax1.plot(time, filtered_degree, 'k-', label='Angular Displacement [degree]')
+# ax2.plot(time, velocity, 'r-', label='Angular Velocity [degree/s]')
+# ax1.set_xlabel('Time [s]', fontweight='bold')
+# ax1.set_ylabel('Angular Displacement [degree]', fontweight='bold')
+# ax2.set_ylabel('Angular Velocity [degree/s]', fontweight='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-100, 100])
+# ax2.set_ylim([-500, 500])
+# fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
 
 '''
 Angular Displacement [rad] & Filtered Velocity  
@@ -105,18 +105,18 @@ Angular Displacement [degree] & Filtered Velocity
 '''
 Angular Displacement & Velocity
 '''
-# fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-# ax2 = ax1.twinx()
-# ax1.plot(time, degree, 'k-+', label='Angular Displacement [degree]')
-# ax2.plot(time, velocity,'r-+', label='Angular Velocity [degree/s]')
-# ax1.set_xlabel('Time [s]', fontweight ='bold')
-# ax1.set_ylabel('Angular Displacement [degree]',fontweight ='bold')
-# ax2.set_ylabel('Angular Velocity [degree/s]',fontweight ='bold')
-# ax1.grid()
-# fig.legend()
-# ax1.set_ylim([-100, 100])
-# ax2.set_ylim([-500, 500])
-# fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
+fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+ax2 = ax1.twinx()
+ax1.plot(time, degree, 'k-+', label='Angular Displacement [degree]')
+ax2.plot(time, velocity,'r-+', label='Angular Velocity [degree/s]')
+ax1.set_xlabel('Time [s]', fontweight ='bold')
+ax1.set_ylabel('Angular Displacement [degree]',fontweight ='bold')
+ax2.set_ylabel('Angular Velocity [degree/s]',fontweight ='bold')
+ax1.grid()
+fig.legend()
+ax1.set_ylim([-100, 100])
+ax2.set_ylim([-10, 10])
+fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
 
 '''
 Filter
