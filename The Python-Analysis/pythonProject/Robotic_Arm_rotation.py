@@ -61,27 +61,27 @@ Filtered Angular Displacement [degree] & Derivated Velocity [Python]
 '''
 Angular Displacement [rad] & Filtered Velocity  
 '''
-# b, a = signal.butter(8, 0.05, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-# filtedData = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
-#
-# startline_filter = 1
-# endline_filter = None
-# time = time[startline_filter:endline_filter] - time[startline_filter]
-# degree = degree[startline_filter:endline_filter]
-# filtedData = filtedData[startline_filter:endline_filter]
-#
-# fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-# ax2 = ax1.twinx()
-# ax1.plot(time, degree, 'k-', label='Angular Displacement [rad]')
-# ax2.plot(time, filtedData, 'r-', label='Filtered Angular Velocity [rad/s]')
-# ax1.set_xlabel('Time [s]', fontweight='bold')
-# ax1.set_ylabel('Angular Displacement [rad]', fontweight='bold')
-# ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
-# ax1.grid()
-# fig.legend()
-# # ax1.set_ylim([-1, 1])
-# # ax2.set_ylim([-10, 10])
-# fig.savefig('The Filtered.pdf')
+b, a = signal.butter(8, 0.08, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedData = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+
+startline_filter = 1
+endline_filter = None
+time = time[startline_filter:endline_filter] - time[startline_filter]
+degree = degree[startline_filter:endline_filter]
+filtedData = filtedData[startline_filter:endline_filter]
+
+fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+ax2 = ax1.twinx()
+ax1.plot(time, degree, 'k-+', label='Angular Displacement [rad]')
+ax2.plot(time, filtedData, 'r-+', label='Filtered Angular Velocity [rad/s]')
+ax1.set_xlabel('Time [s]', fontweight='bold')
+ax1.set_ylabel('Angular Displacement [rad]', fontweight='bold')
+ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
+ax1.grid()
+fig.legend()
+ax1.set_ylim([-100, 100])
+ax2.set_ylim([-10, 10])
+fig.savefig("./PDF-File/The Filtered.pdf")
 
 '''
 Angular Displacement [degree] & Filtered Velocity 
@@ -105,18 +105,18 @@ Angular Displacement [degree] & Filtered Velocity
 '''
 Angular Displacement & Velocity
 '''
-fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax2 = ax1.twinx()
-ax1.plot(time, degree, 'k-+', label='Angular Displacement [degree]')
-ax2.plot(time, velocity,'r-+', label='Angular Velocity [degree/s]')
-ax1.set_xlabel('Time [s]', fontweight ='bold')
-ax1.set_ylabel('Angular Displacement [degree]',fontweight ='bold')
-ax2.set_ylabel('Angular Velocity [degree/s]',fontweight ='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-100, 100])
-ax2.set_ylim([-10, 10])
-fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
+# fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+# ax2 = ax1.twinx()
+# ax1.plot(time, degree, 'k-+', label='Angular Displacement [degree]')
+# ax2.plot(time, velocity,'r-+', label='Angular Velocity [degree/s]')
+# ax1.set_xlabel('Time [s]', fontweight ='bold')
+# ax1.set_ylabel('Angular Displacement [degree]',fontweight ='bold')
+# ax2.set_ylabel('Angular Velocity [degree/s]',fontweight ='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-100, 100])
+# ax2.set_ylim([-10, 10])
+# fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
 
 '''
 Filter
@@ -134,7 +134,7 @@ Filter
 # fig.legend()
 # ax1.set_ylim([-1200, 1200])
 # ax2.set_ylim([-1200, 1200])
-# fig.savefig('The Filtered Angular Velocity.pdf')
+# fig.savefig('./PDF-File/The Filtered Angular Velocity.pdf')
 
 
 '''
@@ -147,7 +147,7 @@ Angular Displacement
 # ax1.grid()
 # fig.legend()
 # ax1.set_ylim([-250, 250])
-# fig.savefig('The Angular Displacement.pdf')
+# fig.savefig("./PDF-File/The Angular Displacement.pdf")
 
 '''
 Angular Velocity
@@ -159,7 +159,7 @@ Angular Velocity
 # ax1.grid()
 # fig.legend()
 # ax1.set_ylim([-1200, 1200])
-# fig.savefig('The Angular Velocity.pdf')
+# fig.savefig("./PDF-File/The Angular Velocity.pdf")
 
 '''
 Fitting Angular Velocity 
@@ -176,7 +176,7 @@ Fitting Angular Velocity
 # fig.legend()
 # ax1.set_ylim([-300, 300])
 # ax2.set_ylim([-300, 300])
-# fig.savefig('The Angular Velocity & Fitting Angular Velocity.pdf')
+# fig.savefig('./PDF-File/The Angular Velocity & Fitting Angular Velocity.pdf')
 
 '''
 Electromagnet Clutch State
