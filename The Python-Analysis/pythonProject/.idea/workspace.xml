@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5af5eb99-540b-4cc3-9e22-263472b1e46b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../../Open-CV/IOU.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pythonProject.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230517_RoboticArm/robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230517_RoboticArm/robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230529/robotic_arm-2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230529/robotic_arm-3.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230529/robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230530/robotic_arm-1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230530/robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230610/robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230610/robotic_arm_lowerspring_single.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230610/robotic_arm_upperspring_single.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230613/robotic_arm (1).xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230613/robotic_arm (2).xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/58clutch_robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/58clutch_robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/58clutch_robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/60clutch_robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/60clutch_robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/60clutch_robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/free_motion_robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/free_motion_robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230614/free_motion_robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230619/robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230619/robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230619/robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230619/robotic_arm3.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230619/robotic_arm4.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230620/robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230620/robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230620/robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230627/robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230627/robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230627/robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230627/robotic_arm3.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230627/robotic_arm4.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230628/robotic_arm.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230628/robotic_arm1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230628/robotic_arm2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/20230703/data.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Friction.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Friction1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MotionCapture_Flywheel_45degrees.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MotionCapture_Pendulum.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MotionCapture_Pendulum.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MotionCapture_Pendulum1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PDF-File/Angular Displacement &amp; Velocity.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PDF-File/The Electromagnet_1 &amp; Electromagnet_2 State.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PDF-File/The Electromagnet_3 &amp; Electromagnet_4 State.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/PDF-File/The Filtered.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Robotic-Arm-Torque-Experiment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RoboticArm-angular-displacement_curve-fitting.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Robotic_Arm_rotation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spiral torsion spring check the degree.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spiral torsion spring draw the relationship.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spiral_Torsion_Spring_Friction.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spiral_Torsion_Spring_Power.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spiral_Torsion_Spring_degree_degree.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo_tracker.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo_tracker.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/falling_experiment.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/fitting damped oscillation curve.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hairspring_flywheel/135degree.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hairspring_flywheel/45degree.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/hairspring_flywheel/90degree.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/robotic_arm.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data1/group1_nomass_30degree_15degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data1/group1_nomass_30degree_20degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data1/group1_nomass_30degree_25degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data1/group2_mass_30degree_15degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data1/group2_mass_30degree_20degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data1/group2_mass_30degree_25degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_10degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_12degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_14degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_16degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_18degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_20degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_22degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_24degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_26degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data2/30degree_28degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/-30degree_-16degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/-30degree_-20degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/-30degree_-24degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/-30degree_-28degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/30degree_16degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/30degree_20degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/30degree_24degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rotation_data3/30degree_28degree.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/torsion spring Force Displacement.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/torsion spring Force Displacement1.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/torsion spring Force Displacement2.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/torsion spring Force Displacement3.xlsx" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="2S2kAi4g7Yhj9MJ593GdFutluHs" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortByType" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/cotychen/Desktop/The-Robotics-Related/The Python-Analysis/pythonProject&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="Robotic-Arm-Simulation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Robotic-Arm-Simulation.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Robotic_Arm_rotation" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="pythonProject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python3" />
+      <option name="SDK_NAME" value="Python 3.9" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Robotic_Arm_rotation.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="pythonProject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.Robotic-Arm-Simulation" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5af5eb99-540b-4cc3-9e22-263472b1e46b" name="Changes" comment="" />
+      <created>1688351921800</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1688351921800</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>8</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
