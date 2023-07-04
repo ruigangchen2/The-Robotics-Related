@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230703/data.xlsx")
+data = pd.read_excel("./20230628/robotic_arm1.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,8 +23,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 500
-endline = None
+startline = 8705
+endline = 8800
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -34,7 +34,7 @@ Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
 Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
-
+print(angle)
 
 '''
 Angular Displacement [angle] & Filtered Velocity [rad/s] & curve fit

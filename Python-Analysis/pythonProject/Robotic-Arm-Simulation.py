@@ -1,88 +1,185 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
-from scipy.integrate import solve_ivp
-
-m1 = 190.6 / 1000
-m2 = 593.1 / 1000
-g = 9.81
-length = 216.48 / 1000
-max_step = 0.01
-dt = 0.01
-alpha = 22.5 * np.pi / 180
-A = (1 / (np.cos(2 * alpha)) ** 2) - 1
-# gamma = np.arcsin(A / (np.sqrt(((2 + A) * np.sin(alpha)) ** 2 + (A * np.cos(alpha)) ** 2))) \
-#         - np.arcsin(A * np.cos(alpha) / (np.sqrt(((2 + A) * np.sin(alpha)) ** 2 + (A * np.cos(alpha)) ** 2)))
-gamma = 0.12
-initial_speed = np.sqrt((2 * (m1 + m2) * g * length * (np.cos(0.087) - np.cos(alpha + gamma))) /
-                        ((3 / 2) * m2 * length ** 2 - (1 / 3) * m2 * length ** 2 *
-                         (np.sin(22.5 * np.pi / 180)) ** 2 + m1 * length ** 2)) * np.cos(2 * alpha) * 1.1
-initial_theta = -(alpha - gamma)
+from scipy import signal
+from scipy.integrate import odeint, solve_ivp
+import math
 
 
-def octagon(_t, y):
-    return [y[1], ((m1 + m2) * g * length * np.sin(y[0]))
-            / (3 / 2 * m2 * length ** 2 - 1 / 3 * m2 * (length ** 2) *
-               ((np.sin(22.5 * np.pi / 180)) ** 2) + m1 * length ** 2)]
+data = pd.read_excel("./20230628/robotic_arm1.xlsx")
+# data = pd.read_excel("./20230703/data.xlsx")
+time = np.array(data['Time'].ravel())
+time = np.around(time, 2)
+angle = np.array(data['Degree'].ravel())
+angle = np.around(angle, 2)
+velocity = np.array(data['Velocity'].ravel()) * math.pi / 180
+velocity = np.around(velocity, 2)
+Electromagnet_1_Clutch = np.array(data['Electromagnet_Clutch_1'].ravel())
+Electromagnet_1_Clutch = np.around(Electromagnet_1_Clutch, 2)
+Electromagnet_2_Clutch = np.array(data['Electromagnet_Clutch_2'].ravel())
+Electromagnet_2_Clutch = np.around(Electromagnet_2_Clutch, 2)
+Electromagnet_3_Clutch = np.array(data['Electromagnet_Clutch_3'].ravel())
+Electromagnet_3_Clutch = np.around(Electromagnet_3_Clutch, 2)
+Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
+Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-def terminate_condition(_t, y):
-    return y[0] - (alpha + gamma)
+theta_acceleration = 10 * math.pi / 180
+theta_goal = 150 * math.pi / 180
+omega = 9.05
+rotation_interia_magnet = 0.5 * (14.6 * 0.001) * ((15 * 0.001)**2)  # 0.5 * M * R^2
+rotation_interia_plate = 0.5 * (4.5 * 0.001) * ((25 * 0.001)**2)  # 0.5 * M * R^2
+rotation_interia_arm = 1/3 * (14.7 * 0.001) * ((123.6 * 0.001)**2)  # 0.5 * M * R^2
+rotation_interia_total = rotation_interia_magnet + rotation_interia_plate + rotation_interia_arm
+stiffness = rotation_interia_total * (omega**2)  # I * w^2
+
+stiffness = stiffness * 0.39
+rotation_interia_total = rotation_interia_total * 0.97
 
 
-terminate_condition.terminal = True
-sol = solve_ivp(octagon,
-                [0, 1], [0.077, 0.69],
-                max_step=max_step,
-                events=terminate_condition)
-sol1 = solve_ivp(octagon,
-                 [0, 1], [initial_theta, initial_speed],
-                 max_step=max_step,
-                 events=terminate_condition)
+'''
+First area
+'''
+# startline = 515
+# endline = 595
+
+startline = 8705
+endline = 8800
+
+time = time[startline:endline] - time[startline]
+time = time * 0.001
+angle = angle[startline:endline]
+velocity = velocity[startline:endline]
+Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
+Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
+Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
+Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
+
+initial_speed = velocity[0]
+initial_theta = angle[0]
+
+
+def ode_first_area_odeint(y, _x):
+	y1, y2 = y
+	return np.array([y2, -1*stiffness/rotation_interia_total * y1])
+
+
+sol_odeint = odeint(ode_first_area_odeint, [initial_speed, initial_theta], time)
+
+
+def ode_first_area_ivp(_t, y):
+	return [y[1], -1*stiffness/rotation_interia_total * y[0]]
+
+
+sol_ivp = solve_ivp(ode_first_area_ivp, [0, 0.09], [initial_theta, initial_speed], max_step=0.001, method='LSODA')
+
+b, a = signal.butter(8, 0.05, 'lowpass')
+data_filter = signal.filtfilt(b, a, velocity)
+
 plt.figure(figsize=(8, 6), dpi=100)
-data = pd.read_csv("615.csv")
-exp_start = 1680
-exp_end = 1800
-temp = np.array(data['RX'].ravel())
-RX = temp[exp_start:exp_end]
-temp = np.array(data['TZ'].ravel())
-TZ = temp[exp_start:exp_end] / 1000
-temp = np.array(data['TY'].ravel())
-TY = temp[exp_start:exp_end] / 1000
-N = np.size(TZ)
-time = np.linspace(0, dt * (N - 1), N)
+plt.plot(time, angle, 'b-*', label='Angular Displacement [angle]')
+plt.plot(sol_ivp.t, sol_ivp.y[0], 'r-*', label="Angular Displacement Simulation through ivp [angle]")
+# plt.plot(time,soli[:,1],'r-*',label="Angular Displacement Simulation through odeint [angle]")
+# plt.plot(time, angle - soli[:,1], 'k--', label="Error [angle]")
+plt.grid()
+plt.xlabel('Time [s]', fontweight='bold')
+plt.ylabel('Angular Displacement [angle]', fontweight='bold')
+plt.legend()
+# plt.ylim([-100, -70])
+plt.savefig("./PDF-File/The Filtered.pdf")
 
-velocity = [0 for i in range(120)]
-for i in range(119):
-    velocity[i] = -(RX[i + 1] - RX[i]) / 0.01
+plt.figure(figsize=(8, 6), dpi=100)
+plt.plot(time, data_filter, 'r-*', label='Filtered Angular Velocity [rad/s]')
+plt.plot(sol_ivp.t, sol_ivp.y[1] * math.pi / 180, 'b-*', label="Angular Velocity Simulation through ivp [rad/s]")
+# plt.plot(sol.t, data_filter - sol.y[1] * math.pi / 180, 'k--', label='Error [rad/s]')
+plt.xlabel('Time [s]', fontweight='bold')
+plt.ylabel('Angular Velocity [rad/s]', fontweight='bold')
+plt.grid()
+plt.legend()
+plt.ylim([-10, 10])
+plt.savefig("./PDF-File/The Filtered1.pdf")
 
-plt.subplot(311)
-plt.plot(sol.t, sol.y[0] - sol.y[0][0], 'b--', linewidth=2)
-plt.plot(sol1.t + sol.t[-1], sol1.y[0] - sol1.y[0][0]
-         + (sol.y[0] - sol.y[0][0])[-1] - (sol1.y[0] - sol1.y[0][0])[0], 'b--', linewidth=2, label=r'$\theta_{'
-                                                                                                   r'sim}$')
-plt.plot(time, -(RX - RX[0]), 'r--', label=r'$\theta_{exp}$')
-plt.ylabel(r'Rotation angle [rad]')
-plt.grid()
-plt.legend()
-plt.subplot(312)
-plt.plot(sol.t, sol.y[1] - sol.y[1][0], 'b--', linewidth=2)
-plt.plot(sol1.t + sol.t[-1], sol1.y[1] - sol1.y[1][0]
-         + ((sol.y[1] - sol.y[1][0])[-1] * np.cos(2*alpha) - (sol1.y[1] - sol1.y[1][0])[0]),
-         'b--', linewidth=2, label=r'$\ Velocity_{sim}$')
-plt.plot(time, velocity, 'r--', linewidth=2, label=r'$\ Velocity_{exp}$')
-plt.ylabel(r'Rotation velocity [rad/s]')
-plt.grid()
-plt.legend()
-plt.subplot(313)
-plt.plot(sol.t, length * (-np.cos(0.077) + np.cos(sol.y[0])) -
-         (length * (-np.cos(0.077) + np.cos(sol.y[0])))[0], 'b--', linewidth=2)
-plt.plot(sol1.t + sol.t[-1], length * (-np.cos(0.077) + np.cos(sol1.y[0]))
-         + length * (-np.cos(0.077) + np.cos(sol.y[0]))[-1] -
-         length * (-np.cos(0.077) + np.cos(sol1.y[0]))[0], 'b--', linewidth=2, label=r'$Z_{sim}$')
-plt.plot(time, TZ - TZ[0], 'r--', label=r'$Z_{exp}$')
-plt.ylabel('Disp [m]')
-plt.grid()
-plt.legend()
-plt.savefig('octagon simulation.pdf')
 plt.show()
+
+
+'''
+Second area
+'''
+# startline = 623
+# endline = 1130
+#
+# time = time[startline:endline] - time[startline]
+# time = time * 0.001
+# angle = angle[startline:endline]
+# velocity = velocity[startline:endline]
+# Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
+# Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
+# Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
+# Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
+#
+# initial_speed = velocity[0]
+# initial_theta = angle[0]
+# def ODE_Firstarea_ivp(t, y):
+#     return [y[1], -1*(stiffness)/rotation_interia_total * y[0]]
+# sol_ivp = solve_ivp(ODE_Firstarea_ivp, [0,0.4], [initial_theta, initial_speed],max_step = 0.001, method = 'LSODA')
+#
+# b, a = signal.butter(8, 0.05, 'lowpass')  # low-path filtering
+# data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
+#
+# plt.figure(figsize=(8, 6), dpi=100)
+# plt.plot(time, angle, 'b-*', label='Angular Displacement [angle]')
+# plt.plot(sol_ivp.t, sol_ivp.y[0], 'r-*', label="Angular Displacement Simulation through ivp [angle]")
+#
+# plt.grid()
+# plt.xlabel('Time [s]', fontweight='bold')
+# plt.ylabel('Angular Displacement [angle]', fontweight='bold')
+# plt.legend()
+# plt.ylim([-90, 90])
+# plt.savefig("./PDF-File/The Filtered.pdf")
+#
+# plt.figure(figsize=(8, 6), dpi=100)
+# plt.plot(time, data_filter, 'r-*', label='Filtered Angular Velocity [rad/s]')
+# plt.plot(sol_ivp.t, sol_ivp.y[1] * math.pi / 180, 'b-*', label="Angular Velocity Simulation through ivp [rad/s]")
+# plt.xlabel('Time [s]', fontweight='bold')
+# plt.ylabel('Angular Velocity [rad/s]', fontweight='bold')
+# plt.grid()
+# plt.legend()
+# plt.ylim([-10, 10])
+# plt.savefig("./PDF-File/The Filtered1.pdf")
+#
+# plt.show()
+
+
+# '''
+# Third area
+# '''
+# startline = 1130
+# endline = 1298
+
+# time = time[startline:endline] - time[startline]
+# time = time * 0.001
+# angle = angle[startline:endline]
+# velocity = velocity[startline:endline]
+# Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
+# Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
+# Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
+# Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
+#
+# b, a = signal.butter(8, 0.05, 'lowpass')  # low-path filtering
+# data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
+# fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+#
+# ax2 = ax1.twinx()
+# ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+# ax2.plot(time, velocity, 'g--', label='Original Angular Velocity [rad/s]')
+# ax2.plot(time, data_filter, 'b--', label='Filtered Angular Velocity [rad/s]')
+#
+# ax1.set_xlabel('Time [s]', fontweight='bold')
+# ax1.set_ylabel('Angular Displacement [angle]', fontweight='bold')
+# ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-100, 100])
+# ax2.set_ylim([-10, 10])
+# fig.savefig("./PDF-File/The Filtered.pdf")
+# plt.show()
