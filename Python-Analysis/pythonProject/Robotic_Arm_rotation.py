@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230703/data.xlsx")
+data = pd.read_excel("./20230706/data1.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,8 +23,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 544
-endline = 666
+startline = 700
+endline = 8300
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -36,33 +36,51 @@ Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
 print(angle)
 
+
+'''
+Get the friction
+'''
+fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+plt.annotate(r'$\angle %.2f^o$' % np.min(angle[3000:4000]), xy=(2.947, np.min(angle[3000:4000])), xytext=(+20, -20),
+             textcoords='offset points', fontsize=12, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+plt.annotate(r'$\angle %.2f^o$' % np.min(angle[4000:6000]), xy=(4.14, np.min(angle[4000:6000])), xytext=(+20, -10),
+             textcoords='offset points', fontsize=12, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+
+ax1.set_xlabel('Time [s]', fontweight='bold')
+ax1.grid()
+fig.legend()
+ax1.set_ylim([-100, 100])
+fig.savefig("./PDF-File/The Filtered.pdf")
+
+
 '''
 Angular Displacement [angle] & Filtered Velocity [rad/s] & curve fit
 '''
 
-b, a = signal.butter(8, 0.02, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
-fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-
-order = 30
-z = np.polyfit(time, data_filter, order)
-p = np.poly1d(z)
-data_fit = p(time)
-print(z)
-
-ax2 = ax1.twinx()
-ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
-ax2.plot(time, velocity, 'g--', label='Original Angular Velocity [rad/s]')
-ax2.plot(time, data_filter, 'r--', label='Filtered Angular Velocity [rad/s]')
-ax2.plot(time, data_fit, 'b--', label='Fitted Angular Velocity [rad/s]')
-ax1.set_xlabel('Time [s]', fontweight='bold')
-ax1.set_ylabel('Angular Displacement [angle]', fontweight='bold')
-ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-100, 100])
-ax2.set_ylim([-10, 10])
-fig.savefig("./PDF-File/The Filtered.pdf")
+# b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+# data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
+# fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+#
+# order = 30
+# z = np.polyfit(time, data_filter, order)
+# p = np.poly1d(z)
+# data_fit = p(time)
+# print(z)
+#
+# ax2 = ax1.twinx()
+# ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+# ax2.plot(time, velocity, 'g--', label='Original Angular Velocity [rad/s]')
+# ax2.plot(time, data_filter, 'r--', label='Filtered Angular Velocity [rad/s]')
+# ax2.plot(time, data_fit, 'b--', label='Fitted Angular Velocity [rad/s]')
+# ax1.set_xlabel('Time [s]', fontweight='bold')
+# ax1.set_ylabel('Angular Displacement [angle]', fontweight='bold')
+# ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-100, 100])
+# ax2.set_ylim([-10, 10])
+# fig.savefig("./PDF-File/The Filtered.pdf")
 
 '''
 Filtered Angular Displacement [angle] & Derivated Velocity [Python]
