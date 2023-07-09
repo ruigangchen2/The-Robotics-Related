@@ -12,8 +12,8 @@ stiffness = inertia * omega ** 2  # I * w^2
 slope = 0.108
 torque_friction = slope * np.pi * stiffness / 2 / omega
 
-startline = 600
-endline = 700
+startline = 651
+endline = 1130
 data = pd.read_excel("./20230703/data.xlsx")
 temp = np.around(np.array(data['Time'].ravel()), 2)
 time = (temp[startline:endline] - temp[startline]) * 0.001
@@ -25,7 +25,7 @@ def eom(_t, y):
     return [y[1], - torque_friction / inertia]
 
 
-sol_ivp = solve_ivp(eom, [0, 0.076], [angle[0], velocity[0]], max_step=0.001)
+sol_ivp = solve_ivp(eom, [0, 0.38], [angle[0], velocity[0]], max_step=0.001)
 
 order = 12
 z = np.polyfit(time, angle, order)

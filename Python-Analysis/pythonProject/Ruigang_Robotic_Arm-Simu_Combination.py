@@ -25,20 +25,28 @@ time1 = (temp1[startline1:endline1] - temp1[startline1]) * 0.001
 angle1 = np.around(np.array(data['Degree'].ravel()) * np.pi / 180, 2)[startline1:endline1]
 velocity1 = np.around(np.array(data['Velocity'].ravel()) * np.pi / 180, 2)[startline1:endline1]
 
-startline2 = 600
-endline2 = 700
+startline2 = 651
+endline2 = 1130
 temp2 = np.around(np.array(data['Time'].ravel()), 2)
-time2 = (temp2[startline1:endline1] - temp2[startline1]) * 0.001
+time2 = (temp2[startline2:endline2] - temp2[startline2]) * 0.001
 angle2 = np.around(np.array(data['Degree'].ravel()) * np.pi / 180, 2)[startline2:endline2]
 velocity2 = np.around(np.array(data['Velocity'].ravel()) * np.pi / 180, 2)[startline2:endline2]
 
-startline3 = 600
-endline3 = 700
+startline3 = 1200
+endline3 = 1295
 temp3 = np.around(np.array(data['Time'].ravel()), 2)
-time3 = (temp3[startline1:endline1] - temp3[startline1]) * 0.001
+time3 = (temp3[startline3:endline3] - temp3[startline3]) * 0.001
 angle3 = np.around(np.array(data['Degree'].ravel()) * np.pi / 180, 2)[startline3:endline3]
 velocity3 = np.around(np.array(data['Velocity'].ravel()) * np.pi / 180, 2)[startline3:endline3]
 
+time = np.append(time1, time2 + time1[-1])
+time_ = np.append(time, time3 + time[-1])
+
+angle = np.append(angle1, angle2)
+angle_ = np.append(angle, angle3)
+
+velocity = np.append(velocity1, velocity2)
+velocity_ = np.append(velocity, velocity3)
 
 def eom1(_t, y):
     return [y[1], - stiffness1 / inertia * y[0]]
@@ -49,37 +57,51 @@ def eom2(_t, y):
 def eom3(_t, y):
     return [y[1], - stiffness2 / inertia * y[0]]
 
+sol_ivp1 = solve_ivp(eom1, [0, 0.09], [angle1[0], velocity1[0]], max_step=0.001)
+sol_ivp2 = solve_ivp(eom2, [0, 0.38], [angle2[0], velocity2[0]], max_step=0.001)
+sol_ivp3 = solve_ivp(eom3, [0, 0.15], [angle3[0], velocity3[0]], max_step=0.001)
 
-sol_ivp = solve_ivp(eom, [0, 0.15], [angle[0], velocity[0]], max_step=0.001)
+
+y_list = []
+def y(t):
+    for i in t:
+        if i >= 0 and i <= time1[-1]:
+            y_list = np.append(0, sol_ivp1.y[0] * 180 / np.pi)
+        elif i > time1[-1] and i <= time[-1]:
+            y_list = np.append(y_list, sol_ivp2.y[0] * 180 / np.pi)
+        elif i > time[-1]:
+            y_list = np.append(y_list, sol_ivp3.y[0] * 180 / np.pi)
+y(time_)
 
 order = 15
-z = np.polyfit(time, angle, order)
+z = np.polyfit(time1, velocity1, order)
 p = np.poly1d(z)
-angle_fit = p(time)
-z = np.polyfit(time, velocity, order)
-p = np.poly1d(z)
-velocity_fit = p(time)
+velocity_fit1 = p(time1)
 
-b, a = signal.butter(8, 0.06, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-data_filter = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+z = np.polyfit(time2, velocity2, order)
+p = np.poly1d(z)
+velocity_fit2 = p(time2)
+
+z = np.polyfit(time3, velocity3, order)
+p = np.poly1d(z)
+velocity_fit3 = p(time3)
 
 plt.figure(figsize=(6, 5), dpi=100)
 plt.subplot(211)
-plt.plot(time, angle * 180 / np.pi, 'b-+', label=r'$\theta_{exp}$')
-plt.plot(time, angle_fit * 180 / np.pi, 'c-+', label=r'$\theta_{fit}$')
-plt.plot(sol_ivp.t, sol_ivp.y[0] * 180 / np.pi, 'r-*', label=r"$\theta_{Simu}$")
+plt.plot(time_, angle_ * 180 / np.pi, 'b-+', label=r'$\theta_{exp}$')
+plt.plot(time, y_list, 'r-*', label=r"$\theta_{Simu}$")
 plt.grid()
 plt.xlabel('Time [s]')
 plt.ylabel(r'$\theta$ [$^\circ$]')
 plt.legend()
-plt.subplot(212)
-plt.plot(time, velocity_fit, 'b-*', label=r'$\dot{\theta}_{exp}$')
-plt.plot(sol_ivp.t, sol_ivp.y[1], 'r-*', label=r"$\dot{\theta}_{simu}$")
-plt.xlabel('Time [s]')
-plt.ylabel('Velocity [rad/s]')
-plt.grid()
-plt.legend()
-plt.tight_layout()
+# plt.subplot(212)
+# plt.plot(time, velocity_fit, 'b-*', label=r'$\dot{\theta}_{exp}$')
+# plt.plot(sol_ivp.t, sol_ivp.y[1], 'r-*', label=r"$\dot{\theta}_{simu}$")
+# plt.xlabel('Time [s]')
+# plt.ylabel('Velocity [rad/s]')
+# plt.grid()
+# plt.legend()
+# plt.tight_layout()
 # plt.ylim([3, 7])
 plt.savefig('Sim.pdf')
 plt.show()
