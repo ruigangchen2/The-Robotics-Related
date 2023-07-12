@@ -18,7 +18,7 @@ print("theta acceleration is:%f" % theta_acceleration)
 slope1 = 0.108
 slope2 = 0.185
 torque = slope1 * np.pi * k1 / 2 / w1
-torque *= 3.5
+torque *= 1
 print("moment of friction is:%f" % torque)
 
 theta_clutch = ((k2*theta_goal - torque)/k2) - (2*((0.5*k1*(np.pi*theta_acceleration-(theta_acceleration**2))+torque*theta_acceleration-0.5*k2*(theta_goal**2))/k2) +((torque-k2*theta_goal)/k2)**2)**0.5
