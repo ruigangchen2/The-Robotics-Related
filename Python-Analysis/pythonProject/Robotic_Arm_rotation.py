@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230703/data.xlsx")
+data = pd.read_excel("./20230712/10_130degrees.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -151,18 +151,18 @@ Angular Displacement [angle] & Filtered Velocity
 '''
 Angular Displacement & Velocity
 '''
-fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax2 = ax1.twinx()
-ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
-ax2.plot(time, velocity,'r--', label='Angular Velocity [angle/s]')
-ax1.set_xlabel('Time [s]', fontweight ='bold')
-ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
-ax2.set_ylabel('Angular Velocity [angle/s]',fontweight ='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-100, 100])
-ax2.set_ylim([-10, 10])
-fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
+# fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+# ax2 = ax1.twinx()
+# ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+# ax2.plot(time, velocity,'r--', label='Angular Velocity [angle/s]')
+# ax1.set_xlabel('Time [s]', fontweight ='bold')
+# ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
+# ax2.set_ylabel('Angular Velocity [angle/s]',fontweight ='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-150, 150])
+# ax2.set_ylim([-10, 10])
+# fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
 
 '''
 Filter
@@ -186,14 +186,14 @@ Filter
 '''
 Angular Displacement
 '''
-# fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-# ax1.plot(time, angle, 'k-', label='Angular Displacement [angle]')
-# ax1.set_xlabel('Time [s]', fontweight ='bold')
-# ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
-# ax1.grid()
-# fig.legend()
-# ax1.set_ylim([-250, 250])
-# fig.savefig("./PDF-File/The Angular Displacement.pdf")
+fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+ax1.plot(time, angle, 'k-', label='Angular Displacement [angle]')
+ax1.set_xlabel('Time [s]', fontweight ='bold')
+ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
+ax1.grid()
+fig.legend()
+ax1.set_ylim([-250, 250])
+fig.savefig("./PDF-File/The Angular Displacement.pdf")
 
 '''
 Angular Velocity
