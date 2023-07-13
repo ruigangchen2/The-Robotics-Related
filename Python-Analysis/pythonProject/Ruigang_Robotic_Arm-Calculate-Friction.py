@@ -16,8 +16,11 @@ print("stiffness2 is:%f" % k2)
 theta_acceleration = 10 * np.pi/ 180
 print("theta acceleration is:%f" % theta_acceleration)
 slope1 = 0.108
-slope2 = 0.185
-torque = slope1 * np.pi * k1 / 2 / w1
+slope2 = 0.237
+torque1 = slope1 * np.pi * k1 / 2 / w1
+torque2 = slope2 * np.pi * k2 / 2 / w2
+
+
 torque *= 1
 print("moment of friction is:%f" % torque)
 

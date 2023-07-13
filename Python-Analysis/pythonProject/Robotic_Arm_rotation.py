@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230712/10_130degrees.xlsx")
+data = pd.read_excel("./20230713_clutch/only_lower_electromagnet_clutch.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,8 +23,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 1
-endline = None
+startline = 505
+endline = -1
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -34,7 +34,7 @@ Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
 Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
-
+print(angle)
 
 
 '''
@@ -187,12 +187,12 @@ Filter
 Angular Displacement
 '''
 fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax1.plot(time, angle, 'k-', label='Angular Displacement [angle]')
+ax1.plot(time, angle * np.pi / 180, 'k-', label=r'$\theta$ [$^\circ$]')
 ax1.set_xlabel('Time [s]', fontweight ='bold')
-ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
+ax1.set_ylabel(r'$\theta$ [$^\circ$]',fontweight ='bold')
 ax1.grid()
-fig.legend()
-ax1.set_ylim([-250, 250])
+# fig.legend()
+ax1.set_ylim([-5, 5])
 fig.savefig("./PDF-File/The Angular Displacement.pdf")
 
 '''

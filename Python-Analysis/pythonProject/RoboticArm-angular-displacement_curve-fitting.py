@@ -10,14 +10,15 @@ def damped_oscillation(t, a, lambda1, omega1, phi1, c1):
     return a * np.exp((-1) * lambda1 * t) * np.sin(omega1 * t + phi1) + c1
 
 
-data = pd.read_excel("./20230711/data.xlsx")
+data = pd.read_excel("./20230713_clutch/only_lower_electromagnet_clutch.xlsx")
 
 angle = (np.array(list(data.iloc[0:, 1]))) * math.pi / 180
 velocity = np.array(list(data.iloc[0:, 2])) * math.pi / 180
 time = np.array(list(data.iloc[0:, 0]))
 
-startline = 700
-endline = 7000
+
+startline = 1000
+endline = 2000
 
 time = time[startline:endline] - time[startline]
 velocity = velocity[startline:endline]
