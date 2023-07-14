@@ -15,10 +15,10 @@
 Reference:
 https://zhou-yuxin.github.io/articles/2017/Linux的GPIO子系统之-sys-class-gpio目录/index.html
 
-//编译
+//compile
 gcc -o Robotics_Arm_Demo Robotics_Arm_Demo.c -lwiringPi -pthread -lcrypt -lm -lrt
 
-//挂在后台
+//in the back
 nohup ./Robotics_Arm_Demo  & 
 
 //查看进程的线程
@@ -34,7 +34,7 @@ sudo cat /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_cur_freq
 
-//转化引脚状态
+//
 echo 92 > /sys/class/gpio/export  # Encoder A Phase 
 echo in > /sys/class/gpio/gpio92/direction
 echo falling > /sys/class/gpio/gpio92/edge
@@ -156,9 +156,11 @@ void *Timer_5ms(void)
     fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
     
     signal(SIGINT, intHandler);
+
     while(1){
         printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
         fflush(stdout);  
+        
         if(file_state == 1){
             fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n", testingT_end(), motion, velocity, Electromagnet_Clutch_1, Electromagnet_Clutch_2, Electromagnet_Clutch_3, Electromagnet_Clutch_4);
         
