@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230713_clutch/only_lower_electromagnet_clutch.xlsx")
+data = pd.read_excel("./20230712_1torque/2_130degrees.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -34,48 +34,50 @@ Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
 Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
-# print(angle)
+
 
 
 '''
 Get the friction
 '''
-fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+# "./20230713_clutch/only_lower_electromagnet_clutch.xlsx"
 
-
-first_maximum_ranage = angle[900:1000]
-first_maximum_time = 900 + np.argmax(first_maximum_ranage)
-second_maximum_ranage = angle[2000:3000]
-second_maximum_time = 2000 + np.argmax(second_maximum_ranage)
-third_maximum_ranage = angle[3600:4000]
-third_maximum_time = 3600 + np.argmax(third_maximum_ranage)
-fourth_maximum_ranage = angle[4000:5500]
-fourth_maximum_time = 4000 + np.argmax(fourth_maximum_ranage)
-fifth_maximum_ranage = angle[5000:5500]
-fifth_maximum_time = 5000 + np.argmax(fifth_maximum_ranage)
-sisth_maximum_ranage = angle[5800:6000]
-sisth_maximum_time = 5800 + np.argmax(sisth_maximum_ranage)
-
-
-plt.annotate(r'$\angle %.2f^o$' % np.max(first_maximum_ranage), xy=(time[first_maximum_time], np.max(first_maximum_ranage)), xytext=(+20, -20),
-             textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-plt.annotate(r'$\angle %.2f^o$' % np.max(second_maximum_ranage), xy=(time[second_maximum_time], np.max(second_maximum_ranage)), xytext=(+20, -10),
-             textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-plt.annotate(r'$\angle %.2f^o$' % np.max(third_maximum_ranage), xy=(time[third_maximum_time], np.max(third_maximum_ranage)), xytext=(+20, -10),
-             textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-plt.annotate(r'$\angle %.2f^o$' % np.max(fourth_maximum_ranage), xy=(time[fourth_maximum_time], np.max(fourth_maximum_ranage)), xytext=(+20, -10),
-             textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-plt.annotate(r'$\angle %.2f^o$' % np.max(fifth_maximum_ranage), xy=(time[fifth_maximum_time], np.max(fifth_maximum_ranage)), xytext=(+20, -10),
-             textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-plt.annotate(r'$\angle %.2f^o$' % np.max(sisth_maximum_ranage), xy=(time[sisth_maximum_time], np.max(sisth_maximum_ranage)), xytext=(+20, -10),
-             textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-
-ax1.set_xlabel('Time [s]', fontweight='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-100, 100])
-fig.savefig("./PDF-File/The Filtered.pdf")
+# fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+# ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+#
+#
+# first_maximum_ranage = angle[900:1000]
+# first_maximum_time = 900 + np.argmax(first_maximum_ranage)
+# second_maximum_ranage = angle[2000:3000]
+# second_maximum_time = 2000 + np.argmax(second_maximum_ranage)
+# third_maximum_ranage = angle[3600:4000]
+# third_maximum_time = 3600 + np.argmax(third_maximum_ranage)
+# fourth_maximum_ranage = angle[4000:5500]
+# fourth_maximum_time = 4000 + np.argmax(fourth_maximum_ranage)
+# fifth_maximum_ranage = angle[5000:5500]
+# fifth_maximum_time = 5000 + np.argmax(fifth_maximum_ranage)
+# sisth_maximum_ranage = angle[5800:6000]
+# sisth_maximum_time = 5800 + np.argmax(sisth_maximum_ranage)
+#
+#
+# plt.annotate(r'$\angle %.2f^o$' % np.max(first_maximum_ranage), xy=(time[first_maximum_time], np.max(first_maximum_ranage)), xytext=(+20, -20),
+#              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+# plt.annotate(r'$\angle %.2f^o$' % np.max(second_maximum_ranage), xy=(time[second_maximum_time], np.max(second_maximum_ranage)), xytext=(+20, -10),
+#              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+# plt.annotate(r'$\angle %.2f^o$' % np.max(third_maximum_ranage), xy=(time[third_maximum_time], np.max(third_maximum_ranage)), xytext=(+20, -10),
+#              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+# plt.annotate(r'$\angle %.2f^o$' % np.max(fourth_maximum_ranage), xy=(time[fourth_maximum_time], np.max(fourth_maximum_ranage)), xytext=(+20, -10),
+#              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+# plt.annotate(r'$\angle %.2f^o$' % np.max(fifth_maximum_ranage), xy=(time[fifth_maximum_time], np.max(fifth_maximum_ranage)), xytext=(+20, -10),
+#              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+# plt.annotate(r'$\angle %.2f^o$' % np.max(sisth_maximum_ranage), xy=(time[sisth_maximum_time], np.max(sisth_maximum_ranage)), xytext=(+20, -10),
+#              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
+#
+# ax1.set_xlabel('Time [s]', fontweight='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-100, 100])
+# fig.savefig("./PDF-File/The Filtered.pdf")
 
 
 '''
@@ -175,18 +177,18 @@ Angular Displacement [angle] & Filtered Velocity
 '''
 Angular Displacement & Velocity
 '''
-# fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-# ax2 = ax1.twinx()
-# ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
-# ax2.plot(time, velocity,'r--', label='Angular Velocity [angle/s]')
-# ax1.set_xlabel('Time [s]', fontweight ='bold')
-# ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
-# ax2.set_ylabel('Angular Velocity [angle/s]',fontweight ='bold')
-# ax1.grid()
-# fig.legend()
-# ax1.set_ylim([-150, 150])
-# ax2.set_ylim([-10, 10])
-# fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
+fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+ax2 = ax1.twinx()
+ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+ax2.plot(time, velocity,'r--', label='Angular Velocity [angle/s]')
+ax1.set_xlabel('Time [s]', fontweight ='bold')
+ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
+ax2.set_ylabel('Angular Velocity [angle/s]',fontweight ='bold')
+ax1.grid()
+fig.legend()
+ax1.set_ylim([-150, 150])
+ax2.set_ylim([-10, 10])
+fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
 
 '''
 Filter
@@ -211,12 +213,12 @@ Filter
 Angular Displacement
 '''
 # fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-# ax1.plot(time, angle * np.pi / 180, 'k-', label=r'$\theta$ [$^\circ$]')
+# ax1.plot(time, angle, 'k-', label=r'$\theta$ [$^\circ$]')
 # ax1.set_xlabel('Time [s]', fontweight ='bold')
 # ax1.set_ylabel(r'$\theta$ [$^\circ$]',fontweight ='bold')
 # ax1.grid()
 # # fig.legend()
-# ax1.set_ylim([-5, 5])
+# ax1.set_ylim([-100, 100])
 # fig.savefig("./PDF-File/The Angular Displacement.pdf")
 
 '''

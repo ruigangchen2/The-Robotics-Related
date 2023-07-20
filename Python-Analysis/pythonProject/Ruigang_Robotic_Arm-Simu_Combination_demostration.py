@@ -12,7 +12,7 @@ omega2 = 5.45
 stiffness1 = inertia * (omega1 ** 2)  # I * w^2
 stiffness2 = inertia * (omega2 ** 2)
 slope1 = 0.108
-slope2 = 0.4
+slope2 = 0.2
 torque_friction1 = slope1 * np.pi * stiffness1 / 2 / omega1
 torque_friction2 = slope2 * np.pi * stiffness2 / 2 / omega2
 
@@ -49,7 +49,7 @@ def eom2(_t, y):
 
 
 def eom3(_t, y):
-    return [y[1],  - (stiffness2 * y[0] - torque_friction2) / inertia]
+    return [y[1], (1.3253182461 * y[1] - 28.8840169731 * y[0])]
 
 
 sol_ivp1 = solve_ivp(eom1, [time1[0], time1[-1]], [angle1[0], velocity1[0]], max_step=0.001)
@@ -61,7 +61,7 @@ plt.subplot(211)
 plt.plot(time, angle * 180 / np.pi, 'b', label='original')
 plt.plot(sol_ivp1.t, sol_ivp1.y[0] * 180 / np.pi, 'r--')
 plt.plot(sol_ivp2.t, sol_ivp2.y[0] * 180 / np.pi, 'r--')
-plt.plot(sol_ivp3.t, sol_ivp3.y[0] * 180 / np.pi, 'r--', label='experiment')
+plt.plot(sol_ivp3.t, sol_ivp3.y[0] * 180 / np.pi, 'r--', label='simulation')
 plt.xlabel('Time [s]')
 plt.ylabel(r'$\theta$ [$^\circ$]')
 plt.ylim([-110, 100])
@@ -71,11 +71,11 @@ plt.plot(time, velocity, 'k-', alpha=0.2, label='original')
 plt.plot(time, velocity_filtered, 'b', label='filtered')
 plt.plot(sol_ivp1.t, sol_ivp1.y[1], 'r--')
 plt.plot(sol_ivp2.t, sol_ivp2.y[1], 'r--')
-plt.plot(sol_ivp3.t, sol_ivp3.y[1], 'r--', label='experiment')
+plt.plot(sol_ivp3.t, sol_ivp3.y[1], 'r--', label='simulation')
 plt.xlabel('Time [s]')
 plt.ylabel('Velocity [rad/s]')
 plt.legend()
 plt.tight_layout()
 plt.ylim([-2, 7])
-plt.savefig('Sim.pdf')
+plt.savefig('./PDF-File/Simulation.pdf')
 plt.show()
