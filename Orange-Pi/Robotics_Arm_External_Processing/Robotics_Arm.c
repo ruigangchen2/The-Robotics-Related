@@ -179,9 +179,9 @@ void *create(void)
         exit(EXIT_FAILURE);
     }
     fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
-   
-
     signal(SIGINT, intHandler);
+
+
     while(1){
         if(poll(fds,1,0)==-1){
             printf("poll failed!\n");
@@ -227,8 +227,8 @@ void *create(void)
                         return (void *)-1;
                     }
                     
-                    digitalWrite(electromagnet_1,1);
-                #if 0
+
+                #if 1
                     if(motion < -85)State0 = 1;
                 
                     if(motion > -80 && State0 == 1){
@@ -237,7 +237,7 @@ void *create(void)
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
                     
-                        if((motion + velocity * 0.03) > -18.5 && State0 == 1){
+                        if((motion + velocity * 0.03) > 35 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
                             Electromagnet_Clutch_4 = 0;
