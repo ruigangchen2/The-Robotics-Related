@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230721-newe-equation/3_150.xlsx")
+data = pd.read_excel("./20230724/1_25.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,7 +23,7 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 510
+startline = 506
 endline = -1
 
 time = time[startline:endline] - time[startline]
