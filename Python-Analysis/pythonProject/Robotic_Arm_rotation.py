@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230724/1_25.xlsx")
+data = pd.read_excel("./20230724/3_clutch_at_5_degrees.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,7 +23,7 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 506
+startline = 504
 endline = -1
 
 time = time[startline:endline] - time[startline]
@@ -86,7 +86,7 @@ Angular Displacement [angle] & Filtered Velocity [rad/s] & curve fit
 
 b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
 data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
-fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+fig, ax1 = plt.subplots(figsize=(10, 6), dpi=100)
 
 order = 30
 z = np.polyfit(time, data_filter, order)
@@ -95,13 +95,13 @@ data_fit = p(time)
 print(z)
 
 ax2 = ax1.twinx()
-ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
-ax2.plot(time, velocity, 'g--', label='Original Angular Velocity [rad/s]')
-ax2.plot(time, data_filter, 'r--', label='Filtered Angular Velocity [rad/s]')
-ax2.plot(time, data_fit, 'b--', label='Fitted Angular Velocity [rad/s]')
+ax1.plot(time, angle, 'k--', label=r'$\theta_{exp}$')
+ax2.plot(time, velocity, 'g--', label=r'$\dot{\theta}_{exp}$')
+ax2.plot(time, data_filter, 'r--', label=r'$\dot{\theta}_{filter}$')
+ax2.plot(time, data_fit, 'b--', label=r'$\dot{\theta}_{fit}$')
 ax1.set_xlabel('Time [s]', fontweight='bold')
-ax1.set_ylabel('Angular Displacement [angle]', fontweight='bold')
-ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
+ax1.set_ylabel(r'$\theta$ [$^\circ$]', fontweight='bold')
+ax2.set_ylabel(r'$\dot{\theta}$ [rad/s]', fontweight='bold')
 ax1.grid()
 fig.legend()
 ax1.set_ylim([-100, 100])
