@@ -3,7 +3,7 @@ import numpy as np
 # You should need to fill in this variable
 theta_dec = 30 * np.pi / 180  # The deceleration angle
 theta_acc = 10 * np.pi / 180  # The acceleration angle
-theta = 137.7 * np.pi / 180  # The final theta the robotic arm rotates
+theta = 137 * np.pi / 180  # The final theta the robotic arm rotates
 
 print("acceleration angle is: %f degrees" % (theta_acc * 180 / np.pi))
 print("deceleration angle is: %f degrees" % (theta_dec * 180 / np.pi))

@@ -1,29 +1,37 @@
 import numpy as np
 
 J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
-          + (5.5 * 0.001) * ((110 * 0.001) ** 2)  # 0.5 * M * R^2
-print("rotation inertia is:%f" % J)
-w1 = 5.28
-w2 = 5.25
-print("omega1 is:%f" % w1)
-print("omega2 is:%f" % w2)
-theta_goal = 110 * np.pi/ 180
-print("theta goal is:%f" % theta_goal)
+          + (5.5 * 0.001) * ((110 * 0.001) ** 2)
+print("rotation inertia is: %f Kg·m²" % J)
+w1 = 5.22
+w2 = 5.72
+print("omega1 is: %f rad/s" % w1)
+print("omega2 is: %f rad/s" % w2)
+
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
-print("stiffness1 is:%f" % k1)
-print("stiffness2 is:%f" % k2)
-theta_acceleration = 10 * np.pi/ 180
-print("theta acceleration is:%f" % theta_acceleration)
+print("stiffness1 is: %f N/m" % k1)
+print("stiffness2 is: %f N/m" % k2)
+
+theta_goal = 150 * np.pi / 180
+print("goal angle is: %.2f degrees" % (theta_goal * 180 / np.pi))
+
+theta_acc = 10 * np.pi / 180
+print("acceleration angle is: %.2f degrees" % (theta_acc * 180 / np.pi))
+
 slope1 = 0.108
-slope2 = 0.237
-torque1 = slope1 * np.pi * k1 / 2 / w1
-torque2 = slope2 * np.pi * k2 / 2 / w2
+slope2 = 0.182
+t1 = slope1 * np.pi * k1 / 2 / w1
+t3 = slope2 * np.pi * k2 / 2 / w2
+t2 = 0.962 * J
 
-
-torque *= 1
-print("moment of friction is:%f" % torque)
-
-theta_clutch = ((k2*theta_goal - torque)/k2) - (2*((0.5*k1*(np.pi*theta_acceleration-(theta_acceleration**2))+torque*theta_acceleration-0.5*k2*(theta_goal**2))/k2) +((torque-k2*theta_goal)/k2)**2)**0.5
+theta_clutch = (- (t3 + t2 - k2 * theta_goal) / k2) - \
+               ((((0.5 * k1 * (np.pi * theta_acc - (theta_acc ** 2)) \
+                 - t1 * theta_acc \
+                 + t3 * theta_goal \
+                 + t2 * theta_acc \
+                 - 0.5 * k2 * (theta_goal ** 2)) \
+                 / (0.5 * k2)) \
+                 + (((t3 + t2 - k2 * theta_goal) / k2) ** 2))
+                ** 0.5)
 print("clutching theta is: %.2f degrees" % (theta_clutch * 180 / np.pi - 90))
-

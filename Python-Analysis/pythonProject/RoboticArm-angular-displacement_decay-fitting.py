@@ -55,6 +55,10 @@ plt.annotate(r'$\angle %.2f^o$' % np.max(fifth_maximum_ranage), xy=(time[fifth_m
 plt.annotate(r'$\angle %.2f^o$' % np.max(sixth_maximum_ranage), xy=(time[sixth_maximum_time], np.max(sixth_maximum_ranage)), xytext=(+20, -10),
              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
 
+print(time[fifth_maximum_time])
+print(np.max(fifth_maximum_ranage))
+print(time[sixth_maximum_time])
+print(np.max(sixth_maximum_ranage))
 ax1.set_xlabel('Time [s]', fontweight='bold')
 ax1.grid()
 fig.legend()

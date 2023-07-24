@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230712_1torque/2_130degrees.xlsx")
+data = pd.read_excel("./20230721-newe-equation/3_150.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -84,29 +84,29 @@ Get the friction
 Angular Displacement [angle] & Filtered Velocity [rad/s] & curve fit
 '''
 
-# b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-# data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
-# fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-#
-# order = 30
-# z = np.polyfit(time, data_filter, order)
-# p = np.poly1d(z)
-# data_fit = p(time)
-# print(z)
-#
-# ax2 = ax1.twinx()
-# ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
-# ax2.plot(time, velocity, 'g--', label='Original Angular Velocity [rad/s]')
-# ax2.plot(time, data_filter, 'r--', label='Filtered Angular Velocity [rad/s]')
-# ax2.plot(time, data_fit, 'b--', label='Fitted Angular Velocity [rad/s]')
-# ax1.set_xlabel('Time [s]', fontweight='bold')
-# ax1.set_ylabel('Angular Displacement [angle]', fontweight='bold')
-# ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
-# ax1.grid()
-# fig.legend()
-# ax1.set_ylim([-100, 100])
-# ax2.set_ylim([-10, 10])
-# fig.savefig("./PDF-File/The Filtered.pdf")
+b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
+fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+
+order = 30
+z = np.polyfit(time, data_filter, order)
+p = np.poly1d(z)
+data_fit = p(time)
+print(z)
+
+ax2 = ax1.twinx()
+ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+ax2.plot(time, velocity, 'g--', label='Original Angular Velocity [rad/s]')
+ax2.plot(time, data_filter, 'r--', label='Filtered Angular Velocity [rad/s]')
+ax2.plot(time, data_fit, 'b--', label='Fitted Angular Velocity [rad/s]')
+ax1.set_xlabel('Time [s]', fontweight='bold')
+ax1.set_ylabel('Angular Displacement [angle]', fontweight='bold')
+ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
+ax1.grid()
+fig.legend()
+ax1.set_ylim([-100, 100])
+ax2.set_ylim([-10, 10])
+fig.savefig("./PDF-File/The Filtered.pdf")
 
 '''
 Filtered Angular Displacement [angle] & Derivated Velocity [Python]
@@ -177,18 +177,18 @@ Angular Displacement [angle] & Filtered Velocity
 '''
 Angular Displacement & Velocity
 '''
-fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax2 = ax1.twinx()
-ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
-ax2.plot(time, velocity,'r--', label='Angular Velocity [angle/s]')
-ax1.set_xlabel('Time [s]', fontweight ='bold')
-ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
-ax2.set_ylabel('Angular Velocity [angle/s]',fontweight ='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-150, 150])
-ax2.set_ylim([-10, 10])
-fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
+# fig ,ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+# ax2 = ax1.twinx()
+# ax1.plot(time, angle, 'k--', label='Angular Displacement [angle]')
+# ax2.plot(time, velocity,'r--', label='Angular Velocity [angle/s]')
+# ax1.set_xlabel('Time [s]', fontweight ='bold')
+# ax1.set_ylabel('Angular Displacement [angle]',fontweight ='bold')
+# ax2.set_ylabel('Angular Velocity [angle/s]',fontweight ='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-150, 150])
+# ax2.set_ylim([-10, 10])
+# fig.savefig('./PDF-File/Angular Displacement & Velocity.pdf')
 
 '''
 Filter
