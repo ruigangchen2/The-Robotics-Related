@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230724/3_clutch_at_5_degrees.xlsx")
+data = pd.read_excel("./20230725/3_130.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,12 +23,12 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 504
+startline = 506
 endline = -1
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
-angle = angle[startline:endline]
+angle = angle[startline:endline] - angle[startline]
 velocity = velocity[startline:endline]
 Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
 Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
@@ -104,7 +104,7 @@ ax1.set_ylabel(r'$\theta$ [$^\circ$]', fontweight='bold')
 ax2.set_ylabel(r'$\dot{\theta}$ [rad/s]', fontweight='bold')
 ax1.grid()
 fig.legend()
-ax1.set_ylim([-100, 100])
+ax1.set_ylim([-10, 200])
 ax2.set_ylim([-10, 10])
 fig.savefig("./PDF-File/The Filtered.pdf")
 
