@@ -11,24 +11,18 @@
 #define __USE_GNU
 #include <sched.h>
 #include <pthread.h>
-
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
 /*
 
-//compile the code
+//compile
 gcc -o Robotics_Arm Robotics_Arm.c -lwiringPi -pthread -lcrypt -lm -lrt
 
-//run the program in the background
+//in the back
 nohup ./Robotics_Arm_Demo  & 
 
-//check the thread's pid
+//catch the pid
 ps -T -p <pid> 
 
-//check the frequency of core
+//frequency
 sudo cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq
@@ -38,7 +32,7 @@ sudo cat /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_cur_freq
 
-//initialize the pin
+//initialize the pins
 echo 92 > /sys/class/gpio/export  # Encoder A Phase 
 echo in > /sys/class/gpio/gpio92/direction
 echo falling > /sys/class/gpio/gpio92/edge
@@ -58,8 +52,6 @@ char back_direction = '-';
 char current_direction = 0; 
 char direction_state = 0;
 float velocity = 0; 
-float pre_velocity = 0; 
-char initialize_state = 0;
 /******************************/
 
 /***** Testing time *****/
@@ -80,7 +72,9 @@ int state1_matrix[15000] = {0};
 int state2_matrix[15000] = {0};
 int state3_matrix[15000] = {0};
 int state4_matrix[15000] = {0};
+int matrix_number = 0;
 /******************************/
+
 
 struct pollfd fds[1];
 
@@ -97,15 +91,12 @@ double testing_durationT_End_Encoder()
     return TimeDuration_Encoder;
 }
 
+float deltaT = 0;
 void get_info()  //calculate the information of the encoder
 {
+    deltaT = testing_durationT_End_Encoder();
+    velocity = pulse * 180.0 / deltaT; //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
 
-    velocity = pulse * 180 / (testing_durationT_End_Encoder()); //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
-    // velocity = 0.8 * pre_velocity + 0.2 * velocity;
-    if(initialize_state == 0){
-        pulse = 0;
-        initialize_state = 1;
-    }
     if(current_direction == forward_direction){
         motion = motion + pulse * 360 / 2000; //calculate the positive motion 
     }
@@ -114,7 +105,6 @@ void get_info()  //calculate the information of the encoder
         velocity = -velocity;
     }
     pulse = 0;    //set pulse to zero
-    // pre_velocity = velocity;
 }
 
 
@@ -141,7 +131,102 @@ void intHandler(int i){
     digitalWrite(electromagnet_3,0);
     digitalWrite(electromagnet_4,0);
     file_state = 0;
+}
+
+int Electromagnet_Clutch_1 = 0;
+int Electromagnet_Clutch_2 = 0;
+int Electromagnet_Clutch_3 = 0;
+int Electromagnet_Clutch_4 = 0;
+void *Timer_5ms(void)
+{
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(7,&mask);
+    if (sched_setaffinity(0,sizeof(mask),&mask)<0){
+        printf("affinity set fail!");
+    }
+
+    testingT_start();
     
+    digitalWrite(electromagnet_1,0);
+    digitalWrite(electromagnet_2,0);
+    digitalWrite(electromagnet_3,0);
+    digitalWrite(electromagnet_4,0);
+    
+
+    char State0 = 0;
+    char State1 = 0;
+
+    FILE *fp = fopen("./robotic_arm.csv", "w+");
+    if (fp == NULL){
+        fprintf(stderr, "fopen() failed.\n");
+        printf("Failed\n");
+        exit(EXIT_FAILURE);
+    }
+    fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
+    signal(SIGINT, intHandler);
+
+    while(1){
+        printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
+        fflush(stdout);  
+        
+        if(file_state == 1){
+        #if 1
+            if(motion < -85)State0 = 1;
+                
+                if(motion > -80 && State0 == 1){
+                    digitalWrite(electromagnet_2,0);
+                    digitalWrite(electromagnet_1,1);
+                    Electromagnet_Clutch_2 = 0;
+                    Electromagnet_Clutch_1 = 1;
+                
+                    if((motion + velocity * 0.03) > 35 && State0 == 1){
+                        digitalWrite(electromagnet_4,0);
+                        digitalWrite(electromagnet_3,1);
+                        Electromagnet_Clutch_4 = 0;
+                        Electromagnet_Clutch_3 = 1;
+
+                        if(velocity < 1){
+                            digitalWrite(electromagnet_3,0);
+                            digitalWrite(electromagnet_4,1);
+                            digitalWrite(electromagnet_2,1);
+                            digitalWrite(electromagnet_1,1);
+                            
+                            Electromagnet_Clutch_3 = 0;
+                            Electromagnet_Clutch_4 = 1;
+                            Electromagnet_Clutch_1 = 1;
+                            Electromagnet_Clutch_2 = 1;
+                            State0 = 0;
+                            State1 = 1;
+                        }
+                    }
+                }
+                else if(State1 == 0){
+                    digitalWrite(electromagnet_1,0);
+                    digitalWrite(electromagnet_2,1);
+                    Electromagnet_Clutch_1 = 0;
+                    Electromagnet_Clutch_2 = 1;
+                }
+        #endif
+        }
+
+        if(file_state == 0){
+            int j = matrix_number;
+            while(matrix_number--){
+                fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n",  time_matrix[j - matrix_number],\
+                                                            motion_matrix[j - matrix_number],\
+                                                            velocity_matrix[j - matrix_number],\
+                                                            state1_matrix[j - matrix_number],\
+                                                            state2_matrix[j - matrix_number],\
+                                                            state3_matrix[j - matrix_number],\
+                                                            state4_matrix[j - matrix_number]);                        
+            }
+            printf("\n\nSaved Over!!!\n\n");
+            fclose(fp); 
+        }
+        else
+            delay(5);
+    }
 }
 
 void *create(void)
@@ -160,34 +245,6 @@ void *create(void)
     }
     fds[0].fd=fd;
     fds[0].events=POLLPRI;
-
-
-    testingT_start();
-    
-    digitalWrite(electromagnet_1,0);
-    digitalWrite(electromagnet_2,0);
-    digitalWrite(electromagnet_3,0);
-    digitalWrite(electromagnet_4,0);
-    
-    
-    int Electromagnet_Clutch_1 = 0;
-    int Electromagnet_Clutch_2 = 0;
-    int Electromagnet_Clutch_3 = 0;
-    int Electromagnet_Clutch_4 = 0;
-
-    char State0 = 0;
-    char State1 = 0;
-    
-    int matrix_number = 0;
-    FILE *fp = fopen("./data.csv", "w+");
-    if (fp == NULL){
-        fprintf(stderr, "fopen() failed.\n");
-        printf("Failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
-    signal(SIGINT, intHandler);
-
 
     while(1){
         if(poll(fds,1,0)==-1){
@@ -216,98 +273,26 @@ void *create(void)
                 get_info();
                 testingT_durationT_start_Encoder();
 
-                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
-                fflush(stdout);  
-                
-                //**********************************For user****************************************
-                if(file_state == 1){
-                    time_matrix[matrix_number] = testingT_end();
-                    motion_matrix[matrix_number] = motion;
-                    velocity_matrix[matrix_number] = velocity;
-                    state1_matrix[matrix_number] = Electromagnet_Clutch_1;
-                    state2_matrix[matrix_number] = Electromagnet_Clutch_2;
-                    state3_matrix[matrix_number] = Electromagnet_Clutch_3;
-                    state4_matrix[matrix_number] = Electromagnet_Clutch_4;
-                    ++matrix_number;
-                    if(matrix_number > 15000){
-                        printf("\n\nMatrix number error!\n\n");
-                        return (void *)-1;
-                    }
-                
-                #if 0
-                    if(motion < -85)State0 = 1;
-                
-                    if(motion > -80 && State0 == 1){
-                        digitalWrite(electromagnet_2,0);
-                        digitalWrite(electromagnet_1,1);
-                        Electromagnet_Clutch_2 = 0;
-                        Electromagnet_Clutch_1 = 1;
-                    
-                        if(motion  > 20 && State0 == 1){
-                            digitalWrite(electromagnet_4,0);
-                            digitalWrite(electromagnet_3,1);
-                        
-                            Electromagnet_Clutch_4 = 0;
-                            Electromagnet_Clutch_3 = 1;
-
-                            if(velocity < 20){
-                                digitalWrite(electromagnet_3,0);
-                                digitalWrite(electromagnet_4,1);
-                                digitalWrite(electromagnet_2,1);
-                                digitalWrite(electromagnet_1,1);
-                                
-                                Electromagnet_Clutch_3 = 0;
-                                Electromagnet_Clutch_4 = 1;
-                                Electromagnet_Clutch_1 = 1;
-                                Electromagnet_Clutch_2 = 0;
-                                State0 = 0;
-                                State1 = 1;
-                            }
-                        }
-                    }
-                    else if(State1 == 0){
-                        digitalWrite(electromagnet_1,0);
-                        digitalWrite(electromagnet_2,1);
-                        Electromagnet_Clutch_1 = 0;
-                        Electromagnet_Clutch_2 = 1;
-                    }
-                #endif
+                time_matrix[matrix_number] = deltaT;
+                motion_matrix[matrix_number] = motion;
+                velocity_matrix[matrix_number] = velocity;
+                state1_matrix[matrix_number] = Electromagnet_Clutch_1;
+                state2_matrix[matrix_number] = Electromagnet_Clutch_2;
+                state3_matrix[matrix_number] = Electromagnet_Clutch_3;
+                state4_matrix[matrix_number] = Electromagnet_Clutch_4;
+                ++matrix_number;
+                if(matrix_number > 15000){
+                    printf("matrix number error!\n");
+                    return (void *)-1;
                 }
-
-                if(file_state == 0){
-                    int j = matrix_number;
-                    while(matrix_number--){
-                        fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n",  time_matrix[j - matrix_number],\
-                                                                    motion_matrix[j - matrix_number],\
-                                                                    velocity_matrix[j - matrix_number],\
-                                                                    state1_matrix[j - matrix_number],\
-                                                                    state2_matrix[j - matrix_number],\
-                                                                    state3_matrix[j - matrix_number],\
-                                                                    state4_matrix[j - matrix_number]);                        
-                    }
-                    printf("\n\nSaved Over!!!\n\n");
-                    fclose(fp); 
-                }
-
-                //**********************************For user end****************************************
-
             }
         }
     }
 }
 
-
-
 int main(int argc, const char *argv[])
 {   
-    int flag1, flag2;
-    if(flag1=(fcntl(STDIN_FILENO, F_GETFL, 0)) < 0)
-    {
-        perror("fcntl");
-        return -1;
-    }
-    flag2 = flag1 | O_NONBLOCK;
-    fcntl(STDIN_FILENO, F_SETFL, flag2);
+
 
     wiringPiSetup();
     pinMode(encoderB_pin, INPUT);
@@ -324,7 +309,7 @@ int main(int argc, const char *argv[])
 
     delay(500);
     
-	pthread_t id1;
+	pthread_t id1,id2;
 	int value;
 
     value = pthread_create(&id1, NULL, (void *)create, NULL);
@@ -334,10 +319,17 @@ int main(int argc, const char *argv[])
         return -1;
 	}
 
+    value = pthread_create(&id2, NULL, (void *)Timer_5ms, NULL);
+    pthread_setname_np(id2, "Timer_5ms");
+	if(value){
+        printf("thread2 is not created!\n");
+        return -1;
+	}
     printf("All the thread is created..\n");
     
     pthread_join(id1,NULL);
-    
+	pthread_join(id2,NULL);
+
 	return 0;
 }
 
