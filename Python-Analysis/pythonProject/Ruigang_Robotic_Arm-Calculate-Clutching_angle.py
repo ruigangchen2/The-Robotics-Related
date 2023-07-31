@@ -16,9 +16,6 @@ print("stiffness2 is: %f N/m" % k2)
 theta_goal = 150 * np.pi / 180
 print("goal angle is: %.2f degrees" % (theta_goal * 180 / np.pi))
 
-theta_start = 70 * np.pi / 180
-print("start angle is: %.2f degrees" % (theta_start * 180 / np.pi))
-
 theta_acc = 10 * np.pi / 180
 print("acceleration angle is: %.2f degrees" % (theta_acc * 180 / np.pi))
 
@@ -29,7 +26,7 @@ t3 = slope2 * np.pi * k2 / 2 / w2
 t2 = 0.962 * J
 
 theta_clutch = (- (t3 + t2 - k2 * theta_goal) / k2) - \
-               ((((0.5 * k1 * (2 * theta_start * theta_acc - (theta_acc ** 2)) \
+               ((((0.5 * k1 * (np.pi * theta_acc - (theta_acc ** 2)) \
                  - t1 * theta_acc \
                  + t3 * theta_goal \
                  + t2 * theta_acc \
