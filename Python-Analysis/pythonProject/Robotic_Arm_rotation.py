@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./20230731/3_150.xlsx")
+data = pd.read_excel("./20230802/1_140.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
