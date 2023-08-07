@@ -6,6 +6,7 @@ from scipy.integrate import solve_ivp
 
 inertia = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
           + (5.5 * 0.001) * ((110 * 0.001) ** 2)  # 0.5 * M * R^2
+
 omega1 = 5.28
 omega2 = 5.45
 stiffness1 = inertia * (omega1 ** 2)  # I * w^2
@@ -14,7 +15,6 @@ slope1 = 0.108
 slope2 = 0.4
 torque_friction1 = slope1 * np.pi * stiffness1 / 2 / omega1
 torque_friction2 = slope2 * np.pi * stiffness2 / 2 / omega2
-
 data = pd.read_excel("./20230712_1torque/1_150degrees.xlsx")
 one = 570
 two = 55
@@ -42,7 +42,6 @@ velocity3 = velocity_filtered[three+1:four]
 def eom1(_t, y):
     return [y[1],  - (stiffness1 * (y[0] + angle1[0] * np.pi / 180) - torque_friction1) / inertia]
 
-
 def eom2(_t, y):
     return [y[1], - torque_friction1 / inertia]
 
@@ -55,8 +54,15 @@ sol_ivp1 = solve_ivp(eom1, [time1[0], time1[-1]], [angle1[0], velocity1[0]], max
 sol_ivp2 = solve_ivp(eom2, [time2[0], time2[-1]], [angle2[0], velocity2[0]], max_step=0.001)
 sol_ivp3 = solve_ivp(eom3, [time3[0], time3[-1]], [angle3[0], velocity3[0]], max_step=0.001)
 
+print(time3[0])
+print(angle3[0])
+print(velocity3[0])
+print(sol_ivp3.t)
+print(sol_ivp3.y[0] * 180 / np.pi)
+print(sol_ivp3.y[1])
+
 plt.figure(figsize=(7, 6), dpi=100)
-plt.subplot(311)
+plt.subplot(211)
 plt.plot(time, angle * 180 / np.pi, 'b', label='original')
 plt.plot(sol_ivp1.t, sol_ivp1.y[0] * 180 / np.pi, 'r--')
 plt.plot(sol_ivp2.t, sol_ivp2.y[0] * 180 / np.pi, 'r--')
@@ -65,7 +71,7 @@ plt.xlabel('Time [s]')
 plt.ylabel(r'$\theta$ [$^\circ$]')
 plt.ylim([-110, 100])
 plt.legend()
-plt.subplot(312)
+plt.subplot(212)
 plt.plot(time, velocity, 'k-', alpha=0.2, label='original')
 plt.plot(time, velocity_filtered, 'b', label='filtered')
 plt.plot(sol_ivp1.t, sol_ivp1.y[1], 'r--')
