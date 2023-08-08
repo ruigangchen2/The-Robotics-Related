@@ -234,7 +234,8 @@ void *create(void)
                         return (void *)-1;
                     }
                 
-                #if 1
+                digitalWrite(electromagnet_1,1);
+                #if 0
                     if(motion < -65)State0 = 1;
                 
                     if(motion > -60 && State0 == 1){
