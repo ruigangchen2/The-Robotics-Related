@@ -234,23 +234,23 @@ void *create(void)
                         return (void *)-1;
                     }
                 
-                #if 0
-                    if(motion < -85)State0 = 1;
+                #if 1
+                    if(motion < -65)State0 = 1;
                 
-                    if(motion > -80 && State0 == 1){
+                    if(motion > -60 && State0 == 1){
                         digitalWrite(electromagnet_2,0);
                         digitalWrite(electromagnet_1,1);
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
                     
-                        if(motion  > 20 && State0 == 1){
+                        if(motion > 20 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
                         
                             Electromagnet_Clutch_4 = 0;
                             Electromagnet_Clutch_3 = 1;
 
-                            if(velocity < 20){
+                            if(velocity < 5){
                                 digitalWrite(electromagnet_3,0);
                                 digitalWrite(electromagnet_4,1);
                                 digitalWrite(electromagnet_2,1);

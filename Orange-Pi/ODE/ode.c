@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <math.h>
+#include <sys/time.h>
 
+/***** Testing time *****/
+double TimeUse = 0;
+struct timeval StartTime;
+struct timeval EndTime;
+/******************************/
 
 double inertia = 0.000141407104;
 double stiffness1 = 0.0039422038081536;
@@ -8,6 +14,22 @@ double stiffness2 = 0.00420014450656;
 double angle0 = -1.5582299561805375;
 double torque_friction1 = 0.00012666271216345623;
 double torque_friction2 = 0.00048422543581007056;
+
+
+
+void testingT_start()
+{
+    gettimeofday(&StartTime, NULL);  //measure the time
+}
+
+double testingT_end()
+{
+    gettimeofday(&EndTime, NULL);   //measurement ends
+    TimeUse = 1000000*(EndTime.tv_sec-StartTime.tv_sec)+EndTime.tv_usec-StartTime.tv_usec;
+    TimeUse /= 1000;  //the result is in the ms dimension
+    return TimeUse;
+}
+
 double EOM1(double x , double y[] , int j){
     if(j == 1)
         return - (stiffness1 * (y[0] + angle0 * M_PI / 180) - torque_friction1) / inertia;
@@ -51,6 +73,7 @@ void rungekutta(double(*function)(double x , double y[] , int j), double x ,  do
 }
 
 int main() {
+    testingT_start();
     double h = 0.001;
     double x1 = 11.36725, x2 = 11.43509, x3 = 11.90949;
     double y1[2], y2[2], y3[2]; //声明变量，y0,y1使用数组y[0],y[1]表示
@@ -72,12 +95,13 @@ int main() {
     //     printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x2 , y2[0] * 180.0 / M_PI , y2[1]) ;
     // }
 
-    printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , 0 , x3 , y3[0] * 180.0 / M_PI , y3[1]) ;
+    // printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , 0 , x3 , y3[0] * 180.0 / M_PI , y3[1]);
     for(int i = 0; i < 196; ++ i){
         rungekutta(EOM3, x3 , y3 , h); 
         x3 = x3 + h;
-        printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x3 , y3[0] * 180.0 / M_PI , y3[1]) ;
+        // printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x3 , y3[0] * 180.0 / M_PI , y3[1]) ;
     }
+    printf("The time used is: %.3lf ms\n",testingT_end());
 
     return 0;
 }
