@@ -8,10 +8,8 @@ from scipy.optimize import curve_fit
 inertia = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
           + (5.5 * 0.001) * ((110 * 0.001) ** 2)  # 0.5 * M * R^2
 
-
 def damped_oscillation(t, a, lambda1, omega1, phi1, c1):
     return a * np.exp((-1) * lambda1 * t) * np.sin(omega1 * t + phi1) + c1
-
 
 data = pd.read_excel("./Upper-Torsion-Spring/experiment1.xlsx")
 
@@ -20,7 +18,7 @@ velocity = np.array(list(data.iloc[0:, 2])) * math.pi / 180
 time = np.array(list(data.iloc[0:, 0]))
 
 
-startline = 507
+startline = 510
 endline = -5
 
 time = time[startline:endline] - time[startline]
@@ -28,8 +26,7 @@ velocity = velocity[startline:endline]
 angle = angle[startline:endline]
 time = time * 0.001
 
-
-A, B, C, D, E = curve_fit(damped_oscillation, time, angle)[0]
+A, B, C, D, E = curve_fit(damped_oscillation, time, angle, maxfev = 50000)[0]
 fitted_angle = A * np.exp((-1) * B * time) * np.sin(C * time + D) + E
 zeta = Symbol('zeta')
 omega = Symbol('omega')
