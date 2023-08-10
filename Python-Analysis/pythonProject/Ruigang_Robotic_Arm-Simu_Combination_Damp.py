@@ -6,6 +6,7 @@ from scipy.integrate import solve_ivp
 
 inertia = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
           + (5.5 * 0.001) * ((110 * 0.001) ** 2)  # 0.5 * M * R^2
+print(inertia)
 omega1 = 5.28
 omega2 = 5.45
 stiffness1 = inertia * (omega1 ** 2)  # I * w^2
