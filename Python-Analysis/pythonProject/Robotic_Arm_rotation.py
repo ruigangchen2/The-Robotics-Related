@@ -23,8 +23,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 390
-endline = -1
+startline = 500
+endline = 700
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -34,7 +34,10 @@ Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
 Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
-print(angle[0])
+
+
+for i in time:
+    print("%.5f" % i, end=', ')
 
 
 '''
