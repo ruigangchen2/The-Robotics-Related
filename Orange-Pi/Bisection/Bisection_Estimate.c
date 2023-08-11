@@ -1,15 +1,10 @@
-/*
-1. maxmitr – maximum number of iterations to be performed
-2. x – the value of root at the n th iteration
-3. a, b – the limits within which the root lies
-4. allerr – allowed error
-5. x1 – the value of root at (n+1)th iteration
-*/
-
 #include <stdio.h>
 #include <math.h>
 
 // sudo gcc -o Bisection_Estimate Bisection_Estimate.c -lm
+
+// rotation inertia is 0.000141407104
+
 
 double angle[] = {-50.22, -50.04, -49.86, -49.68, -49.5, -49.32, -49.14, -48.96, -48.78, -48.6, -48.42, -48.24, -48.06, 
                 -47.88, -47.7, -47.52, -47.34, -47.16, -46.98, -46.8, -46.62, -46.44, -46.26, -46.08, -45.9, -45.72, -45.54, -45.36, 
@@ -55,34 +50,35 @@ double time[] = {0.00000, 0.00106, 0.00207, 0.00313, 0.00419, 0.00524, 0.00634, 
                 0.19519, 0.19631, 0.19742, 0.19853, 0.19963, 0.20075, 0.20187, 0.20298, 0.20409, 0.20520, 0.20636, 0.20743, 0.20855, 
                 0.20967, 0.21078, 0.21189, 0.21301, 0.21418, 0.21525, 0.21636};
 
+
 float fun(float err_t, float err_angle, float cur_velocity, float rotation_inertia)
 {
-    return err_angle - (cur_velocity * err_t + (0.0000378 * cur_velocity / 2 / rotation_inertia) * err_t * err_t);
+    float damp = 0.0000378;
+    return err_angle - (cur_velocity * err_t + ((damp * cur_velocity / 2 /rotation_inertia) * err_t * err_t));
 }
 
 void bisection (float *x, float a, float b, int *itr)
 {
     *x=(a+b)/2;
     ++(*itr);
-    printf("Iteration no. %3d X = %7.8f\n", *itr, *x);
+    printf("Iteration No.%3d, rotation inertia = %7.8f Kg·m²\n", *itr, *x);
 }
 
 int main ()
 { 
-    float initial_inertia_1 = 0.00001, initial_inertia_2 = 0.001;
-    float estitated_inertia = 0, estitated_inertia1 = 0;
-    float err_angle = 0, err_t = 0, cur_velocity = 0;
-    float allerr = 0.000001;
-    int matrix_index = 0;
+    float initial_inertia_1 = 1.0, initial_inertia_2 = 0.00001;
+    float estitated_inertia = 0.0, estitated_inertia1 = 0.0;
+    float err_angle = 0.0, err_t = 0.0, cur_velocity = 0.0;
+    float allerr = 0.0002;
+    int matrix_index = 500;
     int itr = 0;
     int maxmitr = 20;
-    
-    int matrix_number= sizeof(time)/sizeof(double);
-    
+
+
     bisection (&estitated_inertia, initial_inertia_1, initial_inertia_2, &itr);
     do
     {
-        err_angle = angle[matrix_index + 1] - angle[matrix_index];
+        err_angle = (angle[matrix_index + 1] - angle[matrix_index]) * M_PI / 180;
         err_t = time[matrix_index + 1] - time[matrix_index];
         cur_velocity = velocity[matrix_index];
 
@@ -92,10 +88,9 @@ int main ()
             initial_inertia_1 = estitated_inertia;
 
         bisection (&estitated_inertia1, initial_inertia_1, initial_inertia_2, &itr);
-
         if (fabs(estitated_inertia1 - estitated_inertia) < allerr)
         {
-            printf("After %d iterations, root = %6.4f\n", itr, estitated_inertia1);
+            printf("After %d iterations, rotation inertia = %6.8f Kg·m²\n", itr, estitated_inertia1);
             return 0;
         }
 

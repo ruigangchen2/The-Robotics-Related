@@ -25,6 +25,12 @@ angle = np.array(data['Degree'].ravel())[one:-5]*np.pi/180
 velocity = np.array(data['Velocity'].ravel())[one:-5]*np.pi/180
 
 [b, a] = signal.butter(8, 0.05, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+
+
+print(b)
+
+print(a)
+
 velocity_filtered = signal.filtfilt(b, a, velocity)
 
 
