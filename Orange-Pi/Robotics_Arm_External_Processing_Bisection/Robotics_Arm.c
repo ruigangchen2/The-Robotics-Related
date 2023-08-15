@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
@@ -13,9 +14,8 @@
 #include <pthread.h>
 
 #include <sys/types.h>
-#include <unistd.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+
 
 /*
 
@@ -59,6 +59,7 @@ char current_direction = 0;
 char direction_state = 0;
 float velocity = 0; 
 float pre_velocity = 0; 
+float pre_motion = 0; 
 char initialize_state = 0;
 /******************************/
 
@@ -70,6 +71,7 @@ struct timeval EndTime;
 double TimeDuration_Encoder=0;
 struct timeval StartTime_Encoder;
 struct timeval EndTime_Encoder;
+double error_time = 0;
 /******************************/
 
 /***** data matrix *****/
@@ -82,7 +84,51 @@ int state3_matrix[15000] = {0};
 int state4_matrix[15000] = {0};
 /******************************/
 
-struct pollfd fds[1];
+/***** bisection *****/
+float initial_inertia_1 = 1.0, initial_inertia_2 = 0.00001;
+float estitated_inertia = 0.0, estitated_inertia1 = 0.0;
+float err_angle = 0.0, err_t = 0.0, cur_velocity = 0.0;
+float allerr = 0.0003;
+int itr = 0;
+int maxmitr = 15;
+char bisection_state = 0;
+/******************************/
+
+float fun(float err_t, float err_angle, float cur_velocity, float rotation_inertia)
+{
+    float damp = 0.0000378;
+    return err_angle - (cur_velocity * err_t + ((damp * cur_velocity / 2 /rotation_inertia) * err_t * err_t));
+}
+
+void bisection (float *x, float a, float b, int *itr)
+{
+    *x=(a+b)/2;
+    ++(*itr);
+}
+
+void suit_inertia()
+{
+    if (itr < maxmitr && bisection_state == 0){
+        err_angle = (motion - pre_motion) * M_PI / 180;
+        err_t = error_time;
+        cur_velocity = velocity;
+
+        if (fun(err_t, err_angle, cur_velocity, initial_inertia_1) * fun(err_t, err_angle, cur_velocity, estitated_inertia) < 0)
+            initial_inertia_2 = estitated_inertia;
+        else
+            initial_inertia_1 = estitated_inertia;
+
+        bisection (&estitated_inertia1, initial_inertia_1, initial_inertia_2, &itr);
+        if (fabs(estitated_inertia1 - estitated_inertia) < allerr)
+        {
+            printf("After %d iterations, rotation inertia = %6.8f Kg·m²\n", itr, estitated_inertia1);
+            bisection_state = 1;
+        }   
+        estitated_inertia = estitated_inertia1;
+    }
+    
+}
+
 
 void testingT_durationT_start_Encoder()
 {
@@ -99,9 +145,11 @@ double testing_durationT_End_Encoder()
 
 void get_info()  //calculate the information of the encoder
 {
-
-    velocity = pulse * 180 / (testing_durationT_End_Encoder()); //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
-    // velocity = 0.8 * pre_velocity + 0.2 * velocity;
+    pre_velocity = velocity;
+    pre_motion = motion;
+    error_time = testing_durationT_End_Encoder();
+    
+    velocity = pulse * 180 / (error_time); //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
     if(initialize_state == 0){
         pulse = 0;
         initialize_state = 1;
@@ -114,7 +162,7 @@ void get_info()  //calculate the information of the encoder
         velocity = -velocity;
     }
     pulse = 0;    //set pulse to zero
-    // pre_velocity = velocity;
+    
 }
 
 
@@ -143,7 +191,7 @@ void intHandler(int i){
     file_state = 0;
     
 }
-
+struct pollfd fds[1];
 void *create(void)
 {
     cpu_set_t mask;
@@ -188,7 +236,7 @@ void *create(void)
     fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
     signal(SIGINT, intHandler);
 
-
+    bisection (&estitated_inertia, initial_inertia_1, initial_inertia_2, &itr);
     while(1){
         if(poll(fds,1,0)==-1){
             printf("poll failed!\n");
@@ -215,8 +263,8 @@ void *create(void)
                 pulse++;
                 get_info();
                 testingT_durationT_start_Encoder();
-
-                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
+                
+                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s\t", motion, velocity);   
                 fflush(stdout);  
                 
                 //**********************************For user****************************************
@@ -234,6 +282,7 @@ void *create(void)
                         return (void *)-1;
                     }
                 
+                digitalWrite(electromagnet_1,1);
                 #if 1
                     if(motion < -65)State0 = 1;
                 
@@ -242,8 +291,10 @@ void *create(void)
                         digitalWrite(electromagnet_1,1);
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
-                    
-                        if(motion > 42.24 && State0 == 1){
+
+                        if(motion > -40 && motion < 0)
+                            suit_inertia();
+                        if(motion > 20 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
                         
