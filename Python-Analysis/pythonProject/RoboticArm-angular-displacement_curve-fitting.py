@@ -18,8 +18,8 @@ velocity = np.array(list(data.iloc[0:, 2])) * math.pi / 180
 time = np.array(list(data.iloc[0:, 0]))
 
 
-startline = 510
-endline = 2000
+startline = -50
+endline = -3
 
 time = time[startline:endline] - time[startline]
 velocity = velocity[startline:endline]
