@@ -34,22 +34,37 @@ std_dev = np.array([np.std(zero_degree), np.std(five_degree), np.std(ten_degree)
 
 error = x - y
 
-fig, ax1 = plt.subplots(figsize=(8, 6), dpi=100)
-ax2 = ax1.twinx()
-ax1.plot(x, x, 'r', label='Ideal Result')
-ax1.errorbar(x, y, std_dev, marker='o', ecolor='b', color='b',
-             elinewidth=2, capsize=2, capthick=1.5,
-             linestyle=':', markersize=2, label='Experimental Result')
-ax2.plot(x, error, 'g--', label='Error Angle')
-ax1.set_xlabel(r'Target Angle [$^{\circ}$]')
-ax1.set_ylabel(r'Reached Angle [$^{\circ}$]')
-ax2.set_ylabel(r'Error Angle [$^{\circ}$]')
-ax1.grid()
-fig.legend(loc=(2.5/16, 6.5/9))
+plt.figure(figsize=(8, 6), dpi=100)
+host = host_subplot(111, axes_class=axisartist.Axes)
+plt.subplots_adjust(right=0.8)
+
+par1 = host.twinx()
+par2 = host.twinx()
+
+par2.axis["right"] = par2.new_fixed_axis(loc="right", offset=(60, 0))
+par1.axis["right"].toggle(all=True)
+par2.axis["right"].toggle(all=True)
+
+p1, = host.plot(x, x, 'r', label='Ideal Result')
+plt.errorbar(x, y, std_dev, marker='o', ecolor='b', color='b', elinewidth=2, capsize=2,
+             capthick=1.5, linestyle=':', markersize=2, label='Experimental Result')
+p2, = par1.plot(x, error, 'ok--', markersize=5, label="Error Angle")
+p3, = par2.plot(x, energy_saved, '*g-.', markersize=6, label='Energy Saved')
+
 plt.xticks(range(90, 155, 5))
-ax1.set_yticks(range(90, 155, 5))
-ax2.set_yticks(range(-6, 7, 1))
-ax1.set_ylim([85, 155])
-ax2.set_ylim([-7, 7])
-fig.savefig("./PDF-File/The Error.pdf")
+plt.yticks(range(90, 155, 5))
+
+par1.set_yticks(range(-6, 7, 1))
+par1.set_ylim(-7, 7)
+par2.set_yticks(range(70, 102, 2))
+par2.set_ylim(70, 100)
+
+host.set_xlabel(r'Target Angle [$^{\circ}$]')
+host.set_ylabel(r'Reached Angle [$^{\circ}$]')
+par1.set_ylabel(r'Error Angle [$^{\circ}$]')
+par2.set_ylabel(r'Saved Energy [%]')
+host.legend()
+host.grid()
+
+plt.savefig("./PDF-File/The Error.pdf")
 plt.show()

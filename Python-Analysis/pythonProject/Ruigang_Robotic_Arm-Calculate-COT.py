@@ -7,10 +7,10 @@ print("start angle is: %.2f degrees" % (theta_start * 180 / np.pi))
 theta_acc = 10 * np.pi / 180  # The acceleration angle
 print("acceleration angle is: %f degrees" % (theta_acc * 180 / np.pi))
 
-theta_dec = 20.17 * np.pi / 180  # The deceleration angle
+theta_dec = 17.76 * np.pi / 180  # The deceleration angle
 print("deceleration angle is: %f degrees" % (theta_dec * 180 / np.pi))
 
-theta_goal = 90 * np.pi / 180
+theta_goal = 110 * np.pi / 180
 print("goal angle is: %.2f degrees" % (theta_goal * 180 / np.pi))
 
 g = 9.8
