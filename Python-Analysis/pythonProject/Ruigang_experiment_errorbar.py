@@ -21,7 +21,6 @@ sixty_degree = [60.84, 60.66, 59.58, 60.3, 60.3, 62.46, 59.4]
 
 energy_saved = [95.53, 93.73, 91.96, 90.20, 88.46, 86.65, 84.85, 83.08, 81.23, 79.5, 77.69, 75.91, 74.06]
 
-
 y = np.array([np.mean(zero_degree), np.mean(five_degree), np.mean(ten_degree),
               np.mean(fifteen_degree), np.mean(twenty), np.mean(twentyfive_degree),
               np.mean(thirty_degree), np.mean(thirtyfive_degree), np.mean(forty),
