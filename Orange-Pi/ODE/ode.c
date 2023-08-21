@@ -11,9 +11,10 @@ struct timeval EndTime;
 double inertia = 0.000141407104;
 double stiffness1 = 0.0039422038081536;
 double stiffness2 = 0.00420014450656;
+double damp1 = 0.0000405;
+double damp2 = 0.00003780;
+double damp3 = 0.0001869;
 double angle0 = -1.5582299561805375;
-double torque_friction1 = 0.00012666271216345623;
-double torque_friction2 = 0.00048422543581007056;
 
 
 
@@ -32,19 +33,19 @@ double testingT_end()
 
 double EOM1(double x , double y[] , int j){
     if(j == 1)
-        return - (stiffness1 * (y[0] + angle0 * M_PI / 180) - torque_friction1) / inertia;
+        return - (stiffness1 * (y[0] + angle0 * M_PI / 180) - damp1 * y[1]) / inertia;
     return y[1] ;   
 }
 
 double EOM2(double x , double y[] , int j){
     if(j == 1)
-        return - torque_friction1 / inertia;
+        return - damp2 * y[1] / inertia;
     return y[1] ;  
 }
 
 double EOM3(double x , double y[] , int j){
     if(j == 1)
-        return - (stiffness2 * y[0] - torque_friction2) / inertia;
+        return - (stiffness2 * y[0] - damp3 * y[1]) / inertia;
     return y[1] ;  
 }
 
@@ -88,20 +89,20 @@ int main() {
     //     printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x1 , y1[0] * 180.0 / M_PI , y1[1]) ;
     // }
 
-    // printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , 0 , x2 , y2[0] * 180.0 / M_PI , y2[1]) ;
-    // for(int i = 0; i < 474; ++ i){
-    //     rungekutta(EOM2, x2 , y2 , h); 
-    //     x2 = x2 + h;
-    //     printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x2 , y2[0] * 180.0 / M_PI , y2[1]) ;
-    // }
+    printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , 0 , x2 , y2[0] * 180.0 / M_PI , y2[1]) ;
+    for(int i = 0; i < 474; ++ i){
+        rungekutta(EOM2, x2 , y2 , h); 
+        x2 = x2 + h;
+        printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x2 , y2[0] * 180.0 / M_PI , y2[1]) ;
+    }
 
     // printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , 0 , x3 , y3[0] * 180.0 / M_PI , y3[1]);
-    for(int i = 0; i < 196; ++ i){
-        rungekutta(EOM3, x3 , y3 , h); 
-        x3 = x3 + h;
-        // printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x3 , y3[0] * 180.0 / M_PI , y3[1]) ;
-    }
-    printf("The time used is: %.3lf ms\n",testingT_end());
+    // for(int i = 0; i < 196; ++ i){
+    //     rungekutta(EOM3, x3 , y3 , h); 
+    //     x3 = x3 + h;
+    //     printf("n = %d: x = %lf, y0 = %lf, y1 = %lf\n" , i + 1 , x3 , y3[0] * 180.0 / M_PI , y3[1]) ;
+    // }
 
+    printf("The time used is: %.3lf ms\n",testingT_end());
     return 0;
 }

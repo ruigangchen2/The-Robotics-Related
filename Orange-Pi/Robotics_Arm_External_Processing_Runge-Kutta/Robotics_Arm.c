@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
@@ -82,6 +83,23 @@ int state3_matrix[15000] = {0};
 int state4_matrix[15000] = {0};
 /******************************/
 
+/***** Estimation *****/
+double inertia = 0.001;
+double a_inertia = 0.000001;
+double b_inertia = 0.000424221312;
+double damp = 0.00003780;
+double h = 0.001;
+double x = 0.0;
+double y[2] = {0.0, 0.0};   //声明变量，y0,y1使用数组y[0],y[1]表示
+int max_estimation_matrix = 100;
+double experiment_angle_matrix[100] = {0.0};
+double experiment_velocity_matrix[100] = {0.0};
+double estimation_angle_matrix[100] = {0.0};
+double estimation_velocity_matrix[100] = {0.0};
+double estimation_error = 0.0;
+char estimation_initialize = 0;
+/******************************/
+
 struct pollfd fds[1];
 
 void testingT_durationT_start_Encoder()
@@ -117,6 +135,35 @@ void get_info()  //calculate the information of the encoder
     // pre_velocity = velocity;
 }
 
+void rungekutta(double(*function)(double x , double y[] , int j), double x ,  double *y , double h){
+    double ywork[2] , k0[2] , k1[2] , k2[2] , k3[2] ;
+    int j;
+    for(j = 0 ; j < 2 ; ++ j)
+        k0[j] = h * (*function)(x , y , j);   //计算k1
+    for(j = 0 ; j < 2 ; ++ j)
+        ywork[j] = y[j] + 0.5 * k0[j] ;    
+         //用数组ywork存储y的变化量
+    for(j = 0 ; j < 2 ; ++ j)
+        k1[j] = h * (*function)(x + 0.5 * h , ywork , j);//计算k2
+    for(j = 0 ; j < 2 ; ++ j)
+        ywork[j] = y[j] + 0.5 * k1[j] ;   
+         //将y的变化量存储到ywork中
+    for(j = 0 ; j < 2 ; ++ j)
+        k2[j] = h * (*function)(x + 0.5 * h , ywork , j);//计算k3
+    for(j = 0 ; j < 2 ; ++ j)
+        ywork[j] = y[j] + k2[j] ;   
+        //更新ywork数组，存储y的变化量
+    for(j = 0 ; j < 2 ; ++ j)
+        k3[j] = h * (*function)(x + h , ywork , j) ;   //计算k4
+    for(j = 0 ; j < 2 ; ++ j)
+        y[j] = y[j] + (k0[j] + 2 * k1[j] + 2 * k2[j] + k3[j]) / 6;     //计算y0和y1，用j循环先求y0，再求y1
+}
+
+double EOM(double x , double y[] , int j){
+    if(j == 1)
+        return - damp * y[1] / inertia;
+    return y[1] ;  
+}
 
 void testingT_start()
 {
@@ -130,7 +177,6 @@ double testingT_end()
     TimeUse /= 1000;  //the result is in the ms dimension
     return TimeUse;
 }
-
 
 static volatile int file_state = 1;
 
@@ -242,7 +288,41 @@ void *create(void)
                         digitalWrite(electromagnet_1,1);
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
-                    
+                        
+                        if(motion > -50 && State0 == 1){ // for the estimation
+                            if(max_estimation_matrix != 0){
+                                experiment_angle_matrix[100 - max_estimation_matrix] = motion;
+                                experiment_velocity_matrix[100 - max_estimation_matrix] = velocity;
+                                max_estimation_matrix--;
+                            }
+                        }
+                        
+                        if(max_estimation_matrix == 0){
+                            if(estimation_initialize == 0){
+                                x = time_matrix[matrix_number];
+                                y[0] = motion_matrix[matrix_number];
+                                y[1] = velocity_matrix[matrix_number];
+                                estimation_initialize = 1;
+                            }
+
+                            if(estimation_error > 0.0005){
+                                inertia = (a_inertia + b_inertia) / 2;
+                                for(int i = 0; i < 100; ++ i){
+                                    rungekutta(EOM, x , y , h); 
+                                    x = x + h;
+                                    estimation_angle_matrix[i] = y[0] * 180.0 / M_PI;
+                                    estimation_velocity_matrix[i] = y[1] * 180.0 / M_PI;;
+                                }
+                                for(int j = 0; j < 100; j++){
+                                    estimation_error = estimation_error + (experiment_angle_matrix[j] - estimation_angle_matrix[j]);
+                                }
+                                if (estimation_error > 0)
+                                    a_inertia = inertia;
+                                else
+                                    b_inertia = inertia;
+                            }
+                        }
+
                         if(motion > 26.6 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
