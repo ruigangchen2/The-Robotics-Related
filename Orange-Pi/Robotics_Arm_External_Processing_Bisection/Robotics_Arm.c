@@ -16,11 +16,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "IIRLowPass.h"
 
 /*
 
 //compile the code
-gcc -o Robotics_Arm Robotics_Arm.c -lwiringPi -pthread -lcrypt -lm -lrt
+gcc -o Robotics_Arm Robotics_Arm.c IIRLowPass.c -lwiringPi -pthread -lcrypt -lm -lrt
 
 //run the program in the background
 nohup ./Robotics_Arm_Demo  & 
@@ -85,22 +86,26 @@ int state4_matrix[15000] = {0};
 /******************************/
 
 /***** bisection *****/
-float initial_inertia_1 = 1.0, initial_inertia_2 = 0.00001;
-float estitated_inertia = 0.0, estitated_inertia1 = 0.0;
-float err_angle = 0.0, err_t = 0.0, cur_velocity = 0.0;
-float allerr = 0.0003;
+double initial_inertia_1 = 1.0, initial_inertia_2 = 0.000001, estitated_inertia = 0.0;
+double err_angle = 0.0, cur_velocity = 0.0, t_velocity = 0.0, ave_velocity = 0.0;
+double err = 0.0, err_dest = 0.00001;
+int index = 167;
 int itr = 0;
-int maxmitr = 15;
-char bisection_state = 0;
+int maxmitr = 50;
 /******************************/
 
-float fun(float err_t, float err_angle, float cur_velocity, float rotation_inertia)
+/***** Filter *****/
+double a[9] = {1.0, -7.1949243584232745, 22.68506299943664, -40.93508346568443, 46.23642584093399, -33.471920313990374, 15.165671058595017, -3.9317654914649003, 0.44653398238846237};
+double b[9] = {9.835591130971311e-10, 7.868472904777049e-09, 2.753965516671967e-08, 5.507931033343934e-08, 6.884913791679918e-08, 5.507931033343934e-08, 2.753965516671967e-08, 7.868472904777049e-09, 9.835591130971311e-10};
+/******************************/
+
+double fun(double cur_velocity, double t_velocity, double ave_velocity, double rotation_inertia)
 {
-    float damp = 0.0000378;
-    return err_angle - (cur_velocity * err_t + ((damp * cur_velocity / 2 /rotation_inertia) * err_t * err_t));
+    double damp = 0.000037;
+    return (cur_velocity * cur_velocity - t_velocity * t_velocity) / (2 * damp * ave_velocity / rotation_inertia);
 }
 
-void bisection (float *x, float a, float b, int *itr)
+void bisection (double *x, double a, double b, int *itr)
 {
     *x=(a+b)/2;
     ++(*itr);
