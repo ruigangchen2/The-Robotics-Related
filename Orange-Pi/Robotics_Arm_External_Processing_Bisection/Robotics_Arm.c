@@ -54,13 +54,11 @@ echo falling > /sys/class/gpio/gpio92/edge
 /***** AB encoder variable *****/
 float pulse = 0;  //count the pulse of the encoder
 float motion = 0; 
+float velocity = 0; 
 char forward_direction = '+';
 char back_direction = '-';
 char current_direction = 0; 
 char direction_state = 0;
-float velocity = 0; 
-float pre_velocity = 0; 
-float pre_motion = 0; 
 char initialize_state = 0;
 /******************************/
 
@@ -72,7 +70,6 @@ struct timeval EndTime;
 double TimeDuration_Encoder=0;
 struct timeval StartTime_Encoder;
 struct timeval EndTime_Encoder;
-double error_time = 0;
 /******************************/
 
 /***** data matrix *****/
@@ -89,9 +86,12 @@ int state4_matrix[15000] = {0};
 double initial_inertia_1 = 1.0, initial_inertia_2 = 0.000001, estitated_inertia = 0.0;
 double err_angle = 0.0, cur_velocity = 0.0, t_velocity = 0.0, ave_velocity = 0.0;
 double err = 0.0, err_dest = 0.00001;
-int index = 167;
 int itr = 0;
-int maxmitr = 50;
+int maxmitr = 30;
+int max_matrix = 0;
+double angle[20] = {0.0};
+double velocity[20] = {0.0};
+
 /******************************/
 
 /***** Filter *****/
@@ -111,29 +111,37 @@ void bisection (double *x, double a, double b, int *itr)
     ++(*itr);
 }
 
+
 void suit_inertia()
 {
-    if (itr < maxmitr && bisection_state == 0){
-        err_angle = (motion - pre_motion) * M_PI / 180;
-        err_t = error_time;
-        cur_velocity = velocity;
+   int nRet = filtfilt(velocity, velocity_filtered, 20, a, b, 9);
+    bisection (&estitated_inertia, initial_inertia_1, initial_inertia_2, &itr);
+    do
+    {
+        err_angle = angle[18] - angle[0];
+        cur_velocity = velocity_filtered[1];
+        t_velocity = velocity_filtered[19];
+        ave_velocity = (cur_velocity + t_velocity) * 0.5;
 
-        if (fun(err_t, err_angle, cur_velocity, initial_inertia_1) * fun(err_t, err_angle, cur_velocity, estitated_inertia) < 0)
+        err = err_angle - fun(cur_velocity, t_velocity, ave_velocity, estitated_inertia);
+
+        if (err > 0)
             initial_inertia_2 = estitated_inertia;
         else
             initial_inertia_1 = estitated_inertia;
 
-        bisection (&estitated_inertia1, initial_inertia_1, initial_inertia_2, &itr);
-        if (fabs(estitated_inertia1 - estitated_inertia) < allerr)
+        bisection (&estitated_inertia, initial_inertia_1, initial_inertia_2, &itr);
+        
+        if (fabs(err) < err_dest)
         {
-            printf("After %d iterations, rotation inertia = %6.8f Kg·m²\n", itr, estitated_inertia1);
-            bisection_state = 1;
-        }   
-        estitated_inertia = estitated_inertia1;
+            printf("After %d iterations, rotation inertia = %6.10f Kg·m²\n", itr, estitated_inertia);
+            return 0;
+        }
     }
+    while (itr < maxmitr);
+    printf("The solution does not converge or iterations are not sufficient");
     
 }
-
 
 void testingT_durationT_start_Encoder()
 {
@@ -150,11 +158,8 @@ double testing_durationT_End_Encoder()
 
 void get_info()  //calculate the information of the encoder
 {
-    pre_velocity = velocity;
-    pre_motion = motion;
-    error_time = testing_durationT_End_Encoder();
     
-    velocity = pulse * 180 / (error_time); //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
+    velocity = pulse * 180 / (testing_durationT_End_Encoder()); //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
     if(initialize_state == 0){
         pulse = 0;
         initialize_state = 1;
@@ -213,7 +218,6 @@ void *create(void)
     }
     fds[0].fd=fd;
     fds[0].events=POLLPRI;
-
 
     testingT_start();
     
@@ -297,8 +301,15 @@ void *create(void)
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
 
-                        if(motion > -40 && motion < 0)
-                            suit_inertia();
+                        if(motion > -10 && motion < 0){
+                            if(max_matrix==20)
+                                suit_inertia();
+                            else{
+                                angle[max_matrix] = motion;
+                                velocity[max_matrix] = velocity;
+                                max_matrix++;
+                            }
+                        }
                         if(motion > 20 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
