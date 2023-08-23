@@ -6,11 +6,12 @@ from scipy.integrate import solve_ivp
 
 inertia = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
           + (5.5 * 0.001) * ((110 * 0.001) ** 2)  # 0.5 * M * R^2
-print(inertia)
+
 omega1 = 5.28
 omega2 = 5.45
 stiffness1 = inertia * (omega1 ** 2)  # I * w^2
 stiffness2 = inertia * (omega2 ** 2)
+
 damp1 = 0.0000405
 damp2 = 0.00003780
 damp3 = 0.0001869
@@ -26,13 +27,7 @@ velocity = np.array(data['Velocity'].ravel())[one:-5]*np.pi/180
 
 [b, a] = signal.butter(8, 0.05, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
 
-
-print(b)
-
-print(a)
-
 velocity_filtered = signal.filtfilt(b, a, velocity)
-
 
 time1 = time[:two]
 angle1 = angle[:two]

@@ -23,8 +23,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 1
-endline = -5
+startline = 389
+endline = -8
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -34,6 +34,7 @@ Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
 Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
+
 
 '''
 Get the friction
@@ -78,33 +79,68 @@ Get the friction
 # fig.savefig("./PDF-File/The Filtered.pdf")
 
 
+
+b, a = signal.butter(8, 0.2, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedData = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+
+# startline_filter = -725
+# endline_filter = -675
+# startline_filter = -675
+# endline_filter = -639
+# startline_filter = -639
+# endline_filter = -30
+startline_filter = -30
+endline_filter = -3
+
+# startline_filter = -639
+# endline_filter = -7
+
+time = time[startline_filter:endline_filter] - time[startline_filter]
+angle = angle[startline_filter:endline_filter]
+velocity = velocity[startline_filter:endline_filter]
+filtedData = filtedData[startline_filter:endline_filter]
+
+fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
+ax2 = ax1.twinx()
+ax1.plot(time, velocity, 'b--', label='Angular Velocity [rad/s]')
+ax2.plot(time, filtedData, 'r--', label='Filtered Angular Velocity [rad/s]')
+ax1.set_xlabel('Time [s]', fontweight='bold')
+ax1.set_ylabel('Angular Velocity [rad/s]', fontweight='bold')
+ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
+ax1.grid()
+fig.legend()
+ax1.set_ylim([-5, 5])
+ax2.set_ylim([-5, 5])
+fig.savefig("./PDF-File/The Filtered.pdf")
+
+
 '''
 Angular Displacement [angle] & Filtered Velocity [rad/s] & curve fit
 '''
 
-b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
-fig, ax1 = plt.subplots(figsize=(10, 6), dpi=100)
-
-order = 30
-z = np.polyfit(time, data_filter, order)
-p = np.poly1d(z)
-data_fit = p(time)
-print(z)
-
-ax2 = ax1.twinx()
-ax1.plot(time, angle, 'k--', label=r'$\theta_{exp}$')
-ax2.plot(time, velocity, 'g--', label=r'$\dot{\theta}_{exp}$')
-ax2.plot(time, data_filter, 'r--', label=r'$\dot{\theta}_{filter}$')
-ax2.plot(time, data_fit, 'b--', label=r'$\dot{\theta}_{fit}$')
-ax1.set_xlabel('Time [s]', fontweight='bold')
-ax1.set_ylabel(r'$\theta$ [$^\circ$]', fontweight='bold')
-ax2.set_ylabel(r'$\dot{\theta}$ [rad/s]', fontweight='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-100, 200])
-ax2.set_ylim([-10, 10])
-fig.savefig("./PDF-File/The Filtered.pdf")
+# b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+# data_filter = signal.filtfilt(b, a, velocity) # data为要过滤的信号
+# fig, ax1 = plt.subplots(figsize=(10, 6), dpi=100)
+#
+# order = 30
+# z = np.polyfit(time, data_filter, order)
+# p = np.poly1d(z)
+# data_fit = p(time)
+# print(z)
+#
+# ax2 = ax1.twinx()
+# ax1.plot(time, angle, 'k--', label=r'$\theta_{exp}$')
+# ax2.plot(time, velocity, 'g--', label=r'$\dot{\theta}_{exp}$')
+# ax2.plot(time, data_filter, 'r--', label=r'$\dot{\theta}_{filter}$')
+# ax2.plot(time, data_fit, 'b--', label=r'$\dot{\theta}_{fit}$')
+# ax1.set_xlabel('Time [s]', fontweight='bold')
+# ax1.set_ylabel(r'$\theta$ [$^\circ$]', fontweight='bold')
+# ax2.set_ylabel(r'$\dot{\theta}$ [rad/s]', fontweight='bold')
+# ax1.grid()
+# fig.legend()
+# ax1.set_ylim([-100, 200])
+# ax2.set_ylim([-10, 10])
+# fig.savefig("./PDF-File/The Filtered.pdf")
 
 '''
 Filtered Angular Displacement [angle] & Derivated Velocity [Python]
@@ -142,8 +178,8 @@ Angular Displacement [rad] & Filtered Velocity
 #
 # fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
 # ax2 = ax1.twinx()
-# ax1.plot(time, angle, 'k-+', label='Angular Displacement [rad]')
-# ax2.plot(time, filtedData, 'r-+', label='Filtered Angular Velocity [rad/s]')
+# ax1.plot(time, angle, 'b--', label='Angular Displacement [rad]')
+# ax2.plot(time, filtedData, 'r--', label='Filtered Angular Velocity [rad/s]')
 # ax1.set_xlabel('Time [s]', fontweight='bold')
 # ax1.set_ylabel('Angular Displacement [rad]', fontweight='bold')
 # ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')

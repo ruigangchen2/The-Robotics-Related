@@ -6,8 +6,11 @@ import math
 
 J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) \
     + (5.5 * 0.001) * ((110 * 0.001) ** 2)  # 0.5 * M * R^2
-w1 = 5.22
-w2 = 9.12
+
+# w1 = 5.22
+# w2 = 9.12
+w1 = 5.2
+w2 = 8.0
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 
@@ -30,7 +33,7 @@ Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
 startline = 389
-endline = -5
+endline = -8
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -40,15 +43,56 @@ Electromagnet_1_Clutch = Electromagnet_1_Clutch[startline:endline]
 Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
+
+b, a = signal.butter(8, 0.2, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedangle = signal.filtfilt(b, a, angle)  # data为要过滤的信号
+
+b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+startline_filter0 = -725
+endline_filter0 = -675
+time0 = time[startline_filter0:endline_filter0] - time[startline_filter0]
+angle0 = filtedangle[startline_filter0:endline_filter0]
+velocity0 = velocity[startline_filter0:endline_filter0]
+filtedData0 = filtedvelocity[startline_filter0:endline_filter0]
+
+b, a = signal.butter(8, 0.06, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+startline_filter_1 = -675
+endline_filter_1 = -639
+time1 = time[startline_filter_1:endline_filter_1] - time[startline_filter0]
+angle1 = filtedangle[startline_filter_1:endline_filter_1]
+velocity1 = velocity[startline_filter_1:endline_filter_1]
+filtedData1 = filtedvelocity[startline_filter_1:endline_filter_1]
+
+b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+startline_filter_2 = -639
+endline_filter_2 = -30
+time2 = time[startline_filter_2:endline_filter_2] - time[startline_filter0]
+angle2 = filtedangle[startline_filter_2:endline_filter_2]
+velocity2 = velocity[startline_filter_2:endline_filter_2]
+filtedData2 = filtedvelocity[startline_filter_2:endline_filter_2]
+
+b, a = signal.butter(8, 0.4, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+startline_filter_3 = -30
+endline_filter_3 = -3
+time3 = time[startline_filter_3:endline_filter_3] - time[startline_filter0]
+angle3 = filtedangle[startline_filter_3:endline_filter_3]
+velocity3 = velocity[startline_filter_3:endline_filter_3]
+filtedData3 = filtedvelocity[startline_filter_3:endline_filter_3]
+
+time = np.concatenate((time0, time1, time2, time3), axis=0)
+angle = np.concatenate((angle0, angle1, angle2, angle3), axis=0)
+velocity = np.concatenate((velocity0, velocity1, velocity2, velocity3), axis=0)
+filted_velocity = np.concatenate((filtedData0, filtedData1, filtedData2, filtedData3), axis=0)
+
 Upper_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
 Lower_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
 Total_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
 Kinetic_Energy_Matrix = [0 for i in range(len(angle))]
 Total_Energy_Matrix = [0 for i in range(len(angle))]
-
-
-b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-filted_velocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
 
 
 def upper_elastic_energy(current_angle):
@@ -89,27 +133,17 @@ for i in range(len(angle)):
     Total_Energy_Matrix[i] = Upper_Elastic_Energy_Matrix[i] + Lower_Elastic_Energy_Matrix[i] + Kinetic_Energy_Matrix[i]
 
 
-fig = plt.figure(figsize=(9, 6))
-ax = plt.subplot(211)
-ax.plot(time, Kinetic_Energy_Matrix, 'c--', label=r'$E_{k}$')
-ax.plot(time, Upper_Elastic_Energy_Matrix, 'm-.', label=r'$E_{p1}$')
-ax.plot(time, Lower_Elastic_Energy_Matrix, 'k-.', label=r'$E_{p2}$')
-ax.plot(time, Total_Elastic_Energy_Matrix, 'g-.', label=r'$E_{pT}$')
-ax.plot(time, Total_Energy_Matrix, 'y-', label=r'$ E$')
-ax.set_ylabel('Energy [J]')
-# ax.set_ylim([-0.001, 0.004])
-
-ax1 = plt.subplot(212)
-ax2 = ax1.twinx()
-ax1.plot(time, angle * 180 / np.pi, 'r-', label=r'$\theta_{exp.}$')
-ax2.plot(time, filted_velocity, 'b-', label=r'$\dot{\theta}_{exp.}$')
-ax1.set_xlabel('Time [s]')
-ax1.set_ylabel(r'$\theta$ [$^\circ$]')
-ax2.set_ylabel(r'$\dot{\theta}$ [rad/s]')
-ax1.set_ylim([-100, 100])
-ax2.set_ylim([-5, 5])
-fig.legend(loc=(14.5/16, 5.4/9))
-
-plt.savefig('./PDF-File/energy.pdf')
-
+fig = plt.figure(figsize=(5, 3))
+# fig = plt.figure(figsize=(10, 8))
+plt.plot(time, np.array(Kinetic_Energy_Matrix)*1000, 'b-', label=r'$E_{kinetic}$')
+plt.plot(time, np.array(Upper_Elastic_Energy_Matrix)*1000, 'r--', label=r'$E_{upper}$')
+plt.plot(time, np.array(Lower_Elastic_Energy_Matrix)*1000, 'r-.', label=r'$E_{lower}$')
+plt.plot(time, np.array(Total_Energy_Matrix)*1000, 'k', label=r'$E_{total}$')
+plt.xlabel('Time [s]')
+plt.ylabel('Energy [mJ]')
+plt.ylim([-0.2, 3.1])
+# plt.xticks(np.arange(0, 1, 0.1))
+plt.legend(loc=(0.4, 0.23))
+plt.tight_layout()
+plt.savefig('temp.pdf')
 plt.show()

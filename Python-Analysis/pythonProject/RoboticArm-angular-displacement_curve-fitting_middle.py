@@ -28,6 +28,8 @@ def damped_oscillation(t, a, c):
 A, B = curve_fit(damped_oscillation, time, angle, maxfev = 50000)[0]
 fitted_angle = velocity[0] * time + 0.5 * A * time * time + B
 
+print("The acceleration is: %.8f" % A)
+print("The beta is: %.8f" % B)
 damp = A * inertia / np.mean(velocity)
 print("The damp is: %.8f" % damp)
 
