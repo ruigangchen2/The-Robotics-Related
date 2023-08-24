@@ -1,0 +1,66 @@
+J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2) = 0.000141407104
+
+Iteration No.  1, rotation inertia = 0.5000005000 Kg·m²
+Iteration No.  2, rotation inertia = 0.5000005000 Kg·m²
+Iteration No.  3, rotation inertia = 0.2500007500 Kg·m²
+Iteration No.  4, rotation inertia = 0.1250008750 Kg·m²
+Iteration No.  5, rotation inertia = 0.0625009375 Kg·m²
+Iteration No.  6, rotation inertia = 0.0312509687 Kg·m²
+Iteration No.  7, rotation inertia = 0.0156259844 Kg·m²
+Iteration No.  8, rotation inertia = 0.0078134922 Kg·m²
+Iteration No.  9, rotation inertia = 0.0039072461 Kg·m²
+Iteration No. 10, rotation inertia = 0.0019541230 Kg·m²
+Iteration No. 11, rotation inertia = 0.0009775615 Kg·m²
+Iteration No. 12, rotation inertia = 0.0004892808 Kg·m²
+Iteration No. 13, rotation inertia = 0.0002451404 Kg·m²
+Iteration No. 14, rotation inertia = 0.0001230702 Kg·m²
+Iteration No. 15, rotation inertia = 0.0001841053 Kg·m²
+Iteration No. 16, rotation inertia = 0.0001535877 Kg·m²
+Iteration No. 17, rotation inertia = 0.0001383290 Kg·m²
+Iteration No. 18, rotation inertia = 0.0001459584 Kg·m²
+Iteration No. 19, rotation inertia = 0.0001421437 Kg·m²
+Iteration No. 20, rotation inertia = 0.0001402363 Kg·m²
+Iteration No. 21, rotation inertia = 0.0001411900 Kg·m²
+Iteration No. 22, rotation inertia = 0.0001416668 Kg·m²
+Iteration No. 23, rotation inertia = 0.0001414284 Kg·m²
+Iteration No. 24, rotation inertia = 0.0001415476 Kg·m²
+Iteration No. 25, rotation inertia = 0.0001416072 Kg·m²
+Iteration No. 26, rotation inertia = 0.0001416370 Kg·m²
+Iteration No. 27, rotation inertia = 0.0001416221 Kg·m²
+Iteration No. 28, rotation inertia = 0.0001416296 Kg·m²
+Iteration No. 29, rotation inertia = 0.0001416333 Kg·m²
+Iteration No. 30, rotation inertia = 0.0001416352 Kg·m²
+
+
+J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2) + (18.9 * 0.001) * ((88.6 * 0.001) ** 2) = 0.000289771348
+
+Iteration No.  1, rotation inertia = 0.5000005000 Kg·m²
+Iteration No.  2, rotation inertia = 0.5000005000 Kg·m²
+Iteration No.  3, rotation inertia = 0.2500007500 Kg·m²
+Iteration No.  4, rotation inertia = 0.1250008750 Kg·m²
+Iteration No.  5, rotation inertia = 0.0625009375 Kg·m²
+Iteration No.  6, rotation inertia = 0.0312509687 Kg·m²
+Iteration No.  7, rotation inertia = 0.0156259844 Kg·m²
+Iteration No.  8, rotation inertia = 0.0078134922 Kg·m²
+Iteration No.  9, rotation inertia = 0.0039072461 Kg·m²
+Iteration No. 10, rotation inertia = 0.0019541230 Kg·m²
+Iteration No. 11, rotation inertia = 0.0009775615 Kg·m²
+Iteration No. 12, rotation inertia = 0.0004892808 Kg·m²
+Iteration No. 13, rotation inertia = 0.0002451404 Kg·m²
+Iteration No. 14, rotation inertia = 0.0003672106 Kg·m²
+Iteration No. 15, rotation inertia = 0.0003061755 Kg·m²
+Iteration No. 16, rotation inertia = 0.0002756579 Kg·m²
+Iteration No. 17, rotation inertia = 0.0002909167 Kg·m²
+Iteration No. 18, rotation inertia = 0.0002985461 Kg·m²
+Iteration No. 19, rotation inertia = 0.0002947314 Kg·m²
+Iteration No. 20, rotation inertia = 0.0002966387 Kg·m²
+Iteration No. 21, rotation inertia = 0.0002956851 Kg·m²
+Iteration No. 22, rotation inertia = 0.0002952082 Kg·m²
+Iteration No. 23, rotation inertia = 0.0002954467 Kg·m²
+Iteration No. 24, rotation inertia = 0.0002955659 Kg·m²
+Iteration No. 25, rotation inertia = 0.0002956255 Kg·m²
+Iteration No. 26, rotation inertia = 0.0002955957 Kg·m²
+Iteration No. 27, rotation inertia = 0.0002955808 Kg·m²
+Iteration No. 28, rotation inertia = 0.0002955882 Kg·m²
+Iteration No. 29, rotation inertia = 0.0002955919 Kg·m²
+Iteration No. 30, rotation inertia = 0.0002955901 Kg·m²

@@ -89,6 +89,8 @@ angle = np.concatenate((angle0, angle1, angle2, angle3), axis=0)
 velocity = np.concatenate((velocity0, velocity1, velocity2, velocity3), axis=0)
 filted_velocity = np.concatenate((filtedData0, filtedData1, filtedData2, filtedData3), axis=0)
 
+
+
 Upper_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
 Lower_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
 Total_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
