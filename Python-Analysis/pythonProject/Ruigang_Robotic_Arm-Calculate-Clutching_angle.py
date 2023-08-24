@@ -1,11 +1,12 @@
 import numpy as np
 
-J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
-          + (5.5 * 0.001) * ((110 * 0.001) ** 2)
+# J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
+#           + (5.5 * 0.001) * ((110 * 0.001) ** 2)
+J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2) + (18.9 * 0.001) * ((88.6 * 0.001) ** 2)
 print("rotation inertia is: %f Kg·m²" % J)
 
 w1 = 5.22
-w2 = 9.12
+w2 = 7.8
 print("omega1 is: %f rad/s" % w1)
 print("omega2 is: %f rad/s" % w2)
 
@@ -17,7 +18,7 @@ print("stiffness2 is: %f N/m" % k2)
 theta_start = 70 * np.pi / 180
 print("start angle is: %.2f degrees" % (theta_start * 180 / np.pi))
 
-theta_goal = -20
+theta_goal = 60
 theta_goal = (theta_goal + 90) * np.pi / 180
 print("goal angle is: %.2f degrees" % (theta_goal * 180 / np.pi))
 
