@@ -85,19 +85,58 @@ int state4_matrix[15000] = {0};
 /***** bisection *****/
 double initial_inertia_1 = 1.0, initial_inertia_2 = 0.000001, estitated_inertia = 0.0;
 double err_angle = 0.0, cur_velocity = 0.0, t_velocity = 0.0, ave_velocity = 0.0;
-double err = 0.0, err_dest = 0.00001;
+double err = 0.0, err_dest = 0.0001;
 int itr = 0;
 int maxmitr = 30;
 int max_matrix = 0;
-double angle[20] = {0.0};
-double velocity[20] = {0.0};
+int index = 200;
+double angle_bisection[300] = {0.0};
+double velocity_bisection[300] = {0.0};
+double velocity_filtered[300] = {0.0};
+char bisection_state = 0;
+/******************************/
 
+/***** Calculated Clutching Angle *****/
+double w1 = 3.36;
+double w2 = 2.26;
+double k1 = 0;
+double k2 = 0;
+double slope1 = 0.108;
+double slope2 = 0.182;
+double t1 = 0;
+double t2 = 0;
+double t3 = 0;
+double theta_start = 70 * M_PI / 180;
+double theta_goal = 150 * M_PI / 180;
+double theta_acc = 10 * M_PI / 180;
+double clutching_angle = 0;
 /******************************/
 
 /***** Filter *****/
 double a[9] = {1.0, -7.1949243584232745, 22.68506299943664, -40.93508346568443, 46.23642584093399, -33.471920313990374, 15.165671058595017, -3.9317654914649003, 0.44653398238846237};
 double b[9] = {9.835591130971311e-10, 7.868472904777049e-09, 2.753965516671967e-08, 5.507931033343934e-08, 6.884913791679918e-08, 5.507931033343934e-08, 2.753965516671967e-08, 7.868472904777049e-09, 9.835591130971311e-10};
 /******************************/
+
+double calculated_clutching_angle(double J)
+{
+    double theta_clutch = 0;
+    k1 = J * (w1 * w1);
+    k2 = J * (w2 * w2);
+    t1 = slope1 * M_PI * k1 / 2 / w1;
+    t3 = slope2 * M_PI * k2 / 2 / w2;
+    t2 = 0.962 * J;
+
+    theta_clutch = (- (t3 + t2 - k2 * theta_goal) / k2) - \
+                    sqrt((((0.5 * k1 * (2 * theta_start * theta_acc - (theta_acc * theta_acc)) \
+                    - t1 * theta_acc \
+                    + t3 * theta_goal \
+                    + t2 * theta_acc \
+                    - 0.5 * k2 * (theta_goal * theta_goal)) \
+                    / (0.5 * k2)) \
+                    + (((t3 + t2 - k2 * theta_goal) / k2) * ((t3 + t2 - k2 * theta_goal) / k2))));
+    return theta_clutch * 180 / M_PI - 90;
+}
+
 
 double fun(double cur_velocity, double t_velocity, double ave_velocity, double rotation_inertia)
 {
@@ -109,18 +148,19 @@ void bisection (double *x, double a, double b, int *itr)
 {
     *x=(a+b)/2;
     ++(*itr);
+    printf("Iteration No.%3d, rotation inertia = %6.10f Kg·m²\n", *itr, *x);
 }
 
 
-void suit_inertia()
+int suit_inertia()
 {
-   int nRet = filtfilt(velocity, velocity_filtered, 20, a, b, 9);
+   int nRet = filtfilt(velocity_bisection, velocity_filtered, 300, a, b, 9);
     bisection (&estitated_inertia, initial_inertia_1, initial_inertia_2, &itr);
     do
     {
-        err_angle = angle[18] - angle[0];
-        cur_velocity = velocity_filtered[1];
-        t_velocity = velocity_filtered[19];
+        err_angle = angle_bisection[index + 20] - angle_bisection[index];
+        cur_velocity = velocity_filtered[index + 1];
+        t_velocity = velocity_filtered[index + 21];
         ave_velocity = (cur_velocity + t_velocity) * 0.5;
 
         err = err_angle - fun(cur_velocity, t_velocity, ave_velocity, estitated_inertia);
@@ -134,13 +174,13 @@ void suit_inertia()
         
         if (fabs(err) < err_dest)
         {
+            clutching_angle = calculated_clutching_angle(estitated_inertia);
             printf("After %d iterations, rotation inertia = %6.10f Kg·m²\n", itr, estitated_inertia);
             return 0;
         }
     }
     while (itr < maxmitr);
     printf("The solution does not converge or iterations are not sufficient");
-    
 }
 
 void testingT_durationT_start_Encoder()
@@ -273,8 +313,8 @@ void *create(void)
                 get_info();
                 testingT_durationT_start_Encoder();
                 
-                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s\t", motion, velocity);   
-                fflush(stdout);  
+                // printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s\t", motion, velocity);   
+                // fflush(stdout);  
                 
                 //**********************************For user****************************************
                 if(file_state == 1){
@@ -290,8 +330,7 @@ void *create(void)
                         printf("\n\nMatrix number error!\n\n");
                         return (void *)-1;
                     }
-                
-                digitalWrite(electromagnet_1,1);
+            
                 #if 1
                     if(motion < -65)State0 = 1;
                 
@@ -301,16 +340,18 @@ void *create(void)
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
 
-                        if(motion > -10 && motion < 0){
-                            if(max_matrix==20)
+                        if(motion > -55 && motion < 0){
+                            if(max_matrix == 300 && bisection_state == 0){
                                 suit_inertia();
+                                bisection_state = 1;
+                            }   
                             else{
-                                angle[max_matrix] = motion;
-                                velocity[max_matrix] = velocity;
+                                angle_bisection[max_matrix] = motion;
+                                velocity_bisection[max_matrix] = velocity;
                                 max_matrix++;
                             }
                         }
-                        if(motion > 20 && State0 == 1){
+                        if(motion > clutching_angle && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
                         
@@ -329,6 +370,7 @@ void *create(void)
                                 Electromagnet_Clutch_2 = 0;
                                 State0 = 0;
                                 State1 = 1;
+                                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s\t", motion, velocity);   
                             }
                         }
                     }
@@ -344,7 +386,7 @@ void *create(void)
                 if(file_state == 0){
                     int j = matrix_number;
                     while(matrix_number--){
-                        fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d\n",  time_matrix[j - matrix_number],\
+                        fprintf(fp,"%.2f,%.2f,%.2f,%d,%d,%d,%d,%lf\n",  time_matrix[j - matrix_number],\
                                                                     motion_matrix[j - matrix_number],\
                                                                     velocity_matrix[j - matrix_number],\
                                                                     state1_matrix[j - matrix_number],\
@@ -390,7 +432,7 @@ int main(int argc, const char *argv[])
     digitalWrite(electromagnet_4,0);
 
     delay(500);
-    
+    // printf("%f",calculated_clutching_angle(0.000289771348));
 	pthread_t id1;
 	int value;
 

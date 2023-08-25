@@ -20,7 +20,7 @@
 /*
 
 //compile the code
-gcc -o Robotics_Arm Robotics_Arm.c -lwiringPi -pthread -lcrypt -lm -lrt
+gcc -o run Robotics_Arm.c -lwiringPi -pthread -lcrypt -lm -lrt
 
 //run the program in the background
 nohup ./Robotics_Arm_Demo  & 
@@ -73,13 +73,13 @@ struct timeval EndTime_Encoder;
 /******************************/
 
 /***** data matrix *****/
-float time_matrix[15000] = {0};
-float motion_matrix[15000] = {0};
-float velocity_matrix[15000] = {0};
-int state1_matrix[15000] = {0};
-int state2_matrix[15000] = {0};
-int state3_matrix[15000] = {0};
-int state4_matrix[15000] = {0};
+float time_matrix[30000] = {0};
+float motion_matrix[30000] = {0};
+float velocity_matrix[30000] = {0};
+int state1_matrix[30000] = {0};
+int state2_matrix[30000] = {0};
+int state3_matrix[30000] = {0};
+int state4_matrix[30000] = {0};
 /******************************/
 
 struct pollfd fds[1];
@@ -229,21 +229,23 @@ void *create(void)
                     state3_matrix[matrix_number] = Electromagnet_Clutch_3;
                     state4_matrix[matrix_number] = Electromagnet_Clutch_4;
                     ++matrix_number;
-                    if(matrix_number > 15000){
+                    if(matrix_number > 30000){
                         printf("\n\nMatrix number error!\n\n");
                         return (void *)-1;
                     }
-                
+
                 #if 1
-                    if(motion < -65)State0 = 1;
+                    if(motion < -50)State0 = 1;
                 
-                    if(motion > -60 && State0 == 1){
-                        digitalWrite(electromagnet_2,0);
+                    if(motion > 0 && State0 == 1){
+                        State1 = 1;
                         digitalWrite(electromagnet_1,1);
+                        digitalWrite(electromagnet_2,0);
+
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
                     
-                        if(motion > 26.6 && State0 == 1){
+                        if(motion > 10 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
                         
@@ -251,17 +253,7 @@ void *create(void)
                             Electromagnet_Clutch_3 = 1;
 
                             if(velocity < 5){
-                                digitalWrite(electromagnet_3,0);
-                                digitalWrite(electromagnet_4,1);
-                                digitalWrite(electromagnet_2,1);
-                                digitalWrite(electromagnet_1,1);
-                                
-                                Electromagnet_Clutch_3 = 0;
-                                Electromagnet_Clutch_4 = 1;
-                                Electromagnet_Clutch_1 = 1;
-                                Electromagnet_Clutch_2 = 0;
                                 State0 = 0;
-                                State1 = 1;
                             }
                         }
                     }
@@ -270,6 +262,16 @@ void *create(void)
                         digitalWrite(electromagnet_2,1);
                         Electromagnet_Clutch_1 = 0;
                         Electromagnet_Clutch_2 = 1;
+                    }
+                    else if(State1 == 1 && State0 == 0){
+                        digitalWrite(electromagnet_1,1);
+                        digitalWrite(electromagnet_2,0);
+                        digitalWrite(electromagnet_3,1);
+                        digitalWrite(electromagnet_4,1);
+                        Electromagnet_Clutch_1 = 1;
+                        Electromagnet_Clutch_2 = 0;
+                        Electromagnet_Clutch_3 = 1;
+                        Electromagnet_Clutch_4 = 1;                        
                     }
                 #endif
                 }
