@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./Repetitive_Experiment/150degrees_60.3degrees.xlsx")
+data = pd.read_excel("./vertical_free_vibration/vertical_freevibration1.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,8 +23,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 389
-endline = -8
+startline = 1
+endline = -5
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -77,41 +77,6 @@ Get the friction
 # fig.legend()
 # ax1.set_ylim([-100, 100])
 # fig.savefig("./PDF-File/The Filtered.pdf")
-
-
-
-b, a = signal.butter(8, 0.2, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-filtedData = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
-
-# startline_filter = -725
-# endline_filter = -675
-# startline_filter = -675
-# endline_filter = -639
-# startline_filter = -639
-# endline_filter = -30
-startline_filter = -30
-endline_filter = -3
-
-# startline_filter = -639
-# endline_filter = -7
-
-time = time[startline_filter:endline_filter] - time[startline_filter]
-angle = angle[startline_filter:endline_filter]
-velocity = velocity[startline_filter:endline_filter]
-filtedData = filtedData[startline_filter:endline_filter]
-
-fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax2 = ax1.twinx()
-ax1.plot(time, velocity, 'b--', label='Angular Velocity [rad/s]')
-ax2.plot(time, filtedData, 'r--', label='Filtered Angular Velocity [rad/s]')
-ax1.set_xlabel('Time [s]', fontweight='bold')
-ax1.set_ylabel('Angular Velocity [rad/s]', fontweight='bold')
-ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
-ax1.grid()
-fig.legend()
-ax1.set_ylim([-5, 5])
-ax2.set_ylim([-5, 5])
-fig.savefig("./PDF-File/The Filtered.pdf")
 
 
 '''
@@ -167,7 +132,7 @@ Filtered Angular Displacement [angle] & Derivated Velocity [Python]
 '''
 Angular Displacement [rad] & Filtered Velocity  
 '''
-# b, a = signal.butter(8, 0.08, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+# b, a = signal.butter(8, 0.3, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
 # filtedData = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
 #
 # startline_filter = 1
@@ -192,20 +157,24 @@ Angular Displacement [rad] & Filtered Velocity
 '''
 Angular Displacement [angle] & Filtered Velocity 
 '''
-# b, a = signal.butter(8, 0.05, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
-# filtedData = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
-# fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-# ax2 = ax1.twinx()
-# ax1.plot(time, angle, 'k-+', label='Angular Displacement [angle]')
-# ax2.plot(time, filtedData, 'r-+', label='Filtered Angular Velocity [rad/s]')
-# ax1.set_xlabel('Time [s]', fontweight='bold')
-# ax1.set_ylabel('Angular Displacement [angle]', fontweight='bold')
-# ax2.set_ylabel('Filtered Angular Velocity [rad/s]', fontweight='bold')
-# ax1.grid()
-# fig.legend()
-# ax1.set_ylim([-100, 100])
-# ax2.set_ylim([-10, 10])
-# fig.savefig("./PDF-File/The Filtered.pdf")
+b, a = signal.butter(8, 0.05, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+filtedData = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
+
+plt.subplots(figsize=(8, 4), dpi=200)
+plt.subplot(211)
+plt.plot(time, angle, 'b-')
+plt.ylabel(r'$\theta$ [$^\circ$]')
+plt.grid()
+
+plt.subplot(212)
+plt.plot(time, filtedData, 'r-')
+plt.xlabel('Time [s]')
+plt.ylabel(r'$\dot{\theta}$ [rad/s]')
+
+plt.grid()
+plt.ylim([-80, 80])
+plt.ylim([-10, 10])
+plt.savefig("./PDF-File/The Filtered.pdf")
 
 
 '''
