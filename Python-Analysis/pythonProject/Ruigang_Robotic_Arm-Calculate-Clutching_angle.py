@@ -40,4 +40,5 @@ theta_clutch = (- (t3 + t2 - k2 * theta_goal) / k2) - \
                  / (0.5 * k2)) \
                  + (((t3 + t2 - k2 * theta_goal) / k2) ** 2))
                 ** 0.5)
+
 print("clutching theta is: %.2f degrees" % (theta_clutch * 180 / np.pi - 90))

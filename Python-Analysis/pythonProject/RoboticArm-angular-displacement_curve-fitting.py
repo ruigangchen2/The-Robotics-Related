@@ -11,7 +11,7 @@ inertia = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
 def damped_oscillation(t, a, lambda1, omega1, phi1, c1):
     return a * np.exp((-1) * lambda1 * t) * np.sin(omega1 * t + phi1) + c1
 
-data = pd.read_excel("./vertical_free_vibration/vertical_freevibration1.xlsx")
+data = pd.read_excel("./hairspring_flywheel/45degree.xlsx")
 
 angle = (np.array(list(data.iloc[0:, 1]))) * math.pi / 180
 velocity = np.array(list(data.iloc[0:, 2])) * math.pi / 180

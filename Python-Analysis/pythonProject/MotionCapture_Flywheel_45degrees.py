@@ -5,12 +5,13 @@ from sympy import *
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
+inertia = 0.5 * (30.5 * 0.001) * ((6.7 * 0.01) ** 2) * (1 - 2 / 3 * np.sin(np.pi / 8))
 
 def damped_oscillation(t, a, lambda1, omega1, phi1, c1):
     return a * np.exp((-1) * lambda1 * t) * np.sin(omega1 * t + phi1) + c1
 
 
-data = pd.read_excel("./hairspring_flywheel/45degree.xlsx")
+data = pd.read_excel("./hairspring_flywheel/135degree.xlsx")
 
 Angle = np.array(list(data.iloc[4:, 4]))
 Angle = np.around(Angle, 4)
@@ -19,10 +20,13 @@ time = np.array(list(data.iloc[4:, 0]))
 startline = 1200
 endline = 1600
 
+
+startline = 1200
+endline = None
+
 time = time[startline:endline] - time[startline]
 Angle = Angle[startline:endline]
 time = time * 0.01
-
 
 A, B, C, D, E = curve_fit(damped_oscillation, time, Angle)[0]
 print("The parameters of previous torsion spring:",
@@ -33,12 +37,16 @@ omega = Symbol('omega')
 solved_value = solve([zeta * omega - B, omega * ((1 - (zeta*zeta))**0.5) - C],
                      [zeta, omega])
 print(solved_value)
+
 zeta = solved_value[0][0]
 omega = solved_value[0][1]
 frequency = omega / 2 / math.pi
+stiffness = inertia * (omega ** 2)
+
 print("Zeta is:%.5f" % zeta)
 print("Omega is:%.5f" % omega)
-print("Frequency is:%.5f" % frequency)
+print("Frequency is:%.8f" % frequency)
+print("Stiffness is:%.8f" % stiffness)
 
 fig, ax1 = plt.subplots(figsize=(10, 8), dpi=100)
 ax1.plot(time, Angle, 'b-', label='Experiment')
@@ -51,7 +59,7 @@ plt.title(latex)
 ax1.grid()
 plt.legend()
 plt.subplots_adjust(bottom=0.15)
-fig.savefig('MotionCapture_Flywheel_45degrees.pdf')
+fig.savefig('./PDF-File/MotionCapture_Flywheel_45degrees.pdf')
 plt.show()
 
 Angle = np.array(list(data.iloc[4:, 4]))
@@ -69,7 +77,7 @@ fig, ax1 = plt.subplots(figsize=(10, 8), dpi=100)
 ax1.plot(time, Angle, 'b-', label='Experiment')
 ax1.set_xlabel('Time [s]')
 ax1.set_ylabel(r'$\theta$ [$\circ$]')
-plt.ylim(-50, 50)
+# plt.ylim(-50, 50)
 plt.annotate(r'$\angle %.2f^o$' % np.min(Angle[0:50]), xy=(0, np.min(Angle[0:50])), xytext=(+20, -10),
              textcoords='offset points', fontsize=12, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
 plt.annotate(r'$\angle %.2f^o$' % np.min(Angle[50:100]), xy=(0.96, np.min(Angle[50:100])), xytext=(+20, -10),
@@ -84,5 +92,5 @@ ax1.grid()
 plt.legend()
 plt.subplots_adjust(bottom=0.15)
 
-fig.savefig('MotionCapture_Flywheel_45degrees1.pdf')
+fig.savefig('./PDF-File/MotionCapture_Flywheel_45degrees1.pdf')
 plt.show()

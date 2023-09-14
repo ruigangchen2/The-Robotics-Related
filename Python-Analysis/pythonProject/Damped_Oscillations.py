@@ -11,6 +11,7 @@ def damped_oscillation(t, a, lambda1, omega1, phi1, c1):
 
 
 data = pd.read_excel("./vertical_free_vibration/vertical_freevibration1.xlsx")
+# data = pd.read_excel("./Upper-Torsion-Spring/experiment1.xlsx")
 
 angle = (np.array(list(data.iloc[0:, 1]))) * math.pi / 180
 velocity = np.array(list(data.iloc[0:, 2])) * math.pi / 180
@@ -19,6 +20,8 @@ time = np.array(list(data.iloc[0:, 0]))
 
 startline = 300
 endline = 6000
+# startline = 510
+# endline = 4000
 
 time = time[startline:endline] - time[startline]
 velocity = velocity[startline:endline]

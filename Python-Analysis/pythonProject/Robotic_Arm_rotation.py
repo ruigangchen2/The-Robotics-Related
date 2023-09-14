@@ -5,7 +5,7 @@ from scipy import signal
 import math
 
 
-data = pd.read_excel("./vertical_free_vibration/vertical_freevibration1.xlsx")
+data = pd.read_excel("./20230825/data.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -23,8 +23,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 1
-endline = -5
+startline = 312
+endline = -1
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -165,15 +165,15 @@ plt.subplot(211)
 plt.plot(time, angle, 'b-')
 plt.ylabel(r'$\theta$ [$^\circ$]')
 plt.grid()
+plt.ylim([-80, 80])
 
 plt.subplot(212)
 plt.plot(time, filtedData, 'r-')
 plt.xlabel('Time [s]')
 plt.ylabel(r'$\dot{\theta}$ [rad/s]')
-
 plt.grid()
-plt.ylim([-80, 80])
-plt.ylim([-10, 10])
+plt.ylim([-15, 15])
+
 plt.savefig("./PDF-File/The Filtered.pdf")
 
 

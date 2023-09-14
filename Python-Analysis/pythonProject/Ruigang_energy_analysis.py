@@ -7,7 +7,8 @@ import math
 # 0.5 * M * R^2
 # J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2) + (18.9 * 0.001) * ((88.6 * 0.001) ** 2)
 J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2)
-print(J)
+print("rotation inertia: %.8lf km*m^2" % J)
+
 # w1 = 5.22
 # w2 = 9.12
 w1 = 5.2
@@ -135,7 +136,8 @@ for i in range(len(angle)):
     Total_Elastic_Energy_Matrix[i] = Upper_Elastic_Energy_Matrix[i] + Lower_Elastic_Energy_Matrix[i]
     Total_Energy_Matrix[i] = Upper_Elastic_Energy_Matrix[i] + Lower_Elastic_Energy_Matrix[i] + Kinetic_Energy_Matrix[i]
 
-
+print("Totay Energy: %lf J" % Total_Energy_Matrix[0])
+print("Harvested Energy: %lf J" % Total_Energy_Matrix[-10])
 fig = plt.figure(figsize=(5, 3))
 # fig = plt.figure(figsize=(10, 8))
 plt.plot(time, np.array(Kinetic_Energy_Matrix)*1000, 'b-', label=r'$E_{kinetic}$')
