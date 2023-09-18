@@ -17,7 +17,6 @@ time2 = np.array(data2['Time'].ravel())[start_point2:end_point2]*0.001
 angle2 = np.array(data2['Degree'].ravel())[start_point2:end_point2]*np.pi/180
 velocity2 = np.array(data2['Velocity'].ravel())[start_point2:end_point2]*np.pi/180
 
-
 t1 = time1-time1[0]
 t2 = time2-time2[0]
 
@@ -25,7 +24,7 @@ plt.figure(figsize=(7, 5), dpi=100)
 ax = plt.subplot(211)
 plt.plot(t1, angle1 * 180 / np.pi, 'b', label="Larger Rotation Inertia")
 plt.plot(t2, angle2 * 180 / np.pi, 'r', label="Original")
-plt.plot(t1, 60*np.ones(np.size(angle1)), 'k--', label="Ground Truth")
+
 
 plt.subplot(212, sharex=ax)
 plt.plot(t1, velocity1, 'b--', label="Larger Rotation Inertia")
