@@ -18,7 +18,7 @@ angle2 = np.array(data2['Degree'].ravel())[start_point2:end_point2]*np.pi/180
 velocity2 = np.array(data2['Velocity'].ravel())[start_point2:end_point2]*np.pi/180
 
 data3 = pd.read_csv("./different_inertia_trails/trail3.csv")
-start_point3 = 390
+start_point3 =    390
 end_point3 = 1120
 time3 = np.array(data3['Time'].ravel())[start_point3:end_point3]*0.001
 angle3 = np.array(data3['Degree'].ravel())[start_point3:end_point3]*np.pi/180
