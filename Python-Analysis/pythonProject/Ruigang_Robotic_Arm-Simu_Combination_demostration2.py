@@ -17,13 +17,17 @@ damp2 = 0.00003780
 damp3 = 0.0001869
 
 data = pd.read_excel("./In_paper_data/150degrees.xlsx")
-one = 570
-two = 55
-three = 613
-four = 750
+
+one = 566
+two = 59
+three = 617
+four = 754
+
 time = np.array(data['Time'].ravel())[one:-15]*0.001
 angle = np.array(data['Degree'].ravel())[one:-15]*np.pi/180
 velocity = np.array(data['Velocity'].ravel())[one:-15]*np.pi/180
+print(time)
+time_append1 = np.array([11153.17, 11296.64, 11328.51, 11342.01, 11351.21]) * 0.001 - time[0]
 time = time - time[0]
 
 
@@ -47,6 +51,17 @@ clutch3 = np.array(data['Electromagnet_Clutch_3'].ravel())[one:-15]
 clutch4 = np.array(data['Electromagnet_Clutch_4'].ravel())[one:-15]
 
 
+angle_append1 = np.array([-90.72, -90.54, -90.36, -90.18, -90]) * np.pi/180
+velocity_append1 = np.array([-0.46, 1.25, 5.65, 13.33, 19.56]) * np.pi/180
+time = np.append(time_append1, time)
+angle = np.append(angle_append1, angle)
+velocity = np.append(velocity_append1, velocity)
+velocity_filtered = np.append(velocity_append1, velocity_filtered)
+
+clutch1 = np.append([0,0,0,0,0],clutch1)
+clutch2 = np.append([0,0,0,0,0],clutch2)
+clutch3 = np.append([0,0,0,0,0],clutch3)
+clutch4 = np.append([0,0,0,0,0],clutch4)
 
 
 def eom1(_t, y):

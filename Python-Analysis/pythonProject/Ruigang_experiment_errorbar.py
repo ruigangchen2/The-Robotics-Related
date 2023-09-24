@@ -30,7 +30,7 @@ std_dev = np.array([np.std(zero_degree), np.std(five_degree), np.std(ten_degree)
                     np.std(fifteen_degree), np.std(twenty), np.std(twentyfive_degree),
                     np.std(thirty_degree), np.std(thirtyfive_degree), np.std(forty),
                     np.std(fortyfive_degree), np.std(fifty_degree), np.std(fiftyfive_degree), np.std(sixty_degree)])
-
+print(np.std(sixty_degree))
 error = x - y
 
 fig, ax1 = plt.subplots(figsize=(8, 6), dpi=100)
