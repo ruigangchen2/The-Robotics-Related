@@ -5,8 +5,8 @@ import numpy as np
 J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2) + (18.9 * 0.001) * ((88.6 * 0.001) ** 2)
 print("rotation inertia is: %.8f Kg·m²" % J)
 
-w1 = 5.22
-w2 = 7.8
+w1 = 5.2
+w2 = 8.0
 print("omega1 is: %f rad/s" % w1)
 print("omega2 is: %f rad/s" % w2)
 
@@ -30,6 +30,10 @@ slope2 = 0.182
 t1 = slope1 * np.pi * k1 / 2 / w1
 t3 = slope2 * np.pi * k2 / 2 / w2
 t2 = 0.962 * J
+
+print("t1 is:%f" % t1)
+print("t2 is:%f" % t2)
+print("t3 is:%f" % t3)
 
 theta_clutch = (- (t3 + t2 - k2 * theta_goal) / k2) - \
                ((((0.5 * k1 * (2 * theta_start * theta_acc - (theta_acc ** 2)) \

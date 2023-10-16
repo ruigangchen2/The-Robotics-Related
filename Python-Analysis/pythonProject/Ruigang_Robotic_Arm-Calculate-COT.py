@@ -7,10 +7,10 @@ print("start angle is: %.2f degrees" % (theta_start * 180 / np.pi))
 theta_acc = 10 * np.pi / 180  # The acceleration angle
 print("acceleration angle is: %f degrees" % (theta_acc * 180 / np.pi))
 
-theta_dec =  20 * np.pi / 180  # The deceleration angle
+theta_dec =  20.37 * np.pi / 180  # The deceleration angle
 print("deceleration angle is: %f degrees" % (theta_dec * 180 / np.pi))
 
-theta_goal = 130 * np.pi / 180
+theta_goal = 150 * np.pi / 180
 print("goal angle is: %.2f degrees" % (theta_goal * 180 / np.pi))
 
 g = 9.8
@@ -46,6 +46,9 @@ print("The Energy_Saved is: %f %%" % Energy_Saved)
 
 COT = (energy_acc - energy_dec) / (J * g * theta_goal)
 print("The COT is: %f" % COT)
+
+COT = (energy_acc - energy_dec) / ((J * g)/(theta_goal*))
+print("The NEW COT is: %f" % COT)
 
 theta_dec_max = (energy_acc * 2 / k2) ** 0.5
 print("The max deceleration angle is: %f degrees" % (theta_dec_max * 180 / np.pi))
