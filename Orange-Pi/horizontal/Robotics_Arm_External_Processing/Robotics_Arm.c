@@ -216,8 +216,8 @@ void *create(void)
                 get_info();
                 testingT_durationT_start_Encoder();
 
-                // printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
-                // fflush(stdout);  
+                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
+                fflush(stdout);  
                 
                 //**********************************For user****************************************
                 if(file_state == 1){
@@ -234,9 +234,7 @@ void *create(void)
                         return (void *)-1;
                     }
                 
-                digitalWrite(electromagnet_1,1);
-                digitalWrite(electromagnet_4,1);
-                #if 0
+                #if 1
                     if(motion < -65)State0 = 1;
                 
                     if(motion > -60 && State0 == 1){
