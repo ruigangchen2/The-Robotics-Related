@@ -33,15 +33,11 @@ sudo cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq
 sudo cat /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq
-sudo cat /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_cur_freq
-sudo cat /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_cur_freq
-sudo cat /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_cur_freq
-sudo cat /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_cur_freq
 
 //initialize the pin
-echo 92 > /sys/class/gpio/export  # Encoder A Phase 
-echo in > /sys/class/gpio/gpio92/direction
-echo falling > /sys/class/gpio/gpio92/edge
+echo 71 > /sys/class/gpio/export  # Encoder A Phase 
+echo in > /sys/class/gpio/gpio71/direction
+echo falling > /sys/class/gpio/gpio71/edge
 */
 
 #define encoderB_pin 15
@@ -146,16 +142,16 @@ void intHandler(int i){
 
 void *create(void)
 {
-    cpu_set_t mask;
-    CPU_ZERO(&mask);
-    CPU_SET(7,&mask);
-    if (sched_setaffinity(0,sizeof(mask),&mask)<0){
-        printf("affinity set fail!");
-    }
+    // cpu_set_t mask;
+    // CPU_ZERO(&mask);
+    // CPU_SET(3,&mask);
+    // if (sched_setaffinity(0,sizeof(mask),&mask)<0){
+    //     printf("affinity set fail!");
+    // }
 
-    int fd = open("/sys/class/gpio/gpio92/value",O_RDONLY);
+    int fd = open("/sys/class/gpio/gpio71/value",O_RDONLY);
     if(fd<0){
-        perror("open '/sys/class/gpio/gpio92/value' failed!\n");  
+        perror("open '/sys/class/gpio/gpio71/value' failed!\n");  
         return (void *)-1;
     }
     fds[0].fd=fd;
@@ -233,7 +229,7 @@ void *create(void)
                         printf("\n\nMatrix number error!\n\n");
                         return (void *)-1;
                     }
-                
+
                 #if 1
                     if(motion < -65)State0 = 1;
                 
@@ -243,9 +239,9 @@ void *create(void)
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
                     
-                        if(motion > 39.08 && State0 == 1){
+                        if(motion > 30 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
-                            digitalWrite(electromagnet_3,1);
+                              digitalWrite(electromagnet_3,1);
                         
                             Electromagnet_Clutch_4 = 0;
                             Electromagnet_Clutch_3 = 1;
@@ -285,7 +281,7 @@ void *create(void)
                                                                     state3_matrix[j - matrix_number],\
                                                                     state4_matrix[j - matrix_number]);                        
                     }
-                    printf("\n\nSaved Over!!!\n\n");
+                    printf("\n\n>>>>>>>>>> Data has been saved Over!!! >>>>>>>>>>\n\n");
                     fclose(fp); 
                 }
 
@@ -300,6 +296,9 @@ void *create(void)
 
 int main(int argc, const char *argv[])
 {   
+    /*
+    设置为非阻塞
+    */
     int flag1, flag2;
     if(flag1=(fcntl(STDIN_FILENO, F_GETFL, 0)) < 0)
     {
