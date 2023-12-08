@@ -4,19 +4,19 @@ import pandas as pd
 from scipy import signal
 import math
 
-# 0.5 * M * R^2
-# J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2) + (18.9 * 0.001) * ((88.6 * 0.001) ** 2)
+
 J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2)
+J1 = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (50 * 0.001) * ((0.5 * ((8.9 * 0.001) ** 2)) + (108.8 * 0.001) ** 2)
 print("rotation inertia: %.8lf km*m^2" % J)
 
 # w1 = 5.22
 # w2 = 9.12
-w1 = 5.2
-w2 = 8.0
+w1 = 5.5
+w2 = 6.5
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 
-data = pd.read_excel("./Repetitive_Experiment/150degrees_60.3degrees.xlsx")
+data = pd.read_excel("./energy_analysis/robotic-arm-50g-weight.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -34,8 +34,8 @@ Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 Electromagnet_4_Clutch = np.around(Electromagnet_4_Clutch, 2)
 
 
-startline = 389
-endline = -8
+startline = 392
+endline = -1
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -51,57 +51,53 @@ filtedangle = signal.filtfilt(b, a, angle)  # data为要过滤的信号
 
 b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
 filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
-startline_filter0 = -725
-endline_filter0 = -675
+startline_filter0 = 0
+endline_filter0 = 58
 time0 = time[startline_filter0:endline_filter0] - time[startline_filter0]
 angle0 = filtedangle[startline_filter0:endline_filter0]
 velocity0 = velocity[startline_filter0:endline_filter0]
 filtedData0 = filtedvelocity[startline_filter0:endline_filter0]
 
-
-
-b, a = signal.butter(8, 0.06, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+b, a = signal.butter(8, 0.08, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
 filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
-startline_filter_1 = -675
-endline_filter_1 = -639
+startline_filter_1 = 58
+endline_filter_1 = 94
 time1 = time[startline_filter_1:endline_filter_1] - time[startline_filter0]
 angle1 = filtedangle[startline_filter_1:endline_filter_1]
 velocity1 = velocity[startline_filter_1:endline_filter_1]
 filtedData1 = filtedvelocity[startline_filter_1:endline_filter_1]
 
 
-b, a = signal.butter(8, 0.1, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
+b, a = signal.butter(8, 0.03, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
 filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
-startline_filter_2 = -639
-endline_filter_2 = -30
+startline_filter_2 = 94
+endline_filter_2 = 650
 time2 = time[startline_filter_2:endline_filter_2] - time[startline_filter0]
 angle2 = filtedangle[startline_filter_2:endline_filter_2]
 velocity2 = velocity[startline_filter_2:endline_filter_2]
 filtedData2 = filtedvelocity[startline_filter_2:endline_filter_2]
 
 
-
 b, a = signal.butter(8, 0.4, 'lowpass')  # 配置滤波器 8 表示滤波器的阶数
 filtedvelocity = signal.filtfilt(b, a, velocity)  # data为要过滤的信号
-startline_filter_3 = -30
-endline_filter_3 = -3
+startline_filter_3 = 650
+endline_filter_3 = -9
 time3 = time[startline_filter_3:endline_filter_3] - time[startline_filter0]
 angle3 = filtedangle[startline_filter_3:endline_filter_3]
 velocity3 = velocity[startline_filter_3:endline_filter_3]
 filtedData3 = filtedvelocity[startline_filter_3:endline_filter_3]
+
 
 time = np.concatenate((time0, time1, time2, time3), axis=0)
 angle = np.concatenate((angle0, angle1, angle2, angle3), axis=0)
 velocity = np.concatenate((velocity0, velocity1, velocity2, velocity3), axis=0)
 filted_velocity = np.concatenate((filtedData0, filtedData1, filtedData2, filtedData3), axis=0)
 
-
-
-Upper_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
-Lower_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
-Total_Elastic_Energy_Matrix = [0 for i in range(len(angle))]
-Kinetic_Energy_Matrix = [0 for i in range(len(angle))]
-Total_Energy_Matrix = [0 for i in range(len(angle))]
+Upper_Elastic_Energy_Matrix = np.zeros(len(angle))
+Lower_Elastic_Energy_Matrix = np.zeros(len(angle))
+Total_Elastic_Energy_Matrix = np.zeros(len(angle))
+Kinetic_Energy_Matrix = np.zeros(len(angle))
+Total_Energy_Matrix = np.zeros(len(angle))
 
 
 def upper_elastic_energy(current_angle):
@@ -113,7 +109,7 @@ def lower_elastic_energy(current_angle):
 
 
 def kinetic_energy(current_velocity):
-    return 0.5 * J * (current_velocity ** 2)
+    return 0.5 * J1 * (current_velocity ** 2)
 
 
 for i in range(len(angle)):
@@ -151,7 +147,7 @@ plt.plot(time, np.array(Lower_Elastic_Energy_Matrix)*1000, 'r-.', label=r'$E_{lo
 plt.plot(time, np.array(Total_Energy_Matrix)*1000, 'k', label=r'$E_{total}$')
 plt.xlabel('Time [s]')
 plt.ylabel('Energy [mJ]')
-plt.ylim([-0.2, 3.1])
+
 # plt.xticks(np.arange(0, 1, 0.1))
 plt.legend(loc=(0.4, 0.23))
 plt.tight_layout()
