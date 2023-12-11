@@ -23,7 +23,7 @@
 gcc -o Robotics_Arm Robotics_Arm.c -lwiringPi -pthread -lcrypt -lm -lrt
 
 //run the program in the background
-nohup ./Robotics_Arm_Demo  & 
+nohup ./Robotics_Arm  & 
 
 //check the thread's pid
 ps -T -p <pid> 
@@ -97,7 +97,6 @@ void get_info()  //calculate the information of the encoder
 {
 
     velocity = pulse * 180 / (testing_durationT_End_Encoder()); //   n / ((testing_durationT_End_Encoder / 1000) * 2000) * 360
-    // velocity = 0.8 * pre_velocity + 0.2 * velocity;
     if(initialize_state == 0){
         pulse = 0;
         initialize_state = 1;
@@ -110,7 +109,6 @@ void get_info()  //calculate the information of the encoder
         velocity = -velocity;
     }
     pulse = 0;    //set pulse to zero
-    // pre_velocity = velocity;
 }
 
 
