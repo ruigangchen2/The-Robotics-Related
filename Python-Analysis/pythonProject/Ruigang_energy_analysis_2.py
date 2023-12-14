@@ -109,7 +109,7 @@ plt.savefig('temp.pdf')
 
 fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
 ax2 = ax1.twinx()
-ax1.plot(time, angle * 180 / np.pi, 'b-', label='angle')
+ax1.plot(time[0:endpoint], angle[0:endpoint] * 180 / np.pi, 'b*', label='angle')
 ax1.plot(time_fitted, theta_fitted * 180 / np.pi, 'r-', label='angle')
 ax2.plot(time_fitted, dtheta_fitted ** 2, 'g-', label='velocity')
 ax1.set_xlabel('Time [s]')

@@ -20,10 +20,12 @@ J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2)\
           + (5.5 * 0.001) * ((110 * 0.001) ** 2)  # 0.5 * M * R^2
 print("rotation inertia is: %f Kg·m²" % J)
 
-w1 = 5.2
+# w1 = 5.2
+w1 = 5.5
 print("omega1 is: %f rad/s" % w1)
 
-w2 = 8.0
+# w2 = 8.0
+w2 = 6.5
 print("omega2 is: %f rad/s" % w2)
 
 k1 = J * (w1 ** 2)

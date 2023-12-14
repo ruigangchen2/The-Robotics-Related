@@ -1,29 +1,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy import signal
+import math
 
 
-J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((110 * 0.001) ** 2)
-J_load = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (50 * 0.001) * ((0.5 * ((8.9 * 0.001) ** 2)) + (108.8 * 0.001) ** 2)
+J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((0.5 * ((3 * 0.001) ** 2)) + (110 * 0.001) ** 2)
+
 print("rotation inertia: %.8lf km*m^2" % J)
 
 w1 = 5.2
-w2 = 6.5
+w2 = 8.0
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 
-data = pd.read_excel("/Users/cotychen/Downloads/20231208.xlsx")
+data = pd.read_excel("./Repetitive_Experiment/150degrees_60.3degrees.xlsx")
 time = np.array(data['Time'].ravel())
-angle = np.array(data['Degree'].ravel()) * np.pi / 180
+angle = np.array(data['Degree'].ravel()) * math.pi / 180
 Electromagnet_1_Clutch = np.array(data['Electromagnet_Clutch_1'].ravel())
 Electromagnet_2_Clutch = np.array(data['Electromagnet_Clutch_2'].ravel())
 Electromagnet_3_Clutch = np.array(data['Electromagnet_Clutch_3'].ravel())
 Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 
-startline = 392
-endline = -1
-
-
+startline = 390
+endline = -10
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -39,9 +39,8 @@ dot_p = np.polyder(p, 1)
 theta_fitted = p(time)
 dtheta_fitted = dot_p(time)
 
-
 startpoint = 0
-endpoint = -10
+endpoint = -5
 
 time_fitted = time[startpoint:endpoint]
 theta_fitted = theta_fitted[startpoint:endpoint]
@@ -54,6 +53,8 @@ Kinetic_Energy_Matrix = np.zeros(len(time_fitted))
 Total_Energy_Matrix = np.zeros(len(time_fitted))
 
 
+
+
 def upper_elastic_energy(current_angle):
     return 0.5 * k1 * (current_angle ** 2)
 
@@ -63,8 +64,7 @@ def lower_elastic_energy(current_angle):
 
 
 def kinetic_energy(current_velocity):
-    return 0.5 * J_load * (current_velocity ** 2)
-
+    return 0.5 * J * (current_velocity ** 2)
 
 for i in range(len(theta_fitted)):
     if Electromagnet_2_Clutch[i] == 1:
@@ -94,29 +94,28 @@ for i in range(len(theta_fitted)):
 print("Totay Energy: %lf J" % Total_Energy_Matrix[0])
 print("Harvested Energy: %lf J" % Total_Energy_Matrix[-10])
 
-fig = plt.figure(figsize=(5, 3))
+fig = plt.figure(figsize=(6, 4))
+ax1 = plt.subplot(2, 1, 1)
+ax2 = ax1.twinx()
+ax1.plot(time, angle * 180 / np.pi, 'b-*', label='angle')
+ax1.plot(time_fitted, theta_fitted * 180 / np.pi, 'r-', label='angle')
+ax2.plot(time_fitted, dtheta_fitted , 'g-', label='velocity')
+ax1.set_ylabel(r'$\theta$ [$^\circ$]')
+ax2.set_ylabel(r'$\dot{\theta}$ [rad/s]')
+ax2.set_ylim([-5,5])
+ax1.get_xaxis().set_visible(False)
+lines, labels = ax1.get_legend_handles_labels()
+lines_1, labels_1 = ax2.get_legend_handles_labels()
+ax2.legend(lines+lines_1,labels+labels_1)
+
+plt.subplot(2, 1, 2, sharex=ax1)
 plt.plot(time_fitted, np.array(Kinetic_Energy_Matrix)*1000, 'b-', label=r'$E_{kinetic}$')
 plt.plot(time_fitted, np.array(Upper_Elastic_Energy_Matrix)*1000, 'r--', label=r'$E_{upper}$')
 plt.plot(time_fitted, np.array(Lower_Elastic_Energy_Matrix)*1000, 'r-.', label=r'$E_{lower}$')
 plt.plot(time_fitted, np.array(Total_Energy_Matrix)*1000, 'k', label=r'$E_{total}$')
 plt.xlabel('Time [s]')
 plt.ylabel('Energy [mJ]')
-plt.legend(loc=(0.4, 0.23))
+plt.legend()
 plt.tight_layout()
 plt.savefig('temp.pdf')
-# plt.show()
-
-
-fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax2 = ax1.twinx()
-ax1.plot(time, angle * 180 / np.pi, 'b-', label='angle')
-ax1.plot(time_fitted, theta_fitted * 180 / np.pi, 'r-', label='angle')
-ax2.plot(time_fitted, dtheta_fitted , 'g-', label='velocity')
-ax1.set_xlabel('Time [s]')
-ax1.set_ylabel(r'$\theta$ [$^\circ$]')
-ax2.set_ylabel(r'$\dot{\theta}$ [rad/s]')
-ax2.set_ylim([-5,5])
-fig.legend()
 plt.show()
-
-

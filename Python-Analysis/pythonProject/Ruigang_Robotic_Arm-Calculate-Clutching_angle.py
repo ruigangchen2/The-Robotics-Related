@@ -6,8 +6,10 @@ J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (50 * 0.001) * ((0.5 * ((8
 # J = 1/3 * m1 * R^2 + m2 * (1/2 * r^2 + d^2)
 print("rotation inertia is: %.8f Kg·m²" % J)
 
-w1 = 5.2
-w2 = 8.0
+# w1 = 5.2
+# w2 = 8.0
+w1 = 5.5
+w2 = 6.5
 print("omega1 is: %f rad/s" % w1)
 print("omega2 is: %f rad/s" % w2)
 
