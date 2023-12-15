@@ -237,9 +237,9 @@ void *create(void)
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
                     
-                        if(motion > 30 && State0 == 1){
+                        if(motion > 40 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
-                              digitalWrite(electromagnet_3,1);
+                            digitalWrite(electromagnet_3,1);
                         
                             Electromagnet_Clutch_4 = 0;
                             Electromagnet_Clutch_3 = 1;
