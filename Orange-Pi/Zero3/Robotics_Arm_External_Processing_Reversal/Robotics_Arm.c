@@ -81,7 +81,7 @@ int state4_matrix[30000] = {0};
 /******** experiment ********/
 float start_angle = -60;
 float clutch_angle = 40;
-float re_clutch_angle = 68.7;
+float re_clutch_angle = -68.7;
 /******************************/
 
 struct pollfd fds[1];
@@ -178,9 +178,6 @@ void *create(void)
     char State0 = 0;
     char State1 = 0;
     char Reversal_State = 0;
-    char State0_Reversal = 0;
-    char State1_Reversal = 0;
-
 
     int matrix_number = 0;
     FILE *fp = fopen("./data.csv", "w+");
@@ -280,12 +277,42 @@ void *create(void)
                 }
                     
                 if(Reversal_State == 1){
+
+                    if(motion < clutch_angle){
+                        digitalWrite(electromagnet_4,0);
+                        digitalWrite(electromagnet_3,0);
+                        Electromagnet_Clutch_4 = 0;
+                        Electromagnet_Clutch_3 = 0;
+
+                        if(motion < re_clutch_angle){
+                            digitalWrite(electromagnet_1,0);
+                            digitalWrite(electromagnet_2,1);
+                            Electromagnet_Clutch_1 = 0;
+                            Electromagnet_Clutch_2 = 1;
+
+                            if(velocity < 5){
+                                digitalWrite(electromagnet_3,0);
+                                digitalWrite(electromagnet_4,0);
+                                digitalWrite(electromagnet_2,0);
+                                digitalWrite(electromagnet_1,1);
+                                
+                                Electromagnet_Clutch_3 = 0;
+                                Electromagnet_Clutch_4 = 1;
+                                Electromagnet_Clutch_1 = 1;
+                                Electromagnet_Clutch_2 = 0;
+  
+                            }
+                        }
+                    }
                     
+                    else if(motion > clutch_angle){
+                        digitalWrite(electromagnet_4,0);
+                        digitalWrite(electromagnet_3,1);
+                        Electromagnet_Clutch_4 = 0;
+                        Electromagnet_Clutch_3 = 1;
+                    }
+
                 }
-
-
-                    
-
                 #endif
                 }
 
