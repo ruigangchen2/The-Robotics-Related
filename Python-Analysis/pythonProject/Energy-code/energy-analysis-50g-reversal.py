@@ -12,7 +12,7 @@ w2 = 7.4
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 
-data = pd.read_excel("../Data/20231219/20231219.xlsx")
+data = pd.read_excel("../Data/back-and-forth-50g/20231220.xlsx")
 time = np.array(data['Time'].ravel())
 angle = np.array(data['Degree'].ravel()) * math.pi / 180
 Electromagnet_1_Clutch = np.array(data['Electromagnet_Clutch_1'].ravel())
@@ -20,8 +20,8 @@ Electromagnet_2_Clutch = np.array(data['Electromagnet_Clutch_2'].ravel())
 Electromagnet_3_Clutch = np.array(data['Electromagnet_Clutch_3'].ravel())
 Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 
-startline = 391
-endline = -40
+startline = 572
+endline = -20
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -31,7 +31,8 @@ Electromagnet_2_Clutch = Electromagnet_2_Clutch[startline:endline]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startline:endline]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startline:endline]
 
-z = np.polyfit(time, angle, 30)
+
+z = np.polyfit(time, angle, 100)
 p = np.poly1d(z)
 dot_p = np.polyder(p, 1)
 theta_fitted = p(time)
@@ -51,19 +52,21 @@ Total_Elastic_Energy_Matrix = np.zeros(len(time_fitted))
 Kinetic_Energy_Matrix = np.zeros(len(time_fitted))
 Total_Energy_Matrix = np.zeros(len(time_fitted))
 
-def upper_elastic_energy(angle):
-    return (0.5 * k1 * (angle ** 2))
+
+def upper_elastic_energy(_angle):
+    return 0.5 * k1 * (_angle ** 2)
 
 
-def lower_elastic_energy(angle):
-    return (0.5 * k2 * (angle ** 2))
+def lower_elastic_energy(_angle):
+    return 0.5 * k2 * (_angle ** 2)
 
 
-def kinetic_energy(velocity):
-    return (0.5 * J_load * (velocity ** 2))
+def kinetic_energy(_velocity):
+    return 0.5 * J_load * (_velocity ** 2)
 
 
 upper_stage = 0
+upper_matrix_number = 0
 for i in range(len(theta_fitted)):
     if Electromagnet_2_Clutch[i] == 1 and upper_stage == 0:
         Upper_Elastic_Energy_Matrix[i] = upper_elastic_energy(abs(theta_fitted[i]))
@@ -74,7 +77,7 @@ for i in range(len(theta_fitted)):
         Upper_Elastic_Energy_Matrix[i] = Upper_Elastic_Energy_Matrix[upper_matrix_number]
         upper_stage = 1
 
-
+lower_matrix_number = 0
 lower_Energy_Calculate_State = 0
 for i in range(len(theta_fitted)):
     if Electromagnet_3_Clutch[i] == 1:
@@ -88,6 +91,13 @@ for i in range(len(theta_fitted)):
 
 for i in range(len(theta_fitted)):
     Kinetic_Energy_Matrix[i] = kinetic_energy(abs(dtheta_fitted[i]))
+
+
+# modify
+Lower_Elastic_Energy_Matrix = np.append(Lower_Elastic_Energy_Matrix[:-5], [Lower_Elastic_Energy_Matrix[-5]]*5)
+Kinetic_Energy_Matrix = np.append(Kinetic_Energy_Matrix[:-5], [Kinetic_Energy_Matrix[-5]]*5)
+Upper_Elastic_Energy_Matrix = np.append(Upper_Elastic_Energy_Matrix[:-5], [Upper_Elastic_Energy_Matrix[-5]]*5)
+
 
 for i in range(len(theta_fitted)):
     Total_Elastic_Energy_Matrix[i] = Upper_Elastic_Energy_Matrix[i] + Lower_Elastic_Energy_Matrix[i]
