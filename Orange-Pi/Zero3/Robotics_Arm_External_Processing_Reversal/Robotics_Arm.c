@@ -82,13 +82,14 @@ int state4_matrix[30000] = {0};
 char State0 = 0;
 char State1 = 0;
 char Reversal_State = 0;
+char timer_State = 0;
+char lower_clutch_State = 0;
 float start_angle = -60;
 float clutch_angle = 40;
 float re_clutch_angle = -65;
 /******************************/
 
 struct pollfd fds[1];
-
 void testingT_durationT_start_Encoder()
 {
     gettimeofday(&StartTime_Encoder, NULL);  //measure the time of encoder use
@@ -147,17 +148,9 @@ void intHandler(int i){
     
 }
 
-
-
-void *create(void)
+void *external_interrupt_IRQ(void)
 {
-    // cpu_set_t mask;
-    // CPU_ZERO(&mask);
-    // CPU_SET(3,&mask);
-    // if (sched_setaffinity(0,sizeof(mask),&mask)<0){
-    //     printf("affinity set fail!");
-    // }
-
+    delay(100);
     int fd = open("/sys/class/gpio/gpio71/value",O_RDONLY);
     if(fd<0){
         perror("open '/sys/class/gpio/gpio71/value' failed!\n");  
@@ -219,7 +212,7 @@ void *create(void)
                 get_info();
                 testingT_durationT_start_Encoder();
 
-                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s", motion, velocity);   
+                printf("\rThe angle is: %.2f degrees, The velocity is: %.2f degrees/s    ", motion, velocity);   
                 fflush(stdout);  
                 
                 //**********************************For user****************************************
@@ -238,31 +231,43 @@ void *create(void)
                     }
 
                 #if 1
-                if(Reversal_State == 0){
+                if(Reversal_State == 0 && timer_State == 0){
                     if(motion < (start_angle - 5))State0 = 1;
 
                     if(motion > start_angle && State0 == 1){
-                        digitalWrite(electromagnet_2,0);
                         digitalWrite(electromagnet_1,1);
-                        Electromagnet_Clutch_2 = 0;
+                        digitalWrite(electromagnet_2,0);
+                        digitalWrite(electromagnet_3,0);  
+                        digitalWrite(electromagnet_4,1);
+                                   
                         Electromagnet_Clutch_1 = 1;
+                        Electromagnet_Clutch_2 = 0;
+                        Electromagnet_Clutch_3 = 0;
+                        Electromagnet_Clutch_4 = 1;
                     
                         if(motion > clutch_angle && State0 == 1){
+                            digitalWrite(electromagnet_1,1);
+                            digitalWrite(electromagnet_2,0);
+                            digitalWrite(electromagnet_3,1);  
                             digitalWrite(electromagnet_4,0);
-                            digitalWrite(electromagnet_3,1);
-                            Electromagnet_Clutch_4 = 0;
+                                    
+                            Electromagnet_Clutch_1 = 1;
+                            Electromagnet_Clutch_2 = 0;
                             Electromagnet_Clutch_3 = 1;
+                            Electromagnet_Clutch_4 = 0;
 
                             if(velocity < 5){
-                                
-                                digitalWrite(electromagnet_3,1);
-                                digitalWrite(electromagnet_4,1);
-                                digitalWrite(electromagnet_2,0);
+
                                 digitalWrite(electromagnet_1,1);
-                                Electromagnet_Clutch_3 = 1;
-                                Electromagnet_Clutch_4 = 1;
+                                digitalWrite(electromagnet_2,0);
+                                digitalWrite(electromagnet_3,1);  
+                                digitalWrite(electromagnet_4,1);
+                                        
                                 Electromagnet_Clutch_1 = 1;
                                 Electromagnet_Clutch_2 = 0;
+                                Electromagnet_Clutch_3 = 1;
+                                Electromagnet_Clutch_4 = 1;
+
                                 State0 = 0;
                                 State1 = 1;
                                 Reversal_State = 1;
@@ -272,39 +277,60 @@ void *create(void)
                     else if(State1 == 0){
                         digitalWrite(electromagnet_1,0);
                         digitalWrite(electromagnet_2,1);
+                        digitalWrite(electromagnet_3,0);  
+                        digitalWrite(electromagnet_4,1);
                         Electromagnet_Clutch_1 = 0;
                         Electromagnet_Clutch_2 = 1;
+                        Electromagnet_Clutch_3 = 0;
+                        Electromagnet_Clutch_4 = 1;
                     }
                 }
                     
-                if(Reversal_State == 1){
+                if(Reversal_State == 1 && timer_State == 1 && lower_clutch_State == 0){
 
-                    if(motion <= (clutch_angle + 2)){
+                    if(motion <= (clutch_angle)){
+                        digitalWrite(electromagnet_1,1);
+                        digitalWrite(electromagnet_2,0);
                         digitalWrite(electromagnet_3,0);
-                        digitalWrite(electromagnet_4,0);
+                        digitalWrite(electromagnet_4,1);
+                        Electromagnet_Clutch_1 = 1;
+                        Electromagnet_Clutch_2 = 0;  
                         Electromagnet_Clutch_3 = 0;
-                        Electromagnet_Clutch_4 = 0;
-                        
+                        Electromagnet_Clutch_4 = 1;
                         
                         if(motion < re_clutch_angle){
                             digitalWrite(electromagnet_1,0);
                             digitalWrite(electromagnet_2,1);
+                            digitalWrite(electromagnet_3,0);
+                            digitalWrite(electromagnet_4,1);
                             Electromagnet_Clutch_1 = 0;
-                            Electromagnet_Clutch_2 = 1;
+                            Electromagnet_Clutch_2 = 1;  
+                            Electromagnet_Clutch_3 = 0;
+                            Electromagnet_Clutch_4 = 1;
 
                             if(velocity > -5){
-                                digitalWrite(electromagnet_2,1);
                                 digitalWrite(electromagnet_1,1);
+                                digitalWrite(electromagnet_2,1);
+                                digitalWrite(electromagnet_3,0);
+                                digitalWrite(electromagnet_4,1);
                                 Electromagnet_Clutch_1 = 1;
                                 Electromagnet_Clutch_2 = 1;  
+                                Electromagnet_Clutch_3 = 0;
+                                Electromagnet_Clutch_4 = 1;
+                                lower_clutch_State = 1;
                             }
                         }
                     }
-                    else if(motion > (clutch_angle + 2)){
-                        digitalWrite(electromagnet_4,0);
+                    else if(motion > (clutch_angle)){
+                        digitalWrite(electromagnet_1,1);
+                        digitalWrite(electromagnet_2,0);
                         digitalWrite(electromagnet_3,1);
-                        Electromagnet_Clutch_4 = 0;
+                        digitalWrite(electromagnet_4,0);
+                        Electromagnet_Clutch_1 = 1;
+                        Electromagnet_Clutch_2 = 0;  
                         Electromagnet_Clutch_3 = 1;
+                        Electromagnet_Clutch_4 = 0;
+                        
                     }
                 }
                 #endif
@@ -333,6 +359,27 @@ void *create(void)
 }
 
 
+void *Timer(void)
+{
+    while(1){
+        if(Reversal_State == 1 && timer_State == 0){
+            delay(2000);
+            digitalWrite(electromagnet_1,1);
+            digitalWrite(electromagnet_2,0);
+            digitalWrite(electromagnet_3,1);  
+            digitalWrite(electromagnet_4,0);
+            timer_State = 1;
+        }
+
+        if(lower_clutch_State == 1){
+            digitalWrite(electromagnet_1,1);
+            digitalWrite(electromagnet_2,1);
+            digitalWrite(electromagnet_3,0);
+            digitalWrite(electromagnet_4,1);
+        }
+        
+    }
+}
 
 int main(int argc, const char *argv[])
 {   
@@ -363,19 +410,27 @@ int main(int argc, const char *argv[])
 
     delay(500);
     
-	pthread_t id1;
+	pthread_t id1,id2;
 	int value;
 
-    value = pthread_create(&id1, NULL, (void *)create, NULL);
-    pthread_setname_np(id1, "create");
+    value = pthread_create(&id1, NULL, (void *)external_interrupt_IRQ, NULL);
+    pthread_setname_np(id1, "external_interrupt_IRQ");
 	if(value){
-        printf("thread1 is not created!\n");
+        printf("thread 'external_interrupt_IRQ' is not created!\n");
         return -1;
 	}
+    printf("thread 'external_interrupt_IRQ' is created!\n");
+    value = pthread_create(&id2, NULL, (void *)Timer, NULL);
+    pthread_setname_np(id2, "Timer");
+	if(value){
+        printf("thread 'Timer' is not created!\n");
+        return -1;
+	}
+    printf("thread 'Timer' is created!\n");
     printf("All the thread is created..\n");
     
     pthread_join(id1,NULL);
-
+	pthread_join(id2,NULL);
 	return 0;
 }
 
