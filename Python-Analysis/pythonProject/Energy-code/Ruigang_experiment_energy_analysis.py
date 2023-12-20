@@ -11,7 +11,7 @@ w2 = 9.12
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 
-data = pd.read_excel("./Repetitive_Experiment/150degrees_60.3degrees.xlsx")
+data = pd.read_excel("../Data/Repetitive_Experiment/150degrees_60.3degrees.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -110,6 +110,6 @@ ax1.set_ylim([-100, 100])
 ax2.set_ylim([-5, 5])
 fig.legend(loc=(14.5/16, 5.4/9))
 
-plt.savefig('./PDF-File/energy.pdf')
+plt.savefig('../Output/energy.pdf')
 
 plt.show()

@@ -14,7 +14,7 @@ w2 = 8.0
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 
-data = pd.read_excel("./Repetitive_Experiment/150degrees_60.3degrees.xlsx")
+data = pd.read_excel("../Data/Repetitive_Experiment/150degrees_60.3degrees.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -153,5 +153,5 @@ plt.ylim([-0.2, 3.1])
 # plt.xticks(np.arange(0, 1, 0.1))
 plt.legend(loc=(0.4, 0.23))
 plt.tight_layout()
-plt.savefig('temp.pdf')
+plt.savefig('../Output/temp.pdf')
 plt.show()
