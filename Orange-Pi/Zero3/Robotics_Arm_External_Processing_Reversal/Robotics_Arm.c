@@ -79,9 +79,12 @@ int state4_matrix[30000] = {0};
 /******************************/
 
 /******** experiment ********/
+char State0 = 0;
+char State1 = 0;
+char Reversal_State = 0;
 float start_angle = -60;
 float clutch_angle = 40;
-float re_clutch_angle = -68.7;
+float re_clutch_angle = -65;
 /******************************/
 
 struct pollfd fds[1];
@@ -144,6 +147,8 @@ void intHandler(int i){
     
 }
 
+
+
 void *create(void)
 {
     // cpu_set_t mask;
@@ -175,10 +180,6 @@ void *create(void)
     int Electromagnet_Clutch_3 = 0;
     int Electromagnet_Clutch_4 = 0;
 
-    char State0 = 0;
-    char State1 = 0;
-    char Reversal_State = 0;
-
     int matrix_number = 0;
     FILE *fp = fopen("./data.csv", "w+");
     if (fp == NULL){
@@ -188,6 +189,7 @@ void *create(void)
     }
     fprintf(fp, "Time,Degree,Velocity,Electromagnet_Clutch_1,Electromagnet_Clutch_2,Electromagnet_Clutch_3,Electromagnet_Clutch_4\n");
     signal(SIGINT, intHandler);
+
 
 
     while(1){
@@ -252,18 +254,17 @@ void *create(void)
                             Electromagnet_Clutch_3 = 1;
 
                             if(velocity < 5){
-                                digitalWrite(electromagnet_3,0);
-                                digitalWrite(electromagnet_4,1);
-                                digitalWrite(electromagnet_2,1);
-                                digitalWrite(electromagnet_1,1);
                                 
-                                Electromagnet_Clutch_3 = 0;
+                                digitalWrite(electromagnet_3,1);
+                                digitalWrite(electromagnet_4,1);
+                                digitalWrite(electromagnet_2,0);
+                                digitalWrite(electromagnet_1,1);
+                                Electromagnet_Clutch_3 = 1;
                                 Electromagnet_Clutch_4 = 1;
                                 Electromagnet_Clutch_1 = 1;
-                                Electromagnet_Clutch_2 = 1;
+                                Electromagnet_Clutch_2 = 0;
                                 State0 = 0;
                                 State1 = 1;
-                                delay(2000);
                                 Reversal_State = 1;
                             }
                         }
@@ -278,40 +279,33 @@ void *create(void)
                     
                 if(Reversal_State == 1){
 
-                    if(motion < clutch_angle){
-                        digitalWrite(electromagnet_4,0);
+                    if(motion <= (clutch_angle + 2)){
                         digitalWrite(electromagnet_3,0);
-                        Electromagnet_Clutch_4 = 0;
+                        digitalWrite(electromagnet_4,0);
                         Electromagnet_Clutch_3 = 0;
-
+                        Electromagnet_Clutch_4 = 0;
+                        
+                        
                         if(motion < re_clutch_angle){
                             digitalWrite(electromagnet_1,0);
                             digitalWrite(electromagnet_2,1);
                             Electromagnet_Clutch_1 = 0;
                             Electromagnet_Clutch_2 = 1;
 
-                            if(velocity < 5){
-                                digitalWrite(electromagnet_3,0);
-                                digitalWrite(electromagnet_4,0);
-                                digitalWrite(electromagnet_2,0);
+                            if(velocity > -5){
+                                digitalWrite(electromagnet_2,1);
                                 digitalWrite(electromagnet_1,1);
-                                
-                                Electromagnet_Clutch_3 = 0;
-                                Electromagnet_Clutch_4 = 1;
                                 Electromagnet_Clutch_1 = 1;
-                                Electromagnet_Clutch_2 = 0;
-  
+                                Electromagnet_Clutch_2 = 1;  
                             }
                         }
                     }
-                    
-                    else if(motion > clutch_angle){
+                    else if(motion > (clutch_angle + 2)){
                         digitalWrite(electromagnet_4,0);
                         digitalWrite(electromagnet_3,1);
                         Electromagnet_Clutch_4 = 0;
                         Electromagnet_Clutch_3 = 1;
                     }
-
                 }
                 #endif
                 }
@@ -378,11 +372,10 @@ int main(int argc, const char *argv[])
         printf("thread1 is not created!\n");
         return -1;
 	}
-
     printf("All the thread is created..\n");
     
     pthread_join(id1,NULL);
-    
+
 	return 0;
 }
 
