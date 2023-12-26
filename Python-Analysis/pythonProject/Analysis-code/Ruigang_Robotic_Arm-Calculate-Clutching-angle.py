@@ -21,11 +21,11 @@ print("stiffness2 is: %f N/m" % k2)
 theta_start = 70 * np.pi / 180
 print("start angle is: %.2f degrees" % (theta_start * 180 / np.pi))
 
-theta_goal = 60
+theta_goal = 100
 theta_goal = (theta_goal + 90) * np.pi / 180
 print("goal angle is: %.2f degrees" % (theta_goal * 180 / np.pi))
 
-theta_acc = 10 * np.pi / 180
+theta_acc = 40 * np.pi / 180
 print("acceleration angle is: %.2f degrees" % (theta_acc * 180 / np.pi))
 
 slope1 = 0.108
