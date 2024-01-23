@@ -140,12 +140,12 @@ void intHandler(int i){
 
 void *create(void)
 {
-    // cpu_set_t mask;
-    // CPU_ZERO(&mask);
-    // CPU_SET(3,&mask);
-    // if (sched_setaffinity(0,sizeof(mask),&mask)<0){
-    //     printf("affinity set fail!");
-    // }
+    cpu_set_t mask;
+    CPU_ZERO(&mask);
+    CPU_SET(3,&mask);
+    if (sched_setaffinity(0,sizeof(mask),&mask)<0){
+        printf("affinity set fail!");
+    }
 
     int fd = open("/sys/class/gpio/gpio71/value",O_RDONLY);
     if(fd<0){
@@ -229,15 +229,15 @@ void *create(void)
                     }
                     
                 #if 1
-                    if(motion < -170)State0 = 1;
+                    if(motion < -70)State0 = 1;
                 
-                    if(motion > -90 && State0 == 1){
+                    if(motion > -60 && State0 == 1){
                         digitalWrite(electromagnet_2,0);
                         digitalWrite(electromagnet_1,1);
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
                     
-                        if(motion > 0 && State0 == 1){
+                        if(motion > 30 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
                         
