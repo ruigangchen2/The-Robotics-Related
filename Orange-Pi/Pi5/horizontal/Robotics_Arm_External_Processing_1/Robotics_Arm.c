@@ -17,6 +17,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+// Should ban the eighth core of the Orange Pi 5 in advance and let this code run on it
+
+
+
 /*
 
 //compile the code
@@ -235,18 +239,18 @@ void *create(void)
                     }
 
                 #if 1
-                    if(motion < -180)State0 = 1;
+                    if(motion < -200)State0 = 1;
                 
                     if(motion > -80 && State0 == 1){
                         digitalWrite(electromagnet_2,0);
                         digitalWrite(electromagnet_1,1);
                         Electromagnet_Clutch_2 = 0;
                         Electromagnet_Clutch_1 = 1;
-                    
-                        if(motion > -70 && State0 == 1){
+
+
+                        if(motion > -75 && State0 == 1){
                             digitalWrite(electromagnet_4,0);
                             digitalWrite(electromagnet_3,1);
-                        
                             Electromagnet_Clutch_4 = 0;
                             Electromagnet_Clutch_3 = 1;
 
@@ -270,6 +274,8 @@ void *create(void)
                         digitalWrite(electromagnet_2,1);
                         Electromagnet_Clutch_1 = 0;
                         Electromagnet_Clutch_2 = 1;
+
+                        digitalWrite(electromagnet_4,1);
                     }
                 #endif
                 }
