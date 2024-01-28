@@ -108,14 +108,14 @@ plt.legend()
 J = 1 / 3 * (14.7 * 0.001) * ((123.6 * 0.001) ** 2) + (5.5 * 0.001) * ((0.5 * ((3 * 0.001) ** 2)) + (110 * 0.001) ** 2)
 J_load = (1 / 3 * (11.2 * 0.001) * ((123.5 * 0.001) ** 2) + (50 * 0.001) * ((((8.9 * 0.001) ** 2) / 12) + ((108.8 * 0.001) ** 2)))   # rotation inertia
 
-w1 = 8.5
-w2 = 8.8
+w1 = 8.4
+w2 = 6.5
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 print(k1)
 print(k2)
 
-data = pd.read_excel("../Data/20240127/20240127.xlsx")
+data = pd.read_excel("../Data/20240128/20240128.xlsx")
 time = np.array(data['Time'].ravel())
 angle = np.array(data['Degree'].ravel()) * np.pi / 180
 Electromagnet_1_Clutch = np.array(data['Electromagnet_Clutch_1'].ravel())
@@ -123,8 +123,8 @@ Electromagnet_2_Clutch = np.array(data['Electromagnet_Clutch_2'].ravel())
 Electromagnet_3_Clutch = np.array(data['Electromagnet_Clutch_3'].ravel())
 Electromagnet_4_Clutch = np.array(data['Electromagnet_Clutch_4'].ravel())
 
-startline = 1210
-endline = -27
+startline = 1234
+endline = -220
 
 time = time[startline:endline] - time[startline]
 time = time * 0.001
@@ -181,18 +181,19 @@ for i in range(len(theta_fitted)):
 
 lower_Energy_Calculate_State = 0
 lower_matrix_number = 0
+lower_matrix_start_number = 0
 for i in range(len(theta_fitted)):
     if Electromagnet_3_Clutch[i] == 1:
         if lower_Energy_Calculate_State == 0:
             lower_matrix_start_number = i
             lower_Energy_Calculate_State = 1
-        Lower_Elastic_Energy_Matrix[i] = lower_elastic_energy(abs(theta_fitted[i]) - abs(theta_fitted[lower_matrix_start_number]))
+        Lower_Elastic_Energy_Matrix[i] = lower_elastic_energy(theta_fitted[i] - theta_fitted[lower_matrix_start_number] + 90 * np.pi / 180) - lower_elastic_energy(90 * np.pi / 180)
         if Lower_Elastic_Energy_Matrix[i] < Lower_Elastic_Energy_Matrix[i-1]:
-            Lower_Elastic_Energy_Matrix[i] = lower_elastic_energy(abs(theta_fitted[lower_matrix_start_number] - abs(theta_fitted[i])))
-
+            Lower_Elastic_Energy_Matrix[i] = lower_elastic_energy(theta_fitted[lower_matrix_start_number] - theta_fitted[i] - 90 * np.pi / 180) - lower_elastic_energy(90 * np.pi / 180)
         lower_matrix_number = i
     if Electromagnet_4_Clutch[i] == 1:
         Lower_Elastic_Energy_Matrix[i] = Lower_Elastic_Energy_Matrix[lower_matrix_number]
+Lower_Elastic_Energy_Matrix = Lower_Elastic_Energy_Matrix + lower_elastic_energy(90 * np.pi / 180)
 
 for i in range(len(theta_fitted)):
     Kinetic_Energy_Matrix[i] = kinetic_energy(abs(dtheta_fitted[i]))
@@ -225,6 +226,7 @@ plt.legend(ncol=2)
 plt.plot(time_fitted, np.zeros(np.shape(time_fitted)), 'k:')
 plt.xlabel('Time [s]')
 plt.ylim([-5, 80])
+plt.xticks([0.0,0.1,0.2,0.3,0.4,0.5,0.6])
 plt.tight_layout()
 plt.savefig('temp.pdf')
 plt.show()
