@@ -77,13 +77,13 @@ struct timeval EndTime_Encoder;
 /******************************/
 
 /***** data matrix *****/
-float time_matrix[30000] = {0};
-float motion_matrix[30000] = {0};
-float velocity_matrix[30000] = {0};
-int state1_matrix[30000] = {0};
-int state2_matrix[30000] = {0};
-int state3_matrix[30000] = {0};
-int state4_matrix[30000] = {0};
+float time_matrix[300000] = {0};
+float motion_matrix[300000] = {0};
+float velocity_matrix[300000] = {0};
+int state1_matrix[300000] = {0};
+int state2_matrix[300000] = {0};
+int state3_matrix[300000] = {0};
+int state4_matrix[300000] = {0};
 /******************************/
 
 struct pollfd fds[1];
@@ -233,11 +233,11 @@ void *create(void)
                     state3_matrix[matrix_number] = Electromagnet_Clutch_3;
                     state4_matrix[matrix_number] = Electromagnet_Clutch_4;
                     ++matrix_number;
-                    if(matrix_number > 30000){
+                    if(matrix_number > 300000){
                         printf("\n\nMatrix number error!\n\n");
                         return (void *)-1;
                     }
-
+                    
                 #if 1
                     if(motion < -200)State0 = 1;
                 
