@@ -15,7 +15,7 @@ slope2 = 0.4
 torque_friction1 = slope1 * np.pi * stiffness1 / 2 / omega1
 torque_friction2 = slope2 * np.pi * stiffness2 / 2 / omega2
 
-data = pd.read_excel("./20230712_1torque/1_150degrees.xlsx")
+data = pd.read_excel("../Data/20230712_1torque/1_150degrees.xlsx")
 one = 570
 two = 55
 three = 613

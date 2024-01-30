@@ -3,22 +3,22 @@ import pandas as pd
 from scipy import signal
 import matplotlib.pyplot as plt
 
-start_point = 122750
-end_point = 132500
+start_point = 50000
+end_point = 58900
 
-data = pd.read_csv("/Users/cotychen/Downloads/20231204/Uba.csv", low_memory=False)
-data1 = pd.read_csv("/Users/cotychen/Downloads/20231204/Uca.csv", low_memory=False)
-data2 = pd.read_csv("/Users/cotychen/Downloads/20231204/Ib.csv", low_memory=False)
-data3 = pd.read_csv("/Users/cotychen/Downloads/20231204/Ic.csv", low_memory=False)
-data4 = pd.read_csv("/Users/cotychen/Downloads/20231204/A.csv", low_memory=False)
-data5 = pd.read_csv("/Users/cotychen/Downloads/20231204/B.csv", low_memory=False)
-step = np.array(data['time'].ravel())[start_point:end_point]
-Uba = np.array(data['voltage'].ravel())[start_point:end_point]
-Uca = np.array(data1['voltage'].ravel())[start_point:end_point]
-Vb = np.array(data2['voltage'].ravel())[start_point:end_point]
-Vc = np.array(data3['voltage'].ravel())[start_point:end_point]
-A = np.array(data4['voltage'].ravel())[start_point:end_point]
-B = np.array(data5['voltage'].ravel())[start_point:end_point]
+data = pd.read_csv("../data/20240130/Uba.csv", low_memory=False)
+data1 = pd.read_csv("../data/20240130/Uca.csv", low_memory=False)
+data2 = pd.read_csv("../data/20240130/Ib.csv", low_memory=False)
+data3 = pd.read_csv("../data/20240130/Ic.csv", low_memory=False)
+data4 = pd.read_csv("../data/20240130/A.csv", low_memory=False)
+data5 = pd.read_csv("../data/20240130/B.csv", low_memory=False)
+step = np.array(data['时间 - Uba'].ravel())[start_point:end_point]
+Uba = np.array(data['Voltage [V] - Uba'].ravel())[start_point:end_point]
+Uca = np.array(data1['Voltage [V] - Uca'].ravel())[start_point:end_point]
+Vb = np.array(data2['Voltage [V] - Ib'].ravel())[start_point:end_point]
+Vc = np.array(data3['Voltage [V] - Ic'].ravel())[start_point:end_point]
+A = np.array(data4['Voltage [V] - A'].ravel())[start_point:end_point]
+B = np.array(data5['Voltage [V] - B'].ravel())[start_point:end_point]
 
 N = len(step)
 motion = np.zeros(N)
@@ -40,11 +40,16 @@ for i in range(len(A)):
     pre_A = A[i]
 
 # change back from the voltage to the current
+U_offset = 50
+Uba = (Uba - Uba[U_offset])
+Uca = (Uca - Uca[U_offset])
+
+I_offset = 50
 Ib = -(3.3 - 2 * Vb) / 40 / 0.0005
 Ic = -(3.3 - 2 * Vc) / 40 / 0.0005
 
-Ib = 2.3 * (Ib - np.mean(Ib[len(Vb)-1000:]))
-Ic = 2.0 * (Ic - np.mean(Ic[len(Ib)-1000:]))
+Ib = (Ib - Ib[I_offset])  # move to the zero point
+Ic = (Ic - Ic[I_offset])
 
 
 b, a = signal.butter(8, 0.01, 'lowpass')
@@ -55,18 +60,18 @@ Ib_filtered = signal.filtfilt(b, a, Ib)
 Ic_filtered = signal.filtfilt(b, a, Ic)
 
 # fit the motion and calculate the velocity
-z1 = np.polyfit(time, motion, 7)
+z1 = np.polyfit(time, motion, 10)
 p1 = np.poly1d(z1)
 dot_p1 = np.polyder(p1, 1)
 theta_fitted = p1(time)
 dtheta_fitted = dot_p1(time) * np.pi / 180
-ignore_front = 10
-ignore_end = 500
+ignore_front = 300
+ignore_end = 200
 dtheta_fitted = dtheta_fitted[ignore_front:-ignore_end]
 dtheta_fitted = np.append([dtheta_fitted[0]]*ignore_front, dtheta_fitted)
 dtheta_fitted = np.append(dtheta_fitted, [dtheta_fitted[-1]]*ignore_end)
 
-J = (1 / 3 * (9.2 * 0.001) * ((123.5 * 0.001) ** 2) + (100 * 0.001) * ((0.5 * ((8.9 * 0.001) ** 2)) + (108.8 * 0.001) ** 2))
+J = (1 / 3 * (11.2 * 0.001) * ((123.5 * 0.001) ** 2) + (50 * 0.001) * ((((8.9 * 0.001) ** 2) / 12) + ((108.8 * 0.001) ** 2)))   # rotation inertia
 Electric_Power = (Uba_filtered*Ib_filtered+Uca_filtered*Ic_filtered)
 Electric_Energy = np.zeros(N)
 Mechanical_Power = np.zeros(N)
@@ -83,7 +88,7 @@ for i in range(len(dtheta_fitted)-1):
 Efficiency = Mechanical_Energy / Electric_Energy * 100
 
 fig_num = 3
-plt.subplots(figsize=(8, 4))
+plt.subplots(figsize=(10.5, 5))
 ax = plt.subplot(fig_num, 2, 1)
 plt.plot(time, motion, 'b')
 plt.ylabel(r'$\theta$ [$^\circ$]')
@@ -147,7 +152,7 @@ Electromagnet_2_Clutch = Electromagnet_2_Clutch[startpoint:endpoint]
 Electromagnet_3_Clutch = Electromagnet_3_Clutch[startpoint:endpoint]
 Electromagnet_4_Clutch = Electromagnet_4_Clutch[startpoint:endpoint]
 
-time_fitted = time[startpoint:endpoint]
+time_fitted = time[startpoint:endpoint] - time[startpoint]
 theta_fitted = theta_fitted[startpoint:endpoint]
 dtheta_fitted = dtheta_fitted[startpoint:endpoint]
 
@@ -209,7 +214,7 @@ Elastic_Power = np.insert((Total_Elastic_Energy_Matrix[1:] - Total_Elastic_Energ
 
 
 plt.subplot(fig_num, 2, 2)
-plt.plot(time[start_point:end_point], angle[start_point:end_point]/np.pi*180, 'b')
+plt.plot(time[start_point:end_point], angle[start_point:end_point]/np.pi*180 + 200, 'b')
 plt.subplot(fig_num, 2, 4)
 plt.plot(time_fitted[start_point:end_point], -Elastic_Power[start_point:end_point], 'r--', label='Input')
 plt.plot(time_fitted[start_point:end_point], Kinetic_Power[start_point:end_point], 'b', label='Mechanical')
@@ -225,7 +230,7 @@ plt.legend(ncol=2)
 plt.plot(time_fitted, np.zeros(np.shape(time_fitted)), 'k:')
 plt.xlabel('Time [s]')
 plt.ylim([-5, 80])
-plt.xticks([0.0,0.1,0.2,0.3,0.4,0.5,0.6])
+plt.xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
 plt.tight_layout()
 plt.savefig('temp.pdf')
 plt.show()
