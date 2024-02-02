@@ -3,9 +3,8 @@ import pandas as pd
 from scipy import signal
 import matplotlib.pyplot as plt
 
-start_point = 50000
+start_point = 50060
 end_point = 58900
-
 data = pd.read_csv("../data/20240130/Uba.csv", low_memory=False)
 data1 = pd.read_csv("../data/20240130/Uca.csv", low_memory=False)
 data2 = pd.read_csv("../data/20240130/Ib.csv", low_memory=False)
@@ -47,7 +46,6 @@ Uca = (Uca - Uca[U_offset])
 I_offset = 50
 Ib = -(3.3 - 2 * Vb) / 40 / 0.0005
 Ic = -(3.3 - 2 * Vc) / 40 / 0.0005
-
 Ib = (Ib - Ib[I_offset])  # move to the zero point
 Ic = (Ic - Ic[I_offset])
 
