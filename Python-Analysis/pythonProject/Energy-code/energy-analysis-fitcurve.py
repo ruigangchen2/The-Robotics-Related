@@ -16,7 +16,7 @@ w2 = 7.4
 k1 = J * (w1 ** 2)
 k2 = J * (w2 ** 2)
 
-data = pd.read_excel("./Repetitive_Experiment/150degrees_60.3degrees.xlsx")
+data = pd.read_excel("../Data/Repetitive_Experiment/150degrees_60.3degrees.xlsx")
 time = np.array(data['Time'].ravel())
 angle = np.array(data['Degree'].ravel()) * math.pi / 180
 Electromagnet_1_Clutch = np.array(data['Electromagnet_Clutch_1'].ravel())

@@ -16,7 +16,7 @@ damp1 = 0.0000405
 damp2 = 0.00003780
 damp3 = 0.0001869
 
-data = pd.read_excel("./In_paper_data/150degrees.xlsx")
+data = pd.read_excel("../Data/In_paper_data/150degrees.xlsx")
 
 one = 566
 two = 59

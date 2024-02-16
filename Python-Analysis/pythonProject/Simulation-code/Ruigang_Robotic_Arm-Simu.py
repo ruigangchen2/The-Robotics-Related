@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 
-data = pd.read_excel("./20230703/data.xlsx")
+data = pd.read_excel("../Data/20230703/data.xlsx")
 time = np.around(np.array(data['Time'].ravel()), 2)
 angle = np.around(np.array(data['Degree'].ravel()) * math.pi / 180, 2)
 velocity = np.around(np.array(data['Velocity'].ravel()) * math.pi / 180, 2)
@@ -66,5 +66,5 @@ plt.ylabel('Angular Velocity [rad/s]', fontweight='bold')
 plt.grid()
 plt.legend()
 # plt.ylim([-200, 300])
-plt.savefig('./PDF-File/Sim.pdf')
+plt.savefig('../Output/Sim.pdf')
 plt.show()
