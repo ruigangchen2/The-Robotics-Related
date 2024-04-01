@@ -9,7 +9,7 @@ def decay_curve(t, a, zeta1):
     return a * np.exp((-1) * zeta1 * t)
 
 
-data = pd.read_excel("./Data/20230713_clutch/only_lower_electromagnet_clutch.xlsx")
+data = pd.read_excel("../Data/20230713_clutch/only_lower_electromagnet_clutch.xlsx")
 
 startline = 510
 endline = -1

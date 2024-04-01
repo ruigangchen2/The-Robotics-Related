@@ -17,19 +17,8 @@ Angle = np.array(list(data.iloc[4:, 4])) * 180 / np.pi
 time = np.array(list(data.iloc[4:, 0]))
 
 
-# k1
-startline = 900
-endline = 1800
-
-# k2
-startline = 1800
-endline = 2700
-
-# k3
-startline = 2700
-endline = -600
-
-
+startline = -400
+endline = -300
 
 time = time[startline:endline] - time[startline]
 Angle = Angle[startline:endline]

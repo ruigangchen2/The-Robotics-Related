@@ -4,7 +4,7 @@ import pandas as pd
 from scipy import signal
 import math
 
-data = pd.read_excel("./Data/vertical_free_vibration/vertical_freevibration1.xlsx")
+data = pd.read_excel("../Data/vertical_free_vibration/vertical_freevibration1.xlsx")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time, 2)
@@ -38,5 +38,5 @@ plt.ylabel(r'$\dot{\theta}$ [rad/s]')
 plt.grid()
 plt.ylim([-80, 80])
 plt.ylim([-10, 10])
-plt.savefig("./Output/The Filtered.pdf")
+plt.savefig("../Output/The Filtered.pdf")
 plt.show()

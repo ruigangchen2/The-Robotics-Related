@@ -3,21 +3,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-data1 = pd.read_csv("./Data/different_inertia_trails/trail1.csv")
+data1 = pd.read_csv("../Data/different_inertia_trails/trail1.csv")
 start_point1 = 391
 end_point1 = 1114
 time1 = np.array(data1['Time'].ravel())[start_point1:end_point1]*0.001
 angle1 = np.array(data1['Degree'].ravel())[start_point1:end_point1]*np.pi/180
 velocity1 = np.array(data1['Velocity'].ravel())[start_point1:end_point1]*np.pi/180
 
-data2 = pd.read_csv("./Data/different_inertia_trails/trail2.csv")
+data2 = pd.read_csv("../Data/different_inertia_trails/trail2.csv")
 start_point2 = 391
 end_point2 = 1120
 time2 = np.array(data2['Time'].ravel())[start_point2:end_point2]*0.001
 angle2 = np.array(data2['Degree'].ravel())[start_point2:end_point2]*np.pi/180
 velocity2 = np.array(data2['Velocity'].ravel())[start_point2:end_point2]*np.pi/180
 
-data3 = pd.read_csv("./Data/different_inertia_trails/trail3.csv")
+data3 = pd.read_csv("../Data/different_inertia_trails/trail3.csv")
 start_point3 =    390
 end_point3 = 1120
 time3 = np.array(data3['Time'].ravel())[start_point3:end_point3]*0.001
@@ -56,5 +56,5 @@ plt.ylabel(r'$\dot{\theta}$ [rad/s]')
 plt.legend()
 plt.tight_layout()
 plt.ylim([-1, 4])
-plt.savefig('./Output/Sim.pdf')
+plt.savefig('../Output/Sim.pdf')
 plt.show()

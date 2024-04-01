@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import scipy
 
-data = pd.read_csv("./rotation_data3/-30degree_-16degree.csv")
+data = pd.read_csv("../Data/rotation_data3/-30degree_-16degree.csv")
 
 time = np.array(data['Time'].ravel())
 time = np.around(time,2)

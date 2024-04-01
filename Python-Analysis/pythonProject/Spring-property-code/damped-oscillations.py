@@ -10,7 +10,7 @@ def damped_oscillation(t, a, lambda1, omega1, phi1, c1):
     return a * np.exp((-1) * lambda1 * t) * np.sin(omega1 * t + phi1) + c1
 
 
-data = pd.read_excel("./vertical_free_vibration/vertical_freevibration1.xlsx")
+data = pd.read_excel("../Data/vertical_free_vibration/vertical_freevibration1.xlsx")
 # data = pd.read_excel("./Upper-Torsion-Spring/experiment1.xlsx")
 
 angle = (np.array(list(data.iloc[0:, 1]))) * math.pi / 180
@@ -53,5 +53,5 @@ plt.title(latex)
 ax1.grid()
 plt.legend()
 plt.subplots_adjust(bottom=0.15)
-fig.savefig('./PDF-File/curve-fitting.pdf')
+fig.savefig('../Output/curve-fitting.pdf')
 plt.show()
