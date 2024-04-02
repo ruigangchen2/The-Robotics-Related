@@ -15,7 +15,7 @@ real_stiffness = 0.00315
 
 startline = 507
 endline = 565
-data = pd.read_excel("./Data/Upper-Torsion-Spring/experiment1.xlsx")
+data = pd.read_excel("../Data/Upper-Torsion-Spring/experiment1.xlsx")
 angle = (np.array(list(data.iloc[0:, 1]))) * math.pi / 180
 velocity = np.array(list(data.iloc[0:, 2])) * math.pi / 180
 time = np.array(list(data.iloc[0:, 0]))

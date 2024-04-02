@@ -11,7 +11,7 @@ stiffness = 0.000141407104 * (omega ** 2)  # constant
 slope = 0.108 # constant
 torque_friction1 = slope * np.pi * stiffness / 2 / omega # constant
 # print(torque_friction1)
-data = pd.read_excel("./20230712_3.5torqye/1_110degrees.xlsx")
+data = pd.read_excel("../Data/20230712_3.5torqye/1_110degrees.xlsx")
 one = 590
 two = 60
 time = np.array(data['Time'].ravel())[one:-5]*0.001

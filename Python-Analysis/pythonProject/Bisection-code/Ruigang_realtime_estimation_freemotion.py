@@ -7,7 +7,7 @@ from scipy.integrate import solve_ivp
 
 damp = 0.00004
 
-data = pd.read_excel("./Data/20230712_1torque/1_150degrees.xlsx")
+data = pd.read_excel("../Data/20230712_1torque/1_150degrees.xlsx")
 one = 570
 two = 55
 three = 613
