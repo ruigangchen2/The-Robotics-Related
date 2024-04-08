@@ -5,7 +5,8 @@ from sympy import *
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-inertia = 0.5 * (30.5 * 0.001) * ((6.7 * 0.01) ** 2) * (1 - 2 / 3 * np.sin(np.pi / 8))
+# inertia = 0.5 * (30.5 * 0.001) * ((6.7 * 0.01) ** 2) * (1 - 2 / 3 * np.sin(np.pi / 8))
+inertia = 0.5 * (30.5 * 0.001) * ((6.7 * 0.01) ** 2) * (1 - 2 / 3 * (np.sin(np.pi / 8)**2))
 
 def damped_oscillation(t, a, lambda1, omega1, phi1, c1):
     return a * np.exp((-1) * lambda1 * t) * np.sin(omega1 * t + phi1) + c1
@@ -17,18 +18,20 @@ Angle = np.array(list(data.iloc[4:, 4])) * 180 / np.pi
 time = np.array(list(data.iloc[4:, 0]))
 
 
-# k1
-startline = 900
-endline = 1800
+# # k1
+# startline = 900
+# endline = 1800
+#
+# # k2
+# startline = 1800
+# endline = 2700
+#
+# # k3
+# startline = 2700
+# endline = -600
 
-# k2
-startline = 1800
-endline = 2700
-
-# k3
-startline = 2700
+startline = 1300
 endline = -600
-
 
 
 time = time[startline:endline] - time[startline]
