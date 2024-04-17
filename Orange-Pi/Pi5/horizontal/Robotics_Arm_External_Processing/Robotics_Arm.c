@@ -81,6 +81,7 @@ int state2_matrix[30000] = {0};
 int state3_matrix[30000] = {0};
 int state4_matrix[30000] = {0};
 /******************************/
+char BLDC_state = 0;
 
 struct pollfd fds[1];
 
@@ -177,7 +178,7 @@ void *create(void)
 
     char State0 = 0;
     char State1 = 0;
-    
+
     int matrix_number = 0;
     FILE *fp = fopen("./data.csv", "w+");
     if (fp == NULL){
@@ -233,43 +234,47 @@ void *create(void)
                         printf("\n\nMatrix number error!\n\n");
                         return (void *)-1;
                     }
-                
-                #if 1
-                    if(motion < -65)State0 = 1;
-                
-                    if(motion > -60 && State0 == 1){
-                        digitalWrite(electromagnet_2,0);
-                        digitalWrite(electromagnet_1,1);
-                        Electromagnet_Clutch_2 = 0;
-                        Electromagnet_Clutch_1 = 1;
-                    
-                        if(motion > 39.08 && State0 == 1){
-                            digitalWrite(electromagnet_4,0);
-                            digitalWrite(electromagnet_3,1);
-                        
-                            Electromagnet_Clutch_4 = 0;
-                            Electromagnet_Clutch_3 = 1;
 
-                            if(velocity < 5){
-                                digitalWrite(electromagnet_3,0);
-                                digitalWrite(electromagnet_4,1);
-                                digitalWrite(electromagnet_2,1);
-                                digitalWrite(electromagnet_1,1);
-                                
-                                Electromagnet_Clutch_3 = 0;
-                                Electromagnet_Clutch_4 = 1;
-                                Electromagnet_Clutch_1 = 1;
-                                Electromagnet_Clutch_2 = 0;
-                                State0 = 0;
-                                State1 = 1;
+                #if 1
+                    if(BLDC_state == 1){
+                        if(motion > 2 && State0 == 0 && State1 == 0)State0 = 1;
+                    
+                        if(State0 == 1){
+                            digitalWrite(electromagnet_2,0);
+                            digitalWrite(electromagnet_1,1);
+                            Electromagnet_Clutch_2 = 0;
+                            Electromagnet_Clutch_1 = 1;
+                        
+                            if(motion > 120){
+                                digitalWrite(electromagnet_4,0);
+                                digitalWrite(electromagnet_3,1);
+                            
+                                Electromagnet_Clutch_4 = 0;
+                                Electromagnet_Clutch_3 = 1;
+
+                                if(velocity < 5){
+                                    State0 = 0;
+                                    State1 = 1;
+                                }
                             }
                         }
-                    }
-                    else if(State1 == 0){
-                        digitalWrite(electromagnet_1,0);
-                        digitalWrite(electromagnet_2,1);
-                        Electromagnet_Clutch_1 = 0;
-                        Electromagnet_Clutch_2 = 1;
+                        else if(State0 == 0 && State1 == 0){
+                            digitalWrite(electromagnet_1,0);
+                            digitalWrite(electromagnet_2,1);
+                            Electromagnet_Clutch_1 = 0;
+                            Electromagnet_Clutch_2 = 1;
+                        }
+                        else if(State0 == 0 && State1 == 1){
+                            digitalWrite(electromagnet_3,0);
+                            digitalWrite(electromagnet_4,1);
+                            digitalWrite(electromagnet_2,1);
+                            digitalWrite(electromagnet_1,1);
+                            
+                            Electromagnet_Clutch_3 = 0;
+                            Electromagnet_Clutch_4 = 1;
+                            Electromagnet_Clutch_1 = 1;
+                            Electromagnet_Clutch_2 = 0;
+                        }
                     }
                 #endif
                 }
@@ -296,7 +301,22 @@ void *create(void)
     }
 }
 
-
+void *timer_10ms(void)
+{
+    int i = 0;
+    while(1){
+        if(BLDC_state==0){
+            digitalWrite(electromagnet_1,1);
+            if(++i > 1000){
+                BLDC_state=1;
+                digitalWrite(electromagnet_1,0);
+                digitalWrite(electromagnet_2,1);
+                delay(10);
+            }
+        }
+        delay(5);
+    }
+}
 
 int main(int argc, const char *argv[])
 {   
@@ -322,9 +342,7 @@ int main(int argc, const char *argv[])
     digitalWrite(electromagnet_3,0);
     digitalWrite(electromagnet_4,0);
 
-    delay(500);
-    
-	pthread_t id1;
+	pthread_t id1,id2;
 	int value;
 
     value = pthread_create(&id1, NULL, (void *)create, NULL);
@@ -334,10 +352,18 @@ int main(int argc, const char *argv[])
         return -1;
 	}
 
+    value = pthread_create(&id2, NULL, (void *)timer_10ms, NULL);
+    pthread_setname_np(id2, "timer_10ms");
+	if(value){
+        printf("thread2 is not created!\n");
+        return -1;
+	}
+
     printf("All the thread is created..\n");
     
     pthread_join(id1,NULL);
-    
+    pthread_join(id2,NULL);
+
 	return 0;
 }
 
