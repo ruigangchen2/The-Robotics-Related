@@ -33,6 +33,9 @@ slope2 = 0.182
 t1 = slope1 * np.pi * k1 / 2 / w1
 t3 = slope2 * np.pi * k2 / 2 / w2
 t2 = 0.962 * J
+# t1 = 0.0000405
+# t2 = 0.00003780
+# t3 = 0.0001869
 
 print("t1 is:%f" % t1)
 print("t2 is:%f" % t2)
