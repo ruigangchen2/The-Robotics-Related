@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
 
+def decay_curve(t, a, zeta1):
+    return a * np.exp((-1) * zeta1 * t)
+
+
 def linear_curve(t, k, b):
     return k * t + b
 
@@ -14,7 +18,7 @@ startline = 510
 endline = -1
 time = np.around(np.array(data['Time'].ravel()), 2) * 0.001
 time = time[startline:endline] - time[startline]
-angle = np.around(np.array(data['Degree'].ravel()), 2)[startline:endline] * np.pi / 180
+angle = np.around(np.array(data['Degree'].ravel()), 2)[startline:endline]
 
 
 first_maximum_ranage = angle[900:1000]
@@ -33,15 +37,15 @@ decay_angle = [np.max(first_maximum_ranage), np.max(second_maximum_ranage), np.m
                np.max(fourth_maximum_ranage), np.max(fifth_maximum_ranage), np.max(sixth_maximum_ranage)]
 decay_time = [time[first_maximum_time], time[second_maximum_time], time[third_maximum_time],
               time[fourth_maximum_time], time[fifth_maximum_time], time[sixth_maximum_time]]
-A, B = curve_fit(linear_curve, decay_time, decay_angle)[0]
-print("The parameters of previous torsion spring:", curve_fit(linear_curve, decay_time, decay_angle)[0])
-fitted_angle = A * time + B
-print(A)
-print(B)
-fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
-ax1.plot(time, angle, 'k--', label=r'$\theta_{exp}$ [rad]')
-ax1.plot(time, fitted_angle, 'r--', label=r'$\theta_{fit}$ [rad]')
+A, B = curve_fit(decay_curve, decay_time, decay_angle)[0]
+print("The parameters of previous torsion spring:", curve_fit(decay_curve, decay_time, decay_angle)[0])
+fitted_angle = A * np.exp((-1) * B * time)
 
+A1, B1 = curve_fit(linear_curve, decay_time, decay_angle)[0]
+print("The parameters of previous torsion spring:", curve_fit(linear_curve, decay_time, decay_angle)[0])
+fitted_angle1 = A1 * time + B1
+
+fig, ax1 = plt.subplots(figsize=(8, 4), dpi=200)
 plt.annotate(r'$\angle %.2f\ rad$' % np.max(first_maximum_ranage), xy=(time[first_maximum_time], np.max(first_maximum_ranage)), xytext=(+20, 0),
              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
 plt.annotate(r'$\angle %.2f\ rad$' % np.max(second_maximum_ranage), xy=(time[second_maximum_time], np.max(second_maximum_ranage)), xytext=(+20, 0),
@@ -54,9 +58,13 @@ plt.annotate(r'$\angle %.2f\ rad$' % np.max(fifth_maximum_ranage), xy=(time[fift
              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
 plt.annotate(r'$\angle %.2f\ rad$' % np.max(sixth_maximum_ranage), xy=(time[sixth_maximum_time], np.max(sixth_maximum_ranage)), xytext=(+20, 0),
              textcoords='offset points', fontsize=10, arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=.2'))
-ax1.set_xlabel('Time [s]')
-ax1.set_ylabel(r'$\theta$ [rad]')
+ax1.plot(time, angle, 'k--', label=r'$\theta_{experiment}$ [$^\circ$]')
+ax1.plot(time, fitted_angle, 'r--', label=r'$\theta_{exponential}$ [$^\circ$]')
+ax1.plot(time, fitted_angle1, 'b--', label=r'$\theta_{linear}$ [$^\circ$]')
+ax1.plot(time, fitted_angle-fitted_angle1, 'c--', label=r'$\theta_{error}$ [$^\circ$]')
+ax1.set_xlabel('Time [s]', fontweight='bold')
 ax1.grid()
-plt.legend()
+fig.legend()
+ax1.set_ylim([-100, 100])
 plt.savefig('figure.pdf')
 plt.show()
