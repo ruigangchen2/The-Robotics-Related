@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data = pd.read_excel("./Data/20230802/1_140.xlsx")
+data = pd.read_excel("../Data/20230802/1_140.xlsx")
 one = 390
 
 time = np.array(data['Time'].ravel())[one:-22]*0.001-np.array(data['Time'].ravel())[one]*0.001
@@ -17,7 +17,7 @@ plt.plot(time, angle * 180 / np.pi, 'b', label="Trial 1")
 plt.subplot(212, sharex=ax)
 plt.plot(time, velocity, 'b', label="Trial 1")
 
-data = pd.read_excel("./Data/20230802/2_140.xlsx")
+data = pd.read_excel("../Data/20230802/2_140.xlsx")
 one = 454
 time = np.array(data['Time'].ravel())[one:-10]*0.001-np.array(data['Time'].ravel())[one]*0.001
 angle = np.array(data['Degree'].ravel())[one:-10]*np.pi/180
@@ -30,7 +30,7 @@ plt.plot(time, angle * 180 / np.pi, 'r--', label="Trial 2")
 plt.subplot(212, sharex=ax)
 plt.plot(time, velocity, 'r--', label="Trial 2")
 
-data = pd.read_excel("./Data/20230802/3_140.xlsx")
+data = pd.read_excel("../Data/20230802/3_140.xlsx")
 one = 391
 time = np.array(data['Time'].ravel())[one:-10]*0.001-np.array(data['Time'].ravel())[one]*0.001
 angle = np.array(data['Degree'].ravel())[one:-10]*np.pi/180

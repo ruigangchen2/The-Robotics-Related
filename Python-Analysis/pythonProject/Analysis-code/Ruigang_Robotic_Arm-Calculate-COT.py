@@ -49,7 +49,7 @@ print("The Energy_Saved is: %f %%" % Energy_Saved)
 COT = (energy_acc - energy_dec) / (J * g * theta_goal)
 print("The COT is: %f" % COT)
 
-COT = (energy_acc - energy_dec) / ((J * g)/(theta_goal*))
+COT = (energy_acc - energy_dec) / ((J * g)/(theta_goal))
 print("The NEW COT is: %f" % COT)
 
 theta_dec_max = (energy_acc * 2 / k2) ** 0.5
