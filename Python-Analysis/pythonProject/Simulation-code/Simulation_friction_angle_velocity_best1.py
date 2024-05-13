@@ -10,10 +10,10 @@ omega = 5.28
 stiffness1 = inertia * (omega ** 2)  # I * w^2
 stiffness2 = inertia * (omega ** 2)
 
-slope = 0.1895
-friction1 = np.pi * stiffness1 * slope / 2 / omega
-friction2 = friction1 * 0.6
-friction3 = np.pi * stiffness2 * slope / 2 / omega
+
+friction1 = 0.00025
+friction2 = 0.00025 * 0.5
+friction3 = 0.00025
 
 data = pd.read_excel("../Data/In_paper_data/150degrees.xlsx")
 
