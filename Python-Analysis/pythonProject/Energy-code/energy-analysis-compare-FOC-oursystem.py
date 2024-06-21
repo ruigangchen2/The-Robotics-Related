@@ -7,12 +7,12 @@ import math
 start_point = 122750
 end_point = 132500
 
-data = pd.read_csv("/Users/coty/Downloads/20231204/Uba.csv", low_memory=False)
-data1 = pd.read_csv("/Users/coty/Downloads/20231204/Uca.csv", low_memory=False)
-data2 = pd.read_csv("/Users/coty/Downloads/20231204/Ib.csv", low_memory=False)
-data3 = pd.read_csv("/Users/coty/Downloads/20231204/Ic.csv", low_memory=False)
-data4 = pd.read_csv("/Users/coty/Downloads/20231204/A.csv", low_memory=False)
-data5 = pd.read_csv("/Users/coty/Downloads/20231204/B.csv", low_memory=False)
+data = pd.read_csv("/Users/cotychen/Downloads/20231204/Uba.csv", low_memory=False)
+data1 = pd.read_csv("/Users/cotychen/Downloads/20231204/Uca.csv", low_memory=False)
+data2 = pd.read_csv("/Users/cotychen/Downloads/20231204/Ib.csv", low_memory=False)
+data3 = pd.read_csv("/Users/cotychen/Downloads/20231204/Ic.csv", low_memory=False)
+data4 = pd.read_csv("/Users/cotychen/Downloads/20231204/A.csv", low_memory=False)
+data5 = pd.read_csv("/Users/cotychen/Downloads/20231204/B.csv", low_memory=False)
 step = np.array(data['time'].ravel())[start_point:end_point]
 Uba = np.array(data['voltage'].ravel())[start_point:end_point]
 Uca = np.array(data1['voltage'].ravel())[start_point:end_point]
