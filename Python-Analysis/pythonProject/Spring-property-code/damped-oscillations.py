@@ -20,8 +20,7 @@ time = np.array(list(data.iloc[0:, 0]))
 
 startline = 300
 endline = 6000
-# startline = 510
-# endline = 4000
+
 
 time = time[startline:endline] - time[startline]
 velocity = velocity[startline:endline]
